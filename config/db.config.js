@@ -15,9 +15,9 @@
 
 //** Production */
 module.exports = {
-  HOST: "sql6.freesqldatabase.com",
-  USER: "sql6453435",
-  PASSWORD: "yxlBvf9t9t",
-  DB: "sql6453435",
+  HOST: "bk1zorhoargullwi7van-mysql.services.clever-cloud.com",
+  USER: "unbptftvur2vuz37",
+  PASSWORD: "GltkPlCyEkfUTwZgfw3F",
+  DB: "bk1zorhoargullwi7van",
   dialect: "mysql"
 };
