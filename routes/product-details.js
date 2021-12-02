@@ -1,9 +1,17 @@
+/**
+ * @Author: Le Vu Huy
+ * @Date:   2021-11-24 13:05:32
+ * @Last Modified by:   Le Vu Huy
+ * @Last Modified time: 2021-12-02 01:58:25
+ */
 var express = require('express');
 var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('product-details');
+
+  const product=require("../controller/sanpham");
+  product.renderProductDetail(req,res);
 });
 
 module.exports = router;

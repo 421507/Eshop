@@ -1,3 +1,9 @@
+/**
+ * @Author: Le Vu Huy
+ * @Date:   2021-11-24 13:05:32
+ * @Last Modified by:   Le Vu Huy
+ * @Last Modified time: 2021-12-01 15:10:17
+ */
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
@@ -15,6 +21,12 @@ const checkoutRouter = require('./routes/checkout');
 const productdetailsRouter = require('./routes/product-details');
 
 const app = express();
+
+const db = require('./models/index')
+// database setup
+db.sequelize.sync().then(()=>{
+  console.log("Sync database!");
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -35,6 +47,9 @@ app.use('/contact', contactRouter);
 app.use('/checkout', checkoutRouter);
 app.use('/product-details', productdetailsRouter);
 app.use('/users', usersRouter);
+
+// api route
+require("./routes/api/sanpham")(app);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
