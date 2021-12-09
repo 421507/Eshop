@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-08 22:28:11
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-09 02:24:41
+ * @Last Modified time: 2021-12-09 14:09:47
  */
 module.exports = (sequelize,Sequelize) => {
     try {
@@ -27,8 +27,8 @@ module.exports = (sequelize,Sequelize) => {
         cong_ty: {
           type: Sequelize.INTEGER,
         },
-        admin:{
-          type:Sequelize.BOOLEAN
+        role:{
+          type:Sequelize.STRING
         },
         ten:{
           type:Sequelize.STRING

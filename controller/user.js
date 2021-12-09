@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-08 23:05:58
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-09 02:05:08
+ * @Last Modified time: 2021-12-09 15:43:33
  */
 const {getUser,createUser} = require('./service/user');
 const bcrypt  =require('bcrypt');
@@ -141,5 +141,40 @@ exports.logout=async(req,res)=>{
     res.cookie('auth','');
 
     return res.redirect('/');
+
+}
+
+exports.renderProfilePage=async(req,res)=>{
+
+    const diachi=require('./service/diachi');
+
+    const data=await diachi.getByPk(req.user.id_diachi);
+
+    if(!data){
+
+        res.render('profile',
+        {
+            auth:true,
+            user:req.user,
+            diachi:{
+                so_nha:'',
+                ten_duong:'',
+                phuong:'',
+                quan:'',
+                thanh_pho:'',
+                tinh:''
+            }
+        })
+    }
+    else{
+        console.log(data.ten_duong);
+        res.render('profile',
+        {
+            auth:true,
+            user:req.user,
+            diachi:data
+        })
+    }
+
 
 }

@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 13:18:17
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-08 23:07:26
+ * @Last Modified time: 2021-12-09 15:13:24
  */
 const dbConfig = require("../config/db.config.js");
 
@@ -33,5 +33,6 @@ db.khachhang=require('./khachhang')(sequelize,Sequelize);
 db.giohang=require('./giohang')(sequelize,Sequelize);
 db.giohangchitiet=require('./giohangchitiet')(sequelize,Sequelize);
 db.user=require('./user')(sequelize,Sequelize);
+db.diachi=require('./diachi')(sequelize,Sequelize);
 
 module.exports = db;

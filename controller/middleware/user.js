@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-09 00:19:54
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-09 01:19:49
+ * @Last Modified time: 2021-12-09 15:08:05
  */
 const { verifyToken } = require('../service/token');
 const { getUser } = require('../service/user');
@@ -11,7 +11,8 @@ exports.isAuth = async (req, res, next) => {
     // Lấy access token từ header
     const accessTokenFromHeader = req.cookies.auth;
     if (!accessTokenFromHeader) {
-        return res.status(401).send('Không tìm thấy access token!');
+        // return res.status(401).send('Không tìm thấy access token!');
+        return res.redirect('/login');
     }
 
     const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
@@ -21,9 +22,9 @@ exports.isAuth = async (req, res, next) => {
         accessTokenSecret,
     );
     if (!verified) {
-        return res
-            .status(401)
-            .send('Bạn không có quyền truy cập vào tính năng này!');
+        return res.redirect('/login');
+            // .status(401)
+            // .send('Bạn không có quyền truy cập vào tính năng này!');
     }
 
     try {

@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 13:05:32
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-09 02:08:51
+ * @Last Modified time: 2021-12-09 14:07:57
  */
 const createError = require('http-errors');
 const express = require('express');
@@ -20,6 +20,7 @@ const logoutRouter = require('./routes/logout');
 const contactRouter = require('./routes/contact');
 const checkoutRouter = require('./routes/checkout');
 const productdetailsRouter = require('./routes/product-details');
+const profileRouter=require('./routes/profile');
 
 const app = express();
 
@@ -49,6 +50,7 @@ app.use('/contact', contactRouter);
 app.use('/checkout', checkoutRouter);
 app.use('/product-details', productdetailsRouter);
 app.use('/users', usersRouter);
+app.use('/profile',profileRouter);
 
 // api route
 require("./routes/api/sanpham")(app);
