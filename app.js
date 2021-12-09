@@ -1,20 +1,34 @@
+/**
+ * @Author: Le Vu Huy
+ * @Date:   2021-11-24 13:05:32
+ * @Last Modified by:   Le Vu Huy
+ * @Last Modified time: 2021-12-09 14:07:57
+ */
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-
+require('dotenv').config();
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const productsRouter = require('./routes/products');
 const blogRouter = require('./routes/blog');
 const cartRouter = require('./routes/cart');
 const loginRouter = require('./routes/login');
+const logoutRouter = require('./routes/logout');
 const contactRouter = require('./routes/contact');
 const checkoutRouter = require('./routes/checkout');
 const productdetailsRouter = require('./routes/product-details');
+const profileRouter=require('./routes/profile');
 
 const app = express();
+
+const db = require('./models/index')
+// database setup
+db.sequelize.sync().then(()=>{
+  console.log("Sync database!");
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -31,10 +45,16 @@ app.use('/blog', blogRouter);
 app.use('/products', productsRouter);
 app.use('/cart', cartRouter);
 app.use('/login', loginRouter);
+app.use('/logout', logoutRouter);
 app.use('/contact', contactRouter);
 app.use('/checkout', checkoutRouter);
 app.use('/product-details', productdetailsRouter);
 app.use('/users', usersRouter);
+app.use('/profile',profileRouter);
+
+// api route
+require("./routes/api/sanpham")(app);
+require("./routes/api/user")(app);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

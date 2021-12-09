@@ -5,10 +5,10 @@
  */
 
 var http = require("http");
-var sequelize = require("../models/index");
+var db = require("../models/index");
 
 try {
-  sequelize.authenticate().then(() => {
+  db.sequelize.authenticate().then(() => {
     console.log("Connection has been established successfully.");
 
     var app = require("../app");
