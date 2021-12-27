@@ -2,11 +2,11 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-25 22:32:06
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-21 19:47:31
+ * @Last Modified time: 2021-12-27 23:06:28
  */
 module.exports = cart => {
     const user=require('../../controller/middleware/user');
-    const giohang=require("../../controller/giohang");
+    const giohang=require("../../controller/cartPage");
     const router=require("express").Router();
 
     router.post("/:id",user.isIdentify,giohang.create);

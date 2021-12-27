@@ -2,14 +2,12 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 22:15:05
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-22 00:45:57
+ * @Last Modified time: 2021-12-27 23:05:40
  */
-const { v4: uuidv4 } = require('uuid');
-const { getAll: cartGetAll, update: cartUpdate,create:cartCreate,getByPk:cartGetByPk } = require('./service/giohang');
-const { create: customerCreate, getAll: customerGetAll } = require('./service/khachhang');
+const {update:cartUpdate,getAll: cartGetAll}=require('./service/giohang');
 const { getByPk: productGetByPk,_getAll: productGetAll,update:productUpdate } = require('./service/sanpham');
 const {create:addressCreate}=require('./service/diachi');
-const {update:customerUpdate}=require('./service/khachhang');
+const {getAll: customerGetAll,update:customerUpdate}=require('./service/khachhang');
 const {isAuth} = require('./service/auth');
 const {
     create: detailCartCreate,
@@ -244,14 +242,15 @@ exports.renderCartPage=async (req,res)=>{
         return res.status(401).send("Something wrong,please try again");
     }
     else if(detailCart.length === 0){
-        isAuth(req)
-        .then(result=>{
+        
+        try {
+            const result=await isAuth(req);
             return res.render('cart',{auth:result});
-
-        })
-        .catch(err=>{
-            console.log(err);
-        });
+        } catch (error) {
+            console.log(error);
+            return;
+        }
+        
     }
 
     const idProduct=detailCart.map(item=>item.id_sanpham);
@@ -315,14 +314,15 @@ exports.renderCheckoutPage=async (req,res)=>{
         return res.status(401).send("Something wrong,please try again");
     }
     else if(detailCart.length === 0){
-        isAuth(req)
-        .then(result=>{
-            return res.render('checkout',{checkout:false,auth:result});
 
-        })
-        .catch(err=>{
-            console.log(err);
-        });
+        try {
+            const result=await isAuth(req)
+            return res.render('checkout',{checkout:false,auth:result});
+    
+        } catch (error) {
+            console.log(error);
+            return;
+        }
     }
 
     const idProduct=detailCart.map(item=>item.id_sanpham);
@@ -469,4 +469,76 @@ exports.checkout=async (req,res)=>{
     }   
 
     return res.status(200).send('ok');
+}
+
+exports.handleDetailCart=async (req,res)=>{
+
+    const uuid=req.cookies.auth;
+    if(!uuid){
+        return res.redirect('/cart');
+    }
+
+    if(req.query.method === 'delete'){
+
+        const id=req.query.id;
+
+        const result=await detailCartRemove({id_giohangchitiet:id});
+
+        if(result === null){
+            console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        }
+        res.redirect('/cart');
+
+    }
+    else if(req.query.method === 'post'){
+
+        const id=req.query.id;
+
+        const amount=req.body.amount;
+
+        const prevAmount=req.body.prevAmount;
+
+        const price=req.body.price;
+
+        const result=await detailCartUpdate({soluong:parseInt(amount),id_giohangchitiet:id});
+
+        if(result === null){
+
+            return res.status(401).send("Oops something wrong");
+        }
+
+        let id_khachhang = await customerGetAll({ uuid: uuid });
+
+        if (id_khachhang === null)
+            return res.status(401).send("Something wrong please try again");
+        else
+            id_khachhang = id_khachhang[0].id_khachhang;
+
+        let payload = {
+            id_khachhang: id_khachhang,
+            check_out: false,
+        };
+
+
+        let cart=await cartGetAll(payload);
+
+        if (cart !== null)
+            cart = cart[0];
+        else {
+            res.status(401).send('Something wrong while retrieving giohang')
+        }
+
+        payload={
+            id_giohang:cart.id_giohang,
+            tong_tien:cart.tong_tien+parseInt(price)*(amount-prevAmount)
+        }
+
+        const _result=await cartUpdate(payload);
+
+        if(_result === null){
+            return res.status(401).send("Oops something wrong");
+        }
+
+        return res.status(200).send("OK");
+    }
 }

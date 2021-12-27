@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-25 22:23:01
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-16 22:36:41
+ * @Last Modified time: 2021-12-27 22:24:22
  */
 
 
@@ -24,9 +24,6 @@ module.exports=(sequelize,Sequelize) => {
             },
             tong_tien:{
                 type:Sequelize.DOUBLE
-            },
-            so_luong:{
-                type:Sequelize.INTEGER
             },
             ngay_dat:{
                 type:Sequelize.DATE
