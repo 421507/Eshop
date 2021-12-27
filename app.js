@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 13:05:32
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-16 20:58:35
+ * @Last Modified time: 2021-12-28 00:18:30
  */
 const createError = require('http-errors');
 const express = require('express');
@@ -58,6 +58,7 @@ app.use('/profile',profileRouter);
 require("./routes/api/sanpham")(app);
 require("./routes/api/user")(app);
 require("./routes/api/giohang")(app);
+require("./routes/api/review")(app);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

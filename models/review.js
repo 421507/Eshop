@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 22:06:41
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-27 22:47:14
+ * @Last Modified time: 2021-12-27 23:21:46
  */
 
  module.exports = (sequelize,Sequelize) => {
@@ -21,6 +21,12 @@
         },
         created_at: {
             type: Sequelize.DATE(6),
+        },
+        id_sanpham:{
+          type: Sequelize.INTEGER
+        },
+        description:{
+          type:Sequelize.STRING
         }
       });
       return Review;

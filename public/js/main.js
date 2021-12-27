@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 13:05:32
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-22 01:06:17
+ * @Last Modified time: 2021-12-28 00:51:31
  */
 /*price range*/
 
@@ -182,6 +182,55 @@ $(document).ready(function () {
 			});
 			
 		});
+
+		$('#review-form').submit(event=>{
+
+			event.preventDefault();
+			const idProduct=$('span#product-id').text();
+			
+			const name=$('input#name').val();
+			const email=$('input#email').val();
+			const description=$('textarea#description').val();
+
+			$.ajax({
+				type: 'POST',
+				url: `http://localhost:3000/api/review?product=${idProduct}`,
+				data: {
+					name:name,
+					email:email,
+					description:description
+				}
+			}).done(function (data) {
+				// window.location.replace('/');
+				
+				console.log(data);
+
+				const newData={};
+
+				newData.name=data.name;
+				newData.description=data.description;
+				const myDate=new Date(data.created_at);
+
+				newData.hour=`${myDate.getUTCHours()}:${myDate.getUTCMinutes()}:${myDate.getUTCSeconds()}`;
+				newData.date=`${myDate.getUTCDate()}/${myDate.getUTCMonth()}/${myDate.getUTCFullYear()}`;
+
+				$('div#_reviews').prepend(
+					`<div>
+						<ul>
+							<li><a href=""><i class="fa fa-user"></i>${newData.name}</a></li>
+							<li><a href=""><i class="fa fa-clock-o"></i>${newData.hour}</a></li>
+							<li><a href=""><i class="fa fa-calendar-o"></i>${newData.date}</a></li>
+						</ul>
+						<p>${newData.description}</p>
+					</div>`
+				)
+
+			}).fail(function (data) {
+				alert(data.responseText);
+				console.log(data);
+			});
+
+		})
 	});
 });
 
