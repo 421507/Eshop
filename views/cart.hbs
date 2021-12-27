@@ -19,7 +19,36 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr>
+						{{#data}}
+							<tr id="detail-cart_{{id_detailcart}}">
+								
+								<td class="cart_product">
+									<a href={{link_sanpham}}><img src={{thumbnail}} alt=""></a>
+								</td>
+								<td class="cart_description">
+									<h4><a href="">{{ten_sanpham}}</a></h4>
+									<p>Web ID: {{id_sanpham}}</p>
+								</td>
+								<td class="cart_price">
+									<p>${{gia}}</p>
+								</td>
+								<td class="cart_quantity">
+									<div class="cart_quantity_button">
+										<a class="cart_quantity_up" onclick="increment({{id_detailcart}},{{gia}})" style="cursor:pointer;"> + </a>
+										<input class="cart_quantity_input" type="text" name="quantity" id="quanity_{{id_detailcart}}" value="{{so_luong}}" autocomplete="off" size="2">
+										<a class="cart_quantity_down" onclick="decrement({{id_detailcart}},{{gia}})" style="cursor:pointer;"> - </a>
+									</div>
+								</td>
+								<td class="cart_total">
+									<p class="cart_total_price" id="total_{{id_detailcart}}"> ${{tong_cong}}</p>
+								</td>
+								<td class="cart_delete">
+									
+									<a class="cart_quantity_delete" onclick="removeDetailCart({{id_detailcart}})"><i class="fa fa-times"></i></a>									
+								</td>
+							</tr>
+						{{/data}}
+						{{!-- <tr>
 							<td class="cart_product">
 								<a href=""><img src="images/cart/one.png" alt=""></a>
 							</td>
@@ -94,7 +123,7 @@
 							<td class="cart_delete">
 								<a class="cart_quantity_delete" href=""><i class="fa fa-times"></i></a>
 							</td>
-						</tr>
+						</tr> --}}
 					</tbody>
 				</table>
 			</div>

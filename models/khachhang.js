@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 22:06:41
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-01 15:27:44
+ * @Last Modified time: 2021-12-16 21:09:15
  */
 
 
@@ -14,7 +14,7 @@
           type: Sequelize.INTEGER,
           primaryKey: true,
         },
-        session_token: {
+        uuid: {
           type: Sequelize.STRING,
         },
         ten: {

@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 22:06:41
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-02 13:25:26
+ * @Last Modified time: 2021-12-15 12:28:36
  */
 
 module.exports = (sequelize,Sequelize) => {
@@ -40,6 +40,9 @@ module.exports = (sequelize,Sequelize) => {
       id_thuonghieu: {
         type: Sequelize.INTEGER,
       },
+      thumbnail:{
+        type: Sequelize.STRING
+      }
     });
     return Sanpham;
   } catch (error) {

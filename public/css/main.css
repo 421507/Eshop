@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 13:05:32
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-09 14:08:31
+ * @Last Modified time: 2021-12-21 20:41:10
  */
 
 /*************************
@@ -905,7 +905,6 @@ h2.title {
   transition: height 500ms ease 0s;
   width: 100%;
   display: block;
-  opacity:;
 }
 
 .single-products:hover .product-overlay {
@@ -1905,7 +1904,7 @@ h2.title {
 }
 
 
-.shopper-info > form > input, 
+/* .shopper-info > form > input, 
 .form-two > form > select, 
 .form-two > form > input, 
 .form-one > form > input {
@@ -1918,6 +1917,22 @@ h2.title {
 }
 
 .form-two > form > select {
+  padding:10px 5px
+} */
+
+.shopper-info input, 
+.form-two select, 
+.form-two input, 
+.form-one input {
+  background:#F0F0E9;
+  border: 0 none;
+  margin-bottom:10px;
+  padding: 10px;
+  width: 100%;
+  font-weight: 300
+}
+
+.form-two select {
   padding:10px 5px
 }
 

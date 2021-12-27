@@ -1,5 +1,11 @@
+/**
+ * @Author: Le Vu Huy
+ * @Date:   2021-11-24 13:05:32
+ * @Last Modified by:   Le Vu Huy
+ * @Last Modified time: 2021-12-15 23:47:06
+ */
 jQuery(function($) {'use strict',
-
+	console.log("aaaaaaaaaaaaaaaaaa");
 	var form = $('.contact-form');
 	form.submit(function () {'use strict',
 		$this = $(this);
