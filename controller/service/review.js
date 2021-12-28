@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-27 23:22:26
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-28 01:15:14
+ * @Last Modified time: 2021-12-29 01:09:53
  */
 const async = require("hbs/lib/async");
 const db = require("../../models/index");
@@ -29,6 +29,9 @@ exports.getAll=async (props) =>{
     }
     if(props.description !== undefined){
         condition.description=props.description;
+    }
+    if(props.rating !== undefined){
+        condition.rating=props.rating;
     }
 
     try {
@@ -73,6 +76,9 @@ exports.create=async (props) =>{
     }
     if(props.description !== undefined){
         field.description=props.description;
+    }
+    if(props.rating !== undefined){
+        field.rating=props.rating;
     }
 
     try {

@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 22:15:05
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-27 22:54:58
+ * @Last Modified time: 2021-12-29 00:07:07
  */
 
 const { getAll } = require('./service/sanpham');
@@ -28,7 +28,7 @@ exports.renderHomePage = async (req, res) => {
       });
     }
 
-    const brands = await brandgetAll();
+    const brands = await brandgetAll({});
 
     brands.forEach((item, index) => {
 

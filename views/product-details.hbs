@@ -184,11 +184,22 @@
 						</div>
 						<div class="col-sm-7">
 							<div class="product-information"><!--/product-information-->
-								<img src="images/product-details/new.jpg" class="newarrival" alt="" />
+								{{#if data.isNew}}
+									<img src="images/product-details/new.jpg" class="newarrival" alt="" />	
+								{{/if}}
 								<h2>{{data.name}}</h2>
 								<p>Web ID: <span id='product-id'>{{data.id}}</span></p>
-								<img src="images/product-details/rating.png" alt="" />
+								{{!-- <img src="images/product-details/rating.png" alt="" /> --}}
 								<span>
+									{{#renderRatingStar data.rating}}
+									{{/renderRatingStar}}
+									{{!-- <span class="fa fa-star"></span>
+									<span class="fa fa-star"></span>
+									<span class="fa fa-star"></span>
+									<span class="fa fa-star"></span>
+									<span class="fa fa-star"></span> --}}
+								</span>
+								<span class="product-info">
 									<span>US ${{data.price}}</span>
 									<label>Quantity:</label>
 									<input type="text" value="3" id='quantity-product'/>
@@ -199,7 +210,7 @@
 								</span>
 								<p><b>Availability:</b> {{data.availability}}</p>
 								<p><b>Condition:</b> New</p>
-								<p><b>Brand:</b> E-SHOPPER</p>
+								<p><b>Brand:</b> {{data.brand}}</p>
 								<a href=""><img src="images/product-details/share.png" class="share img-responsive"  alt="" /></a>
 							</div><!--/product-information-->
 						</div>
@@ -385,12 +396,20 @@
 									<p><b>Write Your Review</b></p>
 									
 									<form id='review-form'>
-										<span>
+										<span class="review-form-input">
 											<input type="text" placeholder="Your Name" id="name"/>
 											<input type="email" placeholder="Email Address" id="email"/>
 										</span>
 										<textarea id="description" ></textarea>
-										<b>Rating: </b> <img src="images/product-details/rating.png" alt="" />
+										<b>Rating: </b> 
+										{{!-- <img src="images/product-details/rating.png" alt="" /> --}}
+										<span>
+											<span onclick="getRatingStar('rating-1')" id="rating-1" class="fa fa-star rating-star"></span>
+											<span onclick="getRatingStar('rating-2')" id="rating-2" class="fa fa-star rating-star"></span>
+											<span onclick="getRatingStar('rating-3')" id="rating-3" class="fa fa-star rating-star"></span>
+											<span onclick="getRatingStar('rating-4')" id="rating-4" class="fa fa-star rating-star"></span>
+											<span onclick="getRatingStar('rating-5')" id="rating-5" class="fa fa-star rating-star"></span>
+										</span>
 										<button type="submit" class="btn btn-default pull-right">
 											Submit
 										</button>

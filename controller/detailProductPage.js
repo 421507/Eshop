@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-20 23:41:13
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-28 01:07:47
+ * @Last Modified time: 2021-12-29 01:43:53
  */
 
 // const {remove:detailCartRemove,update:detailCartUpdate}=require('./service/giohangchitiet');
@@ -10,6 +10,7 @@
 // const { getAll: customerGetAll } = require('./service/khachhang');
 const { getByPk } = require('./service/sanpham');
 const { getAllByProduct } = require('./service/hinhanh');
+const {getAll:brandGetAll}=require('./service/thuonghieu');
 const {getAll:reviewGetAll,create:reviewCreate,getByPk:reviewGetByPk}=require('./service/review');
 
 // exports.handleDetailCart=async (req,res)=>{
@@ -113,6 +114,21 @@ exports.renderProductDetail = async (req, res) => {
         return res.redirect('/');
     }
 
+    const brand=await brandGetAll({id_thuonghieu:result.data.id_thuonghieu});
+    const reviews=await reviewGetAll({id_sanpham:result.data.id_sanpham});
+
+    let ratingMark=5;
+    let positiveRating=1;
+    reviews.forEach(item=>{
+
+        if(item.rating >= 3){
+            positiveRating+=1;
+            ratingMark+=item.rating;
+        }
+    });
+
+    ratingMark=Math.ceil(ratingMark/positiveRating);
+
     const detailImg = resu.url[0].url;
     resu.url.splice(0, 1);
     const similarImg = resu.url.map(item => item.url);
@@ -124,16 +140,23 @@ exports.renderProductDetail = async (req, res) => {
 
     const availability = result.data.soluong_tonkho > 0 ? 'In Stock' : 'Sold out';
 
+    const listedDate=new Date(result.data.ngay_list);
+    const currentDate=Date.now();
+
+    const diffTime = Math.abs(currentDate - listedDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+    
     data.detailImg = detailImg;
     data.similarImg = similarImg;
     data.name = name;
     data.id = id;
     data.price = price;
     data.availability = availability;
+    data.brand=brand[0].ten_thuonghieu;
+    data.isNew=diffDays > 7 ? false : true;
+    data.rating=ratingMark;
 
     console.log(data);
-
-    const reviews=await reviewGetAll({id_sanpham:result.data.id_sanpham});
 
     if(reviews !== null){
 
@@ -184,12 +207,14 @@ exports.addReview=async (req,res)=>{
     const email=req.body.email;
     const name=req.body.name;
     const description=req.body.description;
+    const rating=req.body.rating;
 
     const result=await reviewCreate({
         id_sanpham:id_product,
         email:email,
         name:name,
-        description:description
+        description:description,
+        rating:rating
     });
 
     if (result === null){

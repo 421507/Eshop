@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 13:05:32
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-21 20:41:10
+ * @Last Modified time: 2021-12-29 02:33:12
  */
 
 /*************************
@@ -1149,6 +1149,11 @@ h2.title {
 *******Product Details CSS******
 **************************/
 
+
+.checked {
+  color: orange;
+}
+
 .product-details{
 	overflow:hidden;
 }
@@ -1247,13 +1252,13 @@ h2.title {
   margin-bottom: 5px;
 }
 
-.product-information span {
+.product-information span.product-info {
   display: inline-block;
   margin-bottom: 8px;
   margin-top: 18px;
 }
 
-.product-information span span {
+.product-information span.product-info span {
   color: #FE980F;
   float: left;
   font-family: 'Roboto', sans-serif;
@@ -1345,8 +1350,12 @@ h2.title {
 	color:#363432;
 }
 
-#reviews  form span {
+#reviews form span.review-form-input {
   display: block;
+}
+
+#reviews form span.rating-star{
+  cursor: pointer;
 }
 
 #reviews form span input {

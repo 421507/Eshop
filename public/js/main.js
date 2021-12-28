@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 13:05:32
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-28 00:51:31
+ * @Last Modified time: 2021-12-29 01:06:29
  */
 /*price range*/
 
@@ -191,6 +191,26 @@ $(document).ready(function () {
 			const name=$('input#name').val();
 			const email=$('input#email').val();
 			const description=$('textarea#description').val();
+			let rating;
+			
+			if($('span#rating-5').hasClass("checked")){
+				rating=5;
+			}
+			else if($('span#rating-4').hasClass("checked")){
+				rating=4;
+			}
+			else if($('span#rating-3').hasClass("checked")){
+				rating=3;
+			}
+			else if($('span#rating-2').hasClass("checked")){
+				rating=2;
+			}
+			else if($('span#rating-1').hasClass("checked")){
+				rating=1;
+			}
+			else 
+				rating=0;
+			
 
 			$.ajax({
 				type: 'POST',
@@ -198,7 +218,8 @@ $(document).ready(function () {
 				data: {
 					name:name,
 					email:email,
-					description:description
+					description:description,
+					rating:rating
 				}
 			}).done(function (data) {
 				// window.location.replace('/');
@@ -295,4 +316,43 @@ function decrement(id,price){
 			console.log(data);
 		});
 	}
+}
+
+function getRatingStar(rating_star){
+
+	$('span.rating-star').removeClass("checked");
+
+
+	if(rating_star === "rating-1"){
+
+		$('span#rating-1').addClass("checked");
+	}
+	else if(rating_star === "rating-2"){
+
+		$('span#rating-1').addClass("checked");
+		$('span#rating-2').addClass("checked");
+	}
+	else if(rating_star === "rating-3"){
+
+		$('span#rating-1').addClass("checked");
+		$('span#rating-2').addClass("checked");
+		$('span#rating-3').addClass("checked");
+	}
+	else if(rating_star === "rating-4"){
+
+		$('span#rating-1').addClass("checked");
+		$('span#rating-2').addClass("checked");
+		$('span#rating-3').addClass("checked");
+		$('span#rating-4').addClass("checked");
+	}
+	else if(rating_star === "rating-5"){
+
+		$('span#rating-1').addClass("checked");
+		$('span#rating-2').addClass("checked");
+		$('span#rating-3').addClass("checked");
+		$('span#rating-4').addClass("checked");
+		$('span#rating-5').addClass("checked");
+	}
+
+
 }

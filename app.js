@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 13:05:32
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-28 00:18:30
+ * @Last Modified time: 2021-12-29 02:39:21
  */
 const createError = require('http-errors');
 const express = require('express');
@@ -21,19 +21,29 @@ const logoutRouter = require('./routes/logout');
 const contactRouter = require('./routes/contact');
 const checkoutRouter = require('./routes/checkout');
 const productdetailsRouter = require('./routes/product-details');
-const profileRouter=require('./routes/profile');
+const profileRouter = require('./routes/profile');
 
 const app = express();
 
 const db = require('./models/index')
+
+const { create } = require('express-handlebars');
+
+const hbs = create({
+  defaultLayout:'layout',
+  extname:'.hbs',
+  helpers:require('./config/helpers.js')
+});
+
 // database setup
-db.sequelize.sync().then(()=>{
+db.sequelize.sync().then(() => {
   console.log("Sync database!");
 });
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+app.engine('.hbs', hbs.engine)
 app.set('view engine', 'hbs');
+app.set('views', path.join(__dirname, 'views'));
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -52,7 +62,7 @@ app.use('/contact', contactRouter);
 app.use('/checkout', checkoutRouter);
 app.use('/product-details', productdetailsRouter);
 app.use('/users', usersRouter);
-app.use('/profile',profileRouter);
+app.use('/profile', profileRouter);
 
 // api route
 require("./routes/api/sanpham")(app);
@@ -61,12 +71,12 @@ require("./routes/api/giohang")(app);
 require("./routes/api/review")(app);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

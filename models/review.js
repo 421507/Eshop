@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 22:06:41
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-27 23:21:46
+ * @Last Modified time: 2021-12-29 01:01:16
  */
 
  module.exports = (sequelize,Sequelize) => {
@@ -27,6 +27,9 @@
         },
         description:{
           type:Sequelize.STRING
+        },
+        rating:{
+          type:Sequelize.INTEGER
         }
       });
       return Review;
