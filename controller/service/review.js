@@ -2,9 +2,8 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-27 23:22:26
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-29 01:09:53
+ * @Last Modified time: 2021-12-31 15:17:27
  */
-const async = require("hbs/lib/async");
 const db = require("../../models/index");
 const Review = db.review;
 

@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-16 18:03:48
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-20 23:46:06
+ * @Last Modified time: 2021-12-31 23:50:49
  */
 const db = require("../../models/index");
 const Giohangchitiet=db.giohangchitiet;
@@ -19,6 +19,8 @@ const getAll=async (props)=>{
         condition.gia=props.gia;
     if(props.soluong)
         condition.soluong=props.soluong;
+    if(props.id_giohangchitiet)
+        condition.id_giohangchitiet=props.id_giohangchitiet;
 
     try {
         const result=await Giohangchitiet.findAll({where:condition});
@@ -51,6 +53,17 @@ const create=async (props)=>{
     }
 }
 
+const multicreate=async (props)=>{
+
+    try {
+        const result=await Giohangchitiet.bulkCreate(props,{returning:true});
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
 const update=async (props)=>{
 
     const condition={};
@@ -64,7 +77,7 @@ const update=async (props)=>{
         field.gia=props.gia
 
     try {
-        const result=await Giohangchitiet.update(field,{where:condition});
+        const result=await Giohangchitiet.update(field,{where:condition,returning:true});
         return result;
     } catch (error) {
         console.log(error);
@@ -96,4 +109,4 @@ const remove=async (props)=>{
     }
 }
 
-module.exports={getAll,create,update,remove};
+module.exports={getAll,create,update,remove,multicreate};

@@ -40,7 +40,7 @@
 		{{#if checkout}}
 		<div class="shopper-informations">
 
-			<form id="checkout-form" method="post">
+			<form id="checkout-form">
 				<div class="row">
 
 					<div class="col-sm-5 clearfix">
@@ -49,15 +49,20 @@
 							<div class="form-one">
 								<input id="id_cart" value="{{id_cart}}" style="display: none;" />
 								<input id="email" type="email" placeholder="Email*" name="email" />
-								<input id="name" type="text" placeholder="Name*" name="name" />
-								<input id="phone" type="text" placeholder="Phone" name="phone" />
+								<input id="name" type="text" placeholder="Name*" name="name" required/>
+								<input id="phone" type="text" placeholder="Phone" name="phone" required/>
 							</div>
 							<div class="form-two">
-								<input id="sonha" type="text" placeholder="Số nhà" name="sonha" />
-								<input id="street" type="text" placeholder="Tên đường" name="street" />
+								<input id="sonha" type="text" placeholder="Số nhà" name="sonha" required/>
+								<input id="street" type="text" placeholder="Tên đường" name="street" required/>
 								<input id="ward" type="text" placeholder="Phường" name="ward" />
 								<input id="district" type="text" placeholder="Quận" name="district" />
-								<input id="city" type="text" placeholder="Thành phố" name="city" />
+								<select id="city" required>
+									<option value="">Thành phố</option>
+									{{#cities}}
+										<option value="{{dataValues.id}}">{{dataValues.ten_thanhpho}}</option>
+									{{/cities}}
+								</select>
 								<input id="province" type="text" placeholder="Tỉnh" name="province" />
 							</div>
 						</div>
@@ -113,12 +118,12 @@
 						</td>
 						<td class="cart_quantity">
 							<div class="cart_quantity_button">
-								<a class="cart_quantity_up" onclick="increment({{id_detailcart}},{{gia}})"
-									style="cursor:pointer;"> + </a>
+								{{!-- <a class="cart_quantity_up" onclick="increment({{id_detailcart}},{{gia}})"
+									style="cursor:pointer;"> + </a> --}}
 								<input class="cart_quantity_input" type="text" name="quantity"
-									id="quanity_{{id_detailcart}}" value="{{so_luong}}" autocomplete="off" size="2">
-								<a class="cart_quantity_down" onclick="decrement({{id_detailcart}},{{gia}})"
-									style="cursor:pointer;"> - </a>
+									id="quanity_{{id_detailcart}}" value="{{so_luong}}" autocomplete="off" size="2" disabled>
+								{{!-- <a class="cart_quantity_down" onclick="decrement({{id_detailcart}},{{gia}})"
+									style="cursor:pointer;"> - </a> --}}
 							</div>
 						</td>
 						<td class="cart_total">
@@ -126,8 +131,8 @@
 						</td>
 						<td class="cart_delete">
 
-							<a class="cart_quantity_delete" onclick="removeDetailCart({{id_detailcart}})"><i
-									class="fa fa-times"></i></a>
+							{{!-- <a class="cart_quantity_delete" onclick="removeDetailCart({{id_detailcart}})"><i
+									class="fa fa-times"></i></a> --}}
 						</td>
 					</tr>
 					{{/data}}
@@ -219,13 +224,13 @@
 									<td>${{subTotal}}</td>
 								</tr>
 								<tr>
-									<td>Exo Tax</td>
-									<td>${{exoTax}}</td>
+									<td>Discount</td>
+									<td>{{discount}}%</td>
 								</tr>
-								<tr class="shipping-cost">
+								{{!-- <tr class="shipping-cost">
 									<td>Shipping Cost</td>
 									<td>${{shippingCost}}</td>
-								</tr>
+								</tr> --}}
 								<tr>
 									<td>Total</td>
 									<td><span>${{total}}</span></td>

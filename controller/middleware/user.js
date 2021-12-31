@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-09 00:19:54
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-27 22:22:42
+ * @Last Modified time: 2021-12-31 00:21:33
  */
 const { verifyToken } = require('../service/token');
 const { getUser } = require('../service/user');
@@ -116,6 +116,5 @@ exports.isIdentify=async (req,res,next) => {
     req.customer=customer;
     req.cart=cart;
     req.uuid=uuid;
-
     return next();
 }

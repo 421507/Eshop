@@ -2,14 +2,13 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-25 22:23:01
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-27 22:24:22
+ * @Last Modified time: 2021-12-31 14:38:06
  */
 
 
 module.exports=(sequelize,Sequelize) => {
 
     try {
-        console.log("cccccccccccccccccc");
         const Giohang=sequelize.define("giohang",{
 
             id_giohang:{
@@ -30,7 +29,7 @@ module.exports=(sequelize,Sequelize) => {
             },
             check_out:{
                 type:Sequelize.BOOLEAN
-            }
+            },
         });
     
         return Giohang;

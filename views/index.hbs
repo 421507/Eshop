@@ -77,11 +77,11 @@
                                         <h4 class="panel-title">
                                             <a data-toggle="collapse" data-parent="#accordian" href={{url}}>
                                                 <span class="badge pull-right"><i class="fa fa-plus"></i></span>
-                                                {{ten_loaisp}}
+                                                {{dataValues.ten_loaisp}}
                                             </a>
                                         </h4>
                                     </div>
-                                    <div id="{{ten_loaisp}}" class="panel-collapse collapse">
+                                    <div id="{{dataValues.ten_loaisp}}" class="panel-collapse collapse">
                                         <div class="panel-body">
                                             <ul>
                                                 {{#suburl}}
@@ -99,7 +99,7 @@
                             {{else}}
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
-                                        <h4 class="panel-title"><a href={{url}}>{{ten_loaisp}}</a></h4>
+                                        <h4 class="panel-title"><a href={{url}}>{{dataValues.ten_loaisp}}</a></h4>
                                     </div>
                                 </div>
                             {{/if}}
@@ -111,7 +111,7 @@
                         <div class="brands-name">
                             <ul class="nav nav-pills nav-stacked">
                                 {{#brands}}
-                                <li><a href={{url}}> <span class="pull-right">({{so_sanpham}})</span>{{ten_thuonghieu}}</a></li>
+                                <li><a href={{url}}> <span class="pull-right">({{dataValues.so_sanpham}})</span>{{dataValues.ten_thuonghieu}}</a></li>
                                 {{/brands}}
                             </ul>
                         </div>

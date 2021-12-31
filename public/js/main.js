@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 13:05:32
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-29 01:06:29
+ * @Last Modified time: 2022-01-01 00:37:53
  */
 /*price range*/
 
@@ -15,6 +15,7 @@ var RGBChange = function () {
 /*scroll to top*/
 
 $(document).ready(function () {
+	localStorage.removeItem('detailCarts');
 	$(function () {
 		$.scrollUp({
 			scrollName: 'scrollUp', // Element ID
@@ -140,7 +141,6 @@ $(document).ready(function () {
 			event.preventDefault();
 
 			const form=$(this);
-			alert("blah blah");
 
 			console.log(form.serialize());
 
@@ -153,12 +153,14 @@ $(document).ready(function () {
 			const street=$('input#street').val();
 			const ward=$('input#ward').val();
 			const district=$('input#district').val();
-			const city=$('input#city').val();
+			const idcity=$('select#city option:selected').val();
+			const city=$('select#city option:selected').text();
 			const province=$('input#province').val();
+			
 
 			$.ajax({
 				type: 'POST',
-				url: `http://localhost:3000/api/cart/checkout/${id}`,
+				url: `http://localhost:3000/api/cart/checkout`,
 				data: {
 					email:email,
 					name:name,
@@ -168,6 +170,7 @@ $(document).ready(function () {
 					ward:ward,
 					district:district,
 					city:city,
+					idcity:idcity,
 					province:province
 				}
 			}).done(function (data) {
@@ -255,21 +258,160 @@ $(document).ready(function () {
 	});
 });
 
-function removeDetailCart(id){
+function updateCart(){
+
+	const deleteDetailCart=localStorage.getItem("detailCarts");
+	const detailCarts=[];
+
+	$('tr.cart_detail').each(function(index){
+
+		const id=$(this).attr('id').split('_')[1];
+
+		const quanity=$(`input#quanity_${id}`).val();
+
+		detailCarts.push({
+			id_detailcart:id,
+			quanity:quanity
+		});
+	});
+
+	const voucher=$('input#voucher').is(':checked') ? true : false;
+	const discount=$('input#discount').is(':checked') ? true : false;
+	const idDiscount=$('input#discount').val();
+	const idVoucher=$('input#voucher').val();
+	// const city=$('select#area-shipping option:selected').val();
+
+	console.log(voucher);
+	console.log(discount);
+
+	const payload={
+		updateDetailCarts:detailCarts,
+		deleteDetailCarts:deleteDetailCart !== null ? deleteDetailCart.split(" "):null,
+		voucher:voucher,
+		discount:discount,
+		idDiscount:idDiscount,
+		idVoucher:idVoucher,
+		// city:city
+	}
+
+	console.log(payload);
 
 	$.ajax({
-		type: 'DELETE',
-		url: `http://localhost:3000/api/cart/${id}`,
-	}).done(function (data) {
+		type:'PUT',
+		url:'http://localhost:3000/api/cart/',
+		data:payload
+	}).done(data=>{
 
-		$(`tr#detail-cart_${id}`).css('display','none');
+		localStorage.removeItem('detailCarts');
+
+		console.log(data);
+
+		if(data.empty){
+
+			$('table#table-cart').css('display','none');
+
+			const dom='<h3 class="table-empty">Nothing to show. Back to <a href="/products">Product page</a></h3>';
+
+			$('div#table-cart-container').prepend(dom);
+			$('section#do_action').css('display','none');
+		}
+		else{
+
+			if(data.discountErrorCode !== 0){
+				alert(data.discountMessage);
+				
+				$('input#discount').css('display','none');
+				$('input#discount').attr('checked',false);
+			}
+			else{
+				$('span#subTotal').text(`$${data.subTotal}`);
+				$('span#discount').text(`${data.discount}%`);
+				// $('span#shippingCost').text(`${isNaN(data.shippingCost) ? data.shippingCost : `$${data.shippingCost}`}`);
+				const total= Math.ceil(data.subTotal*(1-(data.discount/100)));
+				
+				$('span#total').text(`$${total}`);
+			}
+
+			if(data.voucherErrorCode !== 0){
+				alert(data.voucherMessage);
+				$('input#discount').css('display','none');
+				$('input#discount').attr('checked',false);
+			}
+			else{
+				if(voucher){
+					data.giftProducts.forEach(item=>{
+
+						const dom=`
+						<tr id="detail-cart_${item.id_detailcart}" class="cart_detail-voucher">
+							<td class="cart_product">
+								<a href=${item.link_sanpham}><img src=${thumbnail} alt=""></a>
+							</td>
+							<td class="cart_description">
+								<h4><a href="">${item.ten_sanpham}</a></h4>
+								<p>Web ID: ${item.id_sanpham}</p>
+							</td>
+							<td class="cart_price">
+								<p>${item.gia}</p>
+							</td>
+							<td class="cart_quantity">
+								<div class="cart_quantity_button">
+									<input class="cart_quantity_input" type="text" name="quantity" value="${so_luong}" autocomplete="off" size="2" disabled>
+								</div>
+							</td>
+							<td class="cart_total">
+								<p class="cart_total_price"> ${tong_cong}</p>
+							</td>
+							<td class="cart_delete">						
+							</td>
+						</tr>`
+	
+						$('tbody#detailcart-container').append(dom);
+					});
+				}
+				else{
+					$('tr.cart_detail-voucher').remove();
+				}
+				
+			}
+		}
+
+
+	})
+	.fail(err=>{
+		console.log(err);
+	})
+
+	console.log(detailCarts);
+
+}
+
+function removeDetailCart(id){
+
+	let deleteDetailCart=localStorage.getItem("detailCarts");
+
+	console.log(deleteDetailCart);
+	if(deleteDetailCart !== null){
+
+		deleteDetailCart+=" "+id;
+	}
+	else{
+		deleteDetailCart=id;
+	}
+
+	localStorage.setItem("detailCarts",deleteDetailCart);
+	$(`tr#detail-cart_${id}`).remove();
+	// $.ajax({
+	// 	type: 'DELETE',
+	// 	url: `http://localhost:3000/api/cart/${id}`,
+	// }).done(function (data) {
+
 		
-		alert('Đã update');
-		console.log(data);
-	}).fail(function (data) {
-		alert(data.responseText);
-		console.log(data);
-	});
+	// 	alert('Đã update');
+	// 	console.log(data);
+	// }).fail(function (data) {
+	// 	alert(data.responseText);
+	// 	console.log(data);
+	// });
 
 }
 
@@ -278,21 +420,21 @@ function increment(id,price){
 	const value=$(`input#quanity_${id}`).val();
 	$(`input#quanity_${id}`).val(parseInt(value)+1);
 	$(`p#total_${id}`).text(`$${Math.round((parseInt(value)+1)*price)}`);
-	$.ajax({
-		type: 'PUT',
-		url: `http://localhost:3000/api/cart/${id}`,
-		data: {
-			amount:parseInt(value)+1,
-		}
-	}).done(function (data) {
-		// window.localStorage.setItem('token',data.accessToken);
-		// window.location.replace('')
-		alert('Đã update');
-		console.log(data);
-	}).fail(function (data) {
-		alert(data.responseText);
-		console.log(data);
-	});
+	// $.ajax({
+	// 	type: 'PUT',
+	// 	url: `http://localhost:3000/api/cart/${id}`,
+	// 	data: {
+	// 		amount:parseInt(value)+1,
+	// 	}
+	// }).done(function (data) {
+	// 	// window.localStorage.setItem('token',data.accessToken);
+	// 	// window.location.replace('')
+	// 	alert('Đã update');
+	// 	console.log(data);
+	// }).fail(function (data) {
+	// 	alert(data.responseText);
+	// 	console.log(data);
+	// });
 
 }
 function decrement(id,price){
@@ -302,19 +444,19 @@ function decrement(id,price){
 		$(`input#quanity_${id}`).val(parseInt(value)-1);
 		$(`p#total_${id}`).text(`$${Math.round((parseInt(value)-1)*price)}`);
 
-		$.ajax({
-			type: 'PUT',
-			url: `http://localhost:3000/api/cart/${id}`,
-			data: {
-				amount:parseInt(value)-1,
-			}
-		}).done(function (data) {
-			alert('Đã update');
-			console.log(data);
-		}).fail(function (data) {
-			alert(data.responseText);
-			console.log(data);
-		});
+		// $.ajax({
+		// 	type: 'PUT',
+		// 	url: `http://localhost:3000/api/cart/${id}`,
+		// 	data: {
+		// 		amount:parseInt(value)-1,
+		// 	}
+		// }).done(function (data) {
+		// 	alert('Đã update');
+		// 	console.log(data);
+		// }).fail(function (data) {
+		// 	alert(data.responseText);
+		// 	console.log(data);
+		// });
 	}
 }
 
