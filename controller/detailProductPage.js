@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-20 23:41:13
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-29 01:43:53
+ * @Last Modified time: 2022-01-02 23:58:19
  */
 
 // const {remove:detailCartRemove,update:detailCartUpdate}=require('./service/giohangchitiet');
@@ -12,87 +12,15 @@ const { getByPk } = require('./service/sanpham');
 const { getAllByProduct } = require('./service/hinhanh');
 const {getAll:brandGetAll}=require('./service/thuonghieu');
 const {getAll:reviewGetAll,create:reviewCreate,getByPk:reviewGetByPk}=require('./service/review');
-
-// exports.handleDetailCart=async (req,res)=>{
-
-//     const uuid=req.cookies.auth;
-//     if(!uuid){
-//         return res.redirect('/cart');
-//     }
-
-//     if(req.query.method === 'delete'){
-
-//         const id=req.query.id;
-
-//         const result=await detailCartRemove({id_giohangchitiet:id});
-
-//         if(result === null){
-//             console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaa");
-//         }
-//         res.redirect('/cart');
-
-//     }
-//     else if(req.query.method === 'post'){
-
-//         const id=req.query.id;
-
-//         const amount=req.body.amount;
-
-//         const prevAmount=req.body.prevAmount;
-
-//         const price=req.body.price;
-
-//         const result=await detailCartUpdate({soluong:parseInt(amount),id_giohangchitiet:id});
-
-//         if(result === null){
-
-//             return res.status(401).send("Oops something wrong");
-//         }
-
-//         let id_khachhang = await customerGetAll({ uuid: uuid });
-
-//         if (id_khachhang === null)
-//             return res.status(401).send("Something wrong please try again");
-//         else
-//             id_khachhang = id_khachhang[0].id_khachhang;
-
-//         let payload = {
-//             id_khachhang: id_khachhang,
-//             check_out: false,
-//         };
-
-
-//         let cart=await cartGetAll(payload);
-
-//         if (cart !== null)
-//             cart = cart[0];
-//         else {
-//             res.status(401).send('Something wrong while retrieving giohang')
-//         }
-
-//         payload={
-//             id_giohang:cart.id_giohang,
-//             tong_tien:cart.tong_tien+parseInt(price)*(amount-prevAmount)
-//         }
-
-//         const _result=await cartUpdate(payload);
-
-//         if(_result === null){
-//             return res.status(401).send("Oops something wrong");
-//         }
-
-//         return res.status(200).send("OK");
-//     }
-// }
+const {
+    getAll:discountProductGetAll,
+}=require('./service/sanphamgiamgia');
 
 exports.renderProductDetail = async (req, res) => {
 
     if (!req.query.id) {
         return res.redirect('/');
     }
-
-    console.log(req.query.id);
-    console.log(typeof req.query.id);
 
     let result=null;
 
@@ -112,6 +40,38 @@ exports.renderProductDetail = async (req, res) => {
     } catch (error) {
         console.log(error);
         return res.redirect('/');
+    }
+
+    let discountProduct=await discountProductGetAll({id_sanpham:req.query.id});
+
+    if(discountProduct === null){
+        return res.redirect('/');
+    }
+    else if(discountProduct.length > 0){
+
+        const start=new Date(discountProduct[0].ngay_batdau);
+        const end=new Date(discountProduct[0].ngay_ketthuc);
+        const now=new Date();
+        now.setHours(now.getHours()+7);
+
+        if(now >= start && now <= end){
+            
+            data.isDiscount=true;
+            data.price=Math.round(result.data.gia_sanpham*(1-discountProduct[0].gia_giam/100));
+            data.originPrice=result.data.gia_sanpham;
+        
+        }
+        else{
+            
+            data.price = result.data.gia_sanpham;
+
+            data.isDiscount=false;
+        }
+    }
+    else{
+        data.price = result.data.gia_sanpham;
+
+        data.isDiscount=false;
     }
 
     const brand=await brandGetAll({id_thuonghieu:result.data.id_thuonghieu});
@@ -136,8 +96,6 @@ exports.renderProductDetail = async (req, res) => {
     const name = result.data.ten_sanpham;
     const id = result.data.id_sanpham;
 
-    const price = result.data.gia_sanpham;
-
     const availability = result.data.soluong_tonkho > 0 ? 'In Stock' : 'Sold out';
 
     const listedDate=new Date(result.data.ngay_list);
@@ -150,13 +108,10 @@ exports.renderProductDetail = async (req, res) => {
     data.similarImg = similarImg;
     data.name = name;
     data.id = id;
-    data.price = price;
     data.availability = availability;
     data.brand=brand[0].ten_thuonghieu;
     data.isNew=diffDays > 7 ? false : true;
     data.rating=ratingMark;
-
-    console.log(data);
 
     if(reviews !== null){
 

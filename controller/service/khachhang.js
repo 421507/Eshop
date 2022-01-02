@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-16 17:16:59
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-21 21:32:26
+ * @Last Modified time: 2022-01-03 00:13:58
  */
 const db = require("../../models/index");
 const Khachhang=db.khachhang;
@@ -13,13 +13,13 @@ const create=async (props)=>{
 
     field.uuid=props.uuid;
 
-    if(props.ten)
+    if(props.ten !== undefined)
         field.ten=props.ten;
-    if(props.phone)
+    if(props.phone !== undefined)
         field.phone=props.phone;
-    if(props.email)
+    if(props.email !== undefined)
         field.email=props.email;
-    if(props.id_user)
+    if(props.id_user !== undefined)
         field.id_user=props.id_user;
     
     try {
@@ -35,15 +35,15 @@ const getAll=async (props)=>{
 
     const condition={};
 
-    if(props.uuid)
+    if(props.uuid !== undefined)
         condition.uuid=props.uuid;
-    if(props.ten)
+    if(props.ten !== undefined)
         condition.ten=props.ten;
-    if(props.phone)
+    if(props.phone !== undefined)
         condition.phone=props.phone;
-    if(props.email)
+    if(props.email !== undefined)
         condition.email=props.email;
-    if(props.id_user)
+    if(props.id_user !== undefined)
         condition.id_user=props.id_user;
     
     try {
@@ -63,15 +63,15 @@ const update=async (props)=>{
 
     const field={};
 
-    if(props.uuid)
+    if(props.uuid !== undefined)
         field.uuid=props.uuid;
-    if(props.ten) 
+    if(props.ten !== undefined) 
         field.ten=props.ten;
-    if(props.phone)
+    if(props.phone !== undefined)
         field.phone=props.phone;
-    if(props.email)
+    if(props.email !== undefined)
         field.email=props.email;
-    if(props.id_user)
+    if(props.id_user !== undefined)
         field.id_user=props.id_user;
     
     try {

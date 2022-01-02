@@ -18,7 +18,6 @@
 								<td class="price">Price</td>
 								<td class="quantity">Quantity</td>
 								<td class="total">Total</td>
-								<td></td>
 							</tr>
 						</thead>
 						<tbody id="detailcart-container">
@@ -36,17 +35,11 @@
 									</td>
 									<td class="cart_quantity">
 										<div class="cart_quantity_button">
-											<a class="cart_quantity_up" onclick="increment({{id_detailcart}},{{gia}})" style="cursor:pointer;"> + </a>
-											<input class="cart_quantity_input" type="text" name="quantity" id="quanity_{{id_detailcart}}" value="{{so_luong}}" autocomplete="off" size="2">
-											<a class="cart_quantity_down" onclick="decrement({{id_detailcart}},{{gia}})" style="cursor:pointer;"> - </a>
+											<input class="cart_quantity_input" type="text" name="quantity" id="quanity_{{id_detailcart}}" value="{{so_luong}}" autocomplete="off" size="2" disabled>
 										</div>
 									</td>
 									<td class="cart_total">
 										<p class="cart_total_price" id="total_{{id_detailcart}}"> ${{tong_cong}}</p>
-									</td>
-									<td class="cart_delete">
-										
-										<a class="cart_quantity_delete" onclick="removeDetailCart({{id_detailcart}})"><i class="fa fa-times"></i></a>									
 									</td>
 								</tr>
 							{{/data}}
@@ -80,67 +73,21 @@
 			</div>
 		</div>
 	</section> <!--/#cart_items-->
-	{{#if empty}}
+    {{#if empty}}
 	{{else}}
 	<section id="do_action">
 		<div class="container">
 			<div class="heading">
-				<h3>What would you like to do next?</h3>
-				<p>Choose if you have a discount code or reward points you want to use.</p>
+				<h3>Summary</h3>
 			</div>
 			<div class="row">
-				<div class="col-sm-6">
-					<div class="chose_area" id="chose_area">
-						<ul class="user_option">
-							{{#if hasDiscount}}
-								<li id="discount-checkbox-container">
-									{{#if discountPendingOrNot}}
-										<input type="checkbox" name="discount" id="discount" value="{{discountIdCustomerPresent}}" checked>
-									{{else}}
-										<input type="checkbox" name="discount" id="discount" value="{{discountIdCustomerPresent}}">
-									{{/if}}
-									<label for="discount">Use Coupon Code</label>
-								</li>
-							{{else}}
-								<li id="discount-checkbox-container" style="display: none;">
-									<input type="checkbox" id="discount">
-									<label>Use Coupon Code</label>
-								</li>
-							{{/if}}
-							{{#if hasVoucher}}
-								<li id="voucher-checkbox-container">
-									{{#if voucherPendingOrNot}}
-										<input type="checkbox" name="voucher" id="voucher" value="{{voucherIdCustomerPresent}}" checked>
-									{{else}}
-										<input type="checkbox" name="voucher" id="voucher" value="{{voucherIdCustomerPresent}}">
-									{{/if}}
-									<label for="voucher">Use Gift Voucher</label>
-								</li>
-							{{else}}
-								<li id="voucher-checkbox-container" style="display: none;">
-									<input type="checkbox" id="voucher">
-									<label>Use Gift Voucher</label>
-								</li>
-							{{/if}}
-							
-						</ul>
-					
-						<a class="btn btn-default update" onclick="updateCart()">Update</a>
-						{{#if checkout}}
-							<a id="check_out" class="btn btn-default check_out" href="/checkout">Checkout</a>
-						{{/if}}						
-					</div>
-				</div>
-				<div class="col-sm-6">
+				<div class="col">
 					<div class="total_area">
 						<ul>
 							<li id="cart-subTotal">Cart Sub Total <span id="subTotal">${{subTotal}}</span></li>
 							<li id="cart-discount">Discount<span id="discount">{{discount}}%</span></li>
-							{{!-- <li id="cart-shippingCost">Shipping Cost <span id="shippingCost">{{shippingCost}}</span></li> --}}
 							<li id="cart-total">Total <span id="total">${{total}}</span></li>
 						</ul>
-							{{!-- <a class="btn btn-default update" onclick="updateCart()">Update</a>
-							<a class="btn btn-default check_out" href="">Check Out</a> --}}
 					</div>
 				</div>
 			</div>

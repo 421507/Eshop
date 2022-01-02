@@ -187,20 +187,22 @@
 								{{#if data.isNew}}
 									<img src="images/product-details/new.jpg" class="newarrival" alt="" />	
 								{{/if}}
+								{{#if data.isDiscount}}
+									<img src="images/product-details/discount.png" class="newarrival" alt="" />	
+								{{/if}}
 								<h2>{{data.name}}</h2>
 								<p>Web ID: <span id='product-id'>{{data.id}}</span></p>
-								{{!-- <img src="images/product-details/rating.png" alt="" /> --}}
 								<span>
 									{{#renderRatingStar data.rating}}
 									{{/renderRatingStar}}
-									{{!-- <span class="fa fa-star"></span>
-									<span class="fa fa-star"></span>
-									<span class="fa fa-star"></span>
-									<span class="fa fa-star"></span>
-									<span class="fa fa-star"></span> --}}
 								</span>
 								<span class="product-info">
-									<span>US ${{data.price}}</span>
+									<span>US ${{data.price}}
+										{{#if data.isDiscount}}
+										<div style="text-decoration:line-through;font-size:1.6rem;">US ${{data.originPrice}}</div>
+									{{/if}}
+									</span>
+									
 									<label>Quantity:</label>
 									<input type="text" value="3" id='quantity-product'/>
 									<button type="button" class="btn btn-fefault cart" id="add-cart-btn">

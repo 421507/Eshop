@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 13:18:17
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-02 15:29:11
+ * @Last Modified time: 2022-01-02 22:56:52
  */
 const dbConfig = require("../config/db.config.js");
 
@@ -47,6 +47,7 @@ db.present=require('./present')(sequelize,Sequelize);
 db.voucher=require('./voucher')(sequelize,Sequelize);
 db.trangthaithanhtoan=require('./trangthaithanhtoan')(sequelize,Sequelize);
 db.phuongthucthanhtoan=require('./phuongthucthanhtoan')(sequelize,Sequelize);
+db.sanphamgiamgia=require('./sanphamgiamgia')(sequelize,Sequelize);
 
 
 module.exports = db;

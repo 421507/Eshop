@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 13:05:32
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-02 15:55:36
+ * @Last Modified time: 2022-01-03 01:00:18
  */
 const createError = require('http-errors');
 const express = require('express');
@@ -16,6 +16,7 @@ const usersRouter = require('./routes/users');
 const productsRouter = require('./routes/products');
 const blogRouter = require('./routes/blog');
 const cartRouter = require('./routes/cart');
+const historyRouter = require('./routes/history');
 const loginRouter = require('./routes/login');
 const registerRouter = require('./routes/register');
 const logoutRouter = require('./routes/logout');
@@ -57,6 +58,7 @@ app.use('/', indexRouter);
 app.use('/blog', blogRouter);
 app.use('/products', productsRouter);
 app.use('/cart', cartRouter);
+app.use('/history', historyRouter);
 app.use('/login', loginRouter);
 app.use('/register', registerRouter);
 app.use('/logout', logoutRouter);

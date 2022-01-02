@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 13:05:32
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-02 18:40:14
+ * @Last Modified time: 2022-01-03 02:11:44
  */
 /*price range*/
 
@@ -543,4 +543,9 @@ function handlePayment(element){
 		$('div#credit-card-form').addClass('disabled');
 	}
 
+}
+
+function viewDetailCart(element){
+
+	window.location.replace(`/history?id=${element}`);
 }

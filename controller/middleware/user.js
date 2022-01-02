@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-09 00:19:54
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-01 23:09:10
+ * @Last Modified time: 2022-01-03 00:20:40
  */
 const { verifyToken } = require('../service/token');
 const { getUser } = require('../service/user');
@@ -33,6 +33,40 @@ exports.isAuth = async (req, res, next) => {
     try {
         const user = await getUser(verified.payload.username);
         req.user = user;
+
+        const customers=await customerGetAll({id_user:user.id_user});
+
+        if(customers === null){
+            return res.redirect('/');
+        }
+        else if(customers.length === 0){
+
+            let uuid=req.cookies.uuid;
+
+            if(uuid !== undefined){
+
+                let customer=await customerCreate({uuid:uuid,id_user:user.id_user});
+                customer.id_khachhang=customer.null;
+                req.customer=customer;
+            }
+            else{
+                uuid= uuidv4();
+
+                const option={
+                    maxAge:1000*60*60*24*365,
+                    httpOnly:true
+                }
+        
+                res.cookie('uuid',uuid,option);
+                
+                let customer=await customerCreate({uuid:uuid,id_user:user.id_user});
+                customer.id_khachhang=customer.null;
+                req.customer=customer;
+            }
+        }
+        else{
+            req.customer=customers[0];
+        }
 
         return next();      
     } catch (error) {

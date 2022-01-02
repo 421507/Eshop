@@ -1,0 +1,43 @@
+<section id="cart_items">
+		<div class="container">
+			<div class="breadcrumbs">
+				<ol class="breadcrumb">
+				<li class="active">Shopping Cart</li>
+				</ol>
+			</div>
+			<div class="table-responsive cart_info" id="table-cart-container">
+				{{#if empty}}
+				<h3 class="table-empty">Nothing to show. Back to <a href="/products">Product page</a></h3>
+				{{else}}
+					<table class="table table-condensed" id="table-cart">
+						<thead>
+							<tr class="cart_menu">
+								<td class="description">Ngày mua</td>
+								<td class="price">Tổng tiền</td>
+								<td class="quantity">Phương thức thanh toán</td>
+								<td class="total">Trạng thái thanh toán</td>
+							</tr>
+						</thead>
+						<tbody>
+							{{#data}}
+								<tr id="{{id_giohang}}" class="cart_detail" style="cursor: pointer;" onclick="viewDetailCart(this.id)">
+									<td class="cart_total">
+										{{ngay_dat}}
+									</td>
+									<td class="cart_total">
+										${{tong_tien}}
+									</td>
+									<td class="cart_total">
+										{{methodPayment}}
+									</td>
+									<td class="cart_total">
+										{{statusPayment}}
+									</td>
+								</tr>
+							{{/data}}	
+						</tbody>
+					</table>
+				{{/if}}
+			</div>
+		</div>
+	</section> <!--/#cart_items-->

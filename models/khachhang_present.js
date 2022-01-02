@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 22:06:41
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-31 22:21:55
+ * @Last Modified time: 2022-01-03 01:33:03
  */
 
 
@@ -28,6 +28,9 @@
         },
         loai:{
           type:Sequelize.STRING
+        },
+        id_giohang:{
+          type:Sequelize.INTEGER
         }
       });
     

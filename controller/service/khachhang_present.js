@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-31 14:47:20
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-01 23:07:13
+ * @Last Modified time: 2022-01-03 01:33:54
  */
 const db = require("../../models/index");
 const KhachhangPresent=db.khachhang_present;
@@ -22,6 +22,9 @@ const getAll=async props=>{
         condition.slug_trangthai=props.slug_trangthai;
     if(props.loai !== undefined)
         condition.loai=props.loai;
+    if(props.id_giohang !== undefined)
+        condition.id_giohang=props.id_giohang;
+
     try {
         const result=await KhachhangPresent.findAll({where:condition});
         return result;
@@ -48,6 +51,8 @@ const update=async props=>{
         field.slug_trangthai=props.slug_trangthai;
     if(props.loai !== undefined)
         field.loai=props.loai;
+    if(props.id_giohang !== undefined)
+        field.id_giohang=props.id_giohang;
 
     try {
         const result=await KhachhangPresent.update(field,{where:condition});
