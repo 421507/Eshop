@@ -72,14 +72,26 @@
 							<p>Shipping Order</p>
 							<textarea id="message" name="message"
 								placeholder="Notes about your order, Special Notes for Delivery" rows="16"></textarea>
-							{{!-- <label><input type="checkbox"> Shipping to bill address</label> --}}
 						</div>
 					</div>
 					<div class="col-sm-3">
 						<div class="shopper-info">
 							<p>Checkout confirmation</p>
+							<div class="payment-options">
+								<span>
+									<label><input type="checkbox" id="credit-card" name="payment" onclick="handlePayment(this.id)"> Credit card</label>
+								</span>
+								<span>
+									<label><input type="checkbox" id="check-payment" name="payment" onclick="handlePayment(this.id)"> Check Payment</label>
+								</span>
+							</div>
+							<div class="form-three disabled" id="credit-card-form">
+								<input id="name-credit-card" type="text" placeholder="Name"/>
+								<input id="card-number" type="text" placeholder="Card Number"/>
+								<input id="expiry" type="text" placeholder="Expiry"/>
+								<input id="cvv" type="password" placeholder="CVV/CVC"/>
+							</div>
 
-							{{!-- <button class="btn btn-primary" type="submit">Check out</button> --}}
 							<input class="btn btn-primary" type="submit" value="Check out" />
 						</div>
 					</div>
@@ -104,117 +116,58 @@
 				</thead>
 				<tbody>
 					{{#data}}
-					<tr id="detail-cart_{{id_detailcart}}">
+						<tr id="detail-cart_{{id_detailcart}}">
 
-						<td class="cart_product">
-							<a href={{link_sanpham}}><img src={{thumbnail}} alt=""></a>
-						</td>
-						<td class="cart_description">
-							<h4><a href="">{{ten_sanpham}}</a></h4>
-							<p>Web ID: {{id_sanpham}}</p>
-						</td>
-						<td class="cart_price">
-							<p>${{gia}}</p>
-						</td>
-						<td class="cart_quantity">
-							<div class="cart_quantity_button">
-								{{!-- <a class="cart_quantity_up" onclick="increment({{id_detailcart}},{{gia}})"
-									style="cursor:pointer;"> + </a> --}}
-								<input class="cart_quantity_input" type="text" name="quantity"
-									id="quanity_{{id_detailcart}}" value="{{so_luong}}" autocomplete="off" size="2" disabled>
-								{{!-- <a class="cart_quantity_down" onclick="decrement({{id_detailcart}},{{gia}})"
-									style="cursor:pointer;"> - </a> --}}
-							</div>
-						</td>
-						<td class="cart_total">
-							<p class="cart_total_price" id="total_{{id_detailcart}}"> ${{tong_cong}}</p>
-						</td>
-						<td class="cart_delete">
-
-							{{!-- <a class="cart_quantity_delete" onclick="removeDetailCart({{id_detailcart}})"><i
-									class="fa fa-times"></i></a> --}}
-						</td>
-					</tr>
+							<td class="cart_product">
+								<a href={{link_sanpham}}><img src={{thumbnail}} alt=""></a>
+							</td>
+							<td class="cart_description">
+								<h4><a href="">{{ten_sanpham}}</a></h4>
+								<p>Web ID: {{id_sanpham}}</p>
+							</td>
+							<td class="cart_price">
+								<p>${{gia}}</p>
+							</td>
+							<td class="cart_quantity">
+								<div class="cart_quantity_button">
+									
+									<input class="cart_quantity_input" type="text" name="quantity"
+										id="quanity_{{id_detailcart}}" value="{{so_luong}}" autocomplete="off" size="2" disabled>
+									
+								</div>
+							</td>
+							<td class="cart_total">
+								<p class="cart_total_price" id="total_{{id_detailcart}}"> ${{tong_cong}}</p>
+							</td>
+							<td class="cart_delete">
+							</td>
+						</tr>
 					{{/data}}
-					{{!-- <tr>
-						<td class="cart_product">
-							<a href=""><img src="images/cart/one.png" alt=""></a>
-						</td>
-						<td class="cart_description">
-							<h4><a href="">Colorblock Scuba</a></h4>
-							<p>Web ID: 1089772</p>
-						</td>
-						<td class="cart_price">
-							<p>$59</p>
-						</td>
-						<td class="cart_quantity">
-							<div class="cart_quantity_button">
-								<a class="cart_quantity_up" href=""> + </a>
-								<input class="cart_quantity_input" type="text" name="quantity" value="1"
-									autocomplete="off" size="2">
-								<a class="cart_quantity_down" href=""> - </a>
-							</div>
-						</td>
-						<td class="cart_total">
-							<p class="cart_total_price">$59</p>
-						</td>
-						<td class="cart_delete">
-							<a class="cart_quantity_delete" href=""><i class="fa fa-times"></i></a>
-						</td>
-					</tr>
-
-					<tr>
-						<td class="cart_product">
-							<a href=""><img src="images/cart/two.png" alt=""></a>
-						</td>
-						<td class="cart_description">
-							<h4><a href="">Colorblock Scuba</a></h4>
-							<p>Web ID: 1089772</p>
-						</td>
-						<td class="cart_price">
-							<p>$59</p>
-						</td>
-						<td class="cart_quantity">
-							<div class="cart_quantity_button">
-								<a class="cart_quantity_up" href=""> + </a>
-								<input class="cart_quantity_input" type="text" name="quantity" value="1"
-									autocomplete="off" size="2">
-								<a class="cart_quantity_down" href=""> - </a>
-							</div>
-						</td>
-						<td class="cart_total">
-							<p class="cart_total_price">$59</p>
-						</td>
-						<td class="cart_delete">
-							<a class="cart_quantity_delete" href=""><i class="fa fa-times"></i></a>
-						</td>
-					</tr>
-					<tr>
-						<td class="cart_product">
-							<a href=""><img src="images/cart/three.png" alt=""></a>
-						</td>
-						<td class="cart_description">
-							<h4><a href="">Colorblock Scuba</a></h4>
-							<p>Web ID: 1089772</p>
-						</td>
-						<td class="cart_price">
-							<p>$59</p>
-						</td>
-						<td class="cart_quantity">
-							<div class="cart_quantity_button">
-								<a class="cart_quantity_up" href=""> + </a>
-								<input class="cart_quantity_input" type="text" name="quantity" value="1"
-									autocomplete="off" size="2">
-								<a class="cart_quantity_down" href=""> - </a>
-							</div>
-						</td>
-						<td class="cart_total">
-							<p class="cart_total_price">$59</p>
-						</td>
-						<td class="cart_delete">
-							<a class="cart_quantity_delete" href=""><i class="fa fa-times"></i></a>
-						</td>
-					</tr> --}}
+					{{#giftProducts}}
+						<tr id="detail-cart_{{id_detailcart}}" class="cart_detail-voucher">
+							<td class="cart_product">
+								<a href={{link_sanpham}}><img src={{thumbnail}} alt=""></a>
+							</td>
+							<td class="cart_description">
+								<h4><a href="">{{ten_sanpham}}</a></h4>
+								<p>Web ID: {{id_sanpham}}</p>
+							</td>
+							<td class="cart_price">
+								<p>${{gia}}</p>
+							</td>
+							<td class="cart_quantity">
+								<div class="cart_quantity_button">
+									<input class="cart_quantity_input" type="text" name="quantity" value="{{so_luong}}" autocomplete="off" size="2" disabled>
+								</div>
+							</td>
+							<td class="cart_total">
+								<p class="cart_total_price"> ${{tong_cong}}</p>
+							</td>
+							<td class="cart_delete">										
+							</td>
+						</tr>
+					{{/giftProducts}}
+					
 					<tr>
 						<td colspan="4">&nbsp;</td>
 						<td colspan="2">
@@ -241,19 +194,8 @@
 				</tbody>
 			</table>
 		</div>
-		<div class="payment-options">
-			<span>
-				<label><input type="checkbox"> Direct Bank Transfer</label>
-			</span>
-			<span>
-				<label><input type="checkbox"> Check Payment</label>
-			</span>
-			<span>
-				<label><input type="checkbox"> Paypal</label>
-			</span>
-		</div>
+		
 		{{else}}
-
 		{{/if}}
 	</div>
 </section>

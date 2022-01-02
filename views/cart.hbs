@@ -90,88 +90,52 @@
 			</div>
 			<div class="row">
 				<div class="col-sm-6">
-					<div class="chose_area">
+					<div class="chose_area" id="chose_area">
 						<ul class="user_option">
 							{{#if hasDiscount}}
-								<li>
+								<li id="discount-checkbox-container">
 									{{#if discountPendingOrNot}}
-										<input type="checkbox" id="discount" value="{{discountIdCustomerPresent}}" checked>
+										<input type="checkbox" name="discount" id="discount" value="{{discountIdCustomerPresent}}" checked>
 									{{else}}
-										<input type="checkbox" id="discount" value="{{discountIdCustomerPresent}}">
+										<input type="checkbox" name="discount" id="discount" value="{{discountIdCustomerPresent}}">
 									{{/if}}
-									<label>Use Coupon Code</label>
+									<label for="discount">Use Coupon Code</label>
 								</li>
 							{{else}}
-								<li style="display: none;">
+								<li id="discount-checkbox-container" style="display: none;">
 									<input type="checkbox" id="discount">
 									<label>Use Coupon Code</label>
 								</li>
 							{{/if}}
 							{{#if hasVoucher}}
-								<li>
+								<li id="voucher-checkbox-container">
 									{{#if voucherPendingOrNot}}
-										<input type="checkbox" id="voucher" value="{{voucherIdCustomerPresent}}" checked>
+										<input type="checkbox" name="voucher" id="voucher" value="{{voucherIdCustomerPresent}}" checked>
 									{{else}}
-										<input type="checkbox" id="voucher" value="{{voucherIdCustomerPresent}}">
+										<input type="checkbox" name="voucher" id="voucher" value="{{voucherIdCustomerPresent}}">
 									{{/if}}
-									<label>Use Gift Voucher</label>
+									<label for="voucher">Use Gift Voucher</label>
 								</li>
 							{{else}}
-								<li style="display: none;">
+								<li id="voucher-checkbox-container" style="display: none;">
 									<input type="checkbox" id="voucher">
 									<label>Use Gift Voucher</label>
 								</li>
 							{{/if}}
 							
-							
-							{{!-- <li style="visibility: hidden;">
-								<input type="checkbox">
-								<label>Estimate Shipping & Taxes</label>
-							</li> --}}
 						</ul>
-						{{!-- <ul class="user_info">
-							<li class="single_field">
-								<label>City:</label>
-								<select id="area-shipping">
-									<option value='-1'>No city</opttion>
-									{{#cities}}
-									<option value="{{dataValues.id}}">{{dataValues.ten_thanhpho}}</option>
-									{{/cities}}
-								</select>
-								
-							</li>
-							<li class="single_field">
-								<label>OR</label>
-	
-							</li>
-							<li class="single_field">
-								<label>Region / State:</label>
-								<select>
-									<option>Select</option>
-									<option>Dhaka</option>
-									<option>London</option>
-									<option>Dillih</option>
-									<option>Lahore</option>
-									<option>Alaska</option>
-									<option>Canada</option>
-									<option>Dubai</option>
-								</select>
-							
-							</li>
-							<li class="single_field zip-field">
-								<label>Zip Code:</label>
-								<input type="text">
-							</li>
-						</ul> --}}
+					
 						<a class="btn btn-default update" onclick="updateCart()">Update</a>
-						<a class="btn btn-default check_out" href="/checkout">Checkout</a>
+						{{#if checkout}}
+							<a id="check_out" class="btn btn-default check_out" href="/checkout">Checkout</a>
+						{{/if}}						
 					</div>
 				</div>
 				<div class="col-sm-6">
 					<div class="total_area">
 						<ul>
 							<li id="cart-subTotal">Cart Sub Total <span id="subTotal">${{subTotal}}</span></li>
-							<li id="cart-discount">Discount<span id="discount">{{discount}}</span></li>
+							<li id="cart-discount">Discount<span id="discount">{{discount}}%</span></li>
 							{{!-- <li id="cart-shippingCost">Shipping Cost <span id="shippingCost">{{shippingCost}}</span></li> --}}
 							<li id="cart-total">Total <span id="total">${{total}}</span></li>
 						</ul>

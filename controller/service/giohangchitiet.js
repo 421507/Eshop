@@ -2,24 +2,24 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-16 18:03:48
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-31 23:50:49
+ * @Last Modified time: 2022-01-01 16:28:18
  */
 const db = require("../../models/index");
 const Giohangchitiet=db.giohangchitiet;
 
 const getAll=async (props)=>{
-
+    
     const condition={};
 
-    if(props.id_giohang)
+    if(props.id_giohang !== undefined)
         condition.id_giohang=props.id_giohang;
-    if(props.id_sanpham)
+    if(props.id_sanpham !== undefined)
         condition.id_sanpham=props.id_sanpham;
-    if(props.gia)
+    if(props.gia !== undefined)
         condition.gia=props.gia;
-    if(props.soluong)
+    if(props.soluong !== undefined)
         condition.soluong=props.soluong;
-    if(props.id_giohangchitiet)
+    if(props.id_giohangchitiet !== undefined)
         condition.id_giohangchitiet=props.id_giohangchitiet;
 
     try {
@@ -86,18 +86,18 @@ const update=async (props)=>{
 }
 
 const remove=async (props)=>{
-
+    
     const condition={};
 
-    if(props.id_giohang)
+    if(props.id_giohang !== undefined)
         condition.id_giohang=props.id_giohang;
-    if(props.id_sanpham)
+    if(props.id_sanpham !== undefined)
         condition.id_sanpham=props.id_sanpham;
-    if(props.gia)
+    if(props.gia !== undefined)
         condition.gia=props.gia;
-    if(props.soluong)
+    if(props.soluong !== undefined)
         condition.soluong=props.soluong;
-    if(props.id_giohangchitiet)
+    if(props.id_giohangchitiet !== undefined)
         condition.id_giohangchitiet=props.id_giohangchitiet;
 
     try {

@@ -2,13 +2,12 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-31 14:47:20
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-31 22:22:59
+ * @Last Modified time: 2022-01-01 23:07:13
  */
 const db = require("../../models/index");
 const KhachhangPresent=db.khachhang_present;
 
 const getAll=async props=>{
-
     const condition={};
 
     if(props.id !== undefined)
@@ -23,7 +22,6 @@ const getAll=async props=>{
         condition.slug_trangthai=props.slug_trangthai;
     if(props.loai !== undefined)
         condition.loai=props.loai;
-
     try {
         const result=await KhachhangPresent.findAll({where:condition});
         return result;
@@ -35,7 +33,6 @@ const getAll=async props=>{
 }
 
 const update=async props=>{
-
     const condition={};
     condition.id=props.id;
 

@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 22:06:41
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-31 00:32:45
+ * @Last Modified time: 2022-01-02 00:20:15
  */
 
  module.exports = (sequelize, Sequelize) => {
@@ -30,6 +30,9 @@
             },
             id_giohang:{
                 type:Sequelize.INTEGER
+            },
+            mieu_ta:{
+                type:Sequelize.STRING
             }
             
         });

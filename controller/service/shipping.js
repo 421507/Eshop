@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-15 15:51:04
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-31 00:40:11
+ * @Last Modified time: 2022-01-02 00:21:14
  */
 const db = require("../../models/index");
 const Shipping = db.shipping;
@@ -26,6 +26,8 @@ const getAll = async (props) => {
         condition.gia=props.gia;
     if(props.id_giohang !== undefined)
         condition.id_giohang=props.id_giohang;
+    if(props.mieu_ta !== undefined)
+        condition.mieu_ta=props.mieu_ta;
 
     try {
 
@@ -56,6 +58,8 @@ const create=async (props)=>{
         field.gia=props.gia;
     if(props.id_giohang !== undefined)
         field.id_giohang=props.id_giohang;
+    if(props.mieu_ta !== undefined)
+        field.mieu_ta=props.mieu_ta;
 
     try {
         const result=await Shipping.create(field);

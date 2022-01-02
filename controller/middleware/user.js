@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-09 00:19:54
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-31 00:21:33
+ * @Last Modified time: 2022-01-01 23:09:10
  */
 const { verifyToken } = require('../service/token');
 const { getUser } = require('../service/user');
@@ -92,7 +92,6 @@ exports.isIdentify=async (req,res,next) => {
             console.log(error);
         }
 
-        console.log(cart);
 
         if (cart !== null){
             if (cart.length === 0){

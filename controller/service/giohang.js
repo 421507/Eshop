@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-16 17:05:18
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-22 00:14:21
+ * @Last Modified time: 2022-01-02 15:32:51
  */
 const db = require("../../models/index");
 const Giohang=db.giohang;
@@ -13,16 +13,20 @@ const create=async (props)=>{
 
     field.id_khachhang=props.id_khachhang;
 
-    if(props.id_diachi)
+    if(props.id_diachi !== undefined)
         field.id_diachi=props.id_diachi;
-    if(props.tongtien)
+    if(props.tongtien !== undefined)
         field.tongtien=props.tongtien;
-    if(props.so_luong)
+    if(props.so_luong !== undefined)
         field.so_luong=props.so_luong;
-    if(props.ngay_dat)
+    if(props.ngay_dat !== undefined)
         field.ngay_dat=props.ngay_dat;
-    if(props.check_out)
+    if(props.check_out !== undefined)
         field.check_out=props.check_out;
+    if(props.phuongthuc_thanhtoan !== undefined)
+        field.phuongthuc_thanhtoan=props.phuongthuc_thanhtoan;
+    if(props.trangthai_thanhtoan !== undefined)
+        field.trangthai_thanhtoan=props.trangthai_thanhtoan;
     
     try {
         const result=await Giohang.create(field);
@@ -40,23 +44,29 @@ const update=async (props)=>{
 
     const field={};
 
-    if(props.id_khachhang)
+    if(props.id_khachhang !== undefined)
         field.id_khachhang=props.id_khachhang;
 
-    if(props.id_diachi)
+    if(props.id_diachi !== undefined)
         field.id_diachi=props.id_diachi;
 
-    if(props.so_luong)
+    if(props.so_luong !== undefined)
         field.so_luong=props.so_luong;
 
-    if(props.tong_tien)
+    if(props.tong_tien !== undefined)
         field.tong_tien=props.tong_tien;
 
-    if(props.ngay_dat)
+    if(props.ngay_dat !== undefined)
         field.ngay_dat=props.ngay_dat;
     
-    if(props.check_out)
+    if(props.check_out !== undefined)
         field.check_out=props.check_out;
+        
+    if(props.phuongthuc_thanhtoan !== undefined)
+        field.phuongthuc_thanhtoan=props.phuongthuc_thanhtoan;
+    
+    if(props.trangthai_thanhtoan !== undefined)
+        field.trangthai_thanhtoan=props.trangthai_thanhtoan;
 
     console.log(field);
 
@@ -84,6 +94,10 @@ const getAll=async (props)=>{
     if(props.ngay_dat !== undefined)
         condition.ngay_dat=props.ngay_dat;
     if(props.check_out !== undefined)
+        condition.check_out=props.check_out;
+    if(props.phuongthuc_thanhtoan !== undefined)
+        condition.phuongthuc_thanhtoan=props.phuongthuc_thanhtoan;
+    if(props.trangthai_thanhtoan !== undefined)
         condition.check_out=props.check_out;
 
     try {

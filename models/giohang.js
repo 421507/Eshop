@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-25 22:23:01
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-31 14:38:06
+ * @Last Modified time: 2022-01-02 15:30:41
  */
 
 
@@ -30,6 +30,12 @@ module.exports=(sequelize,Sequelize) => {
             check_out:{
                 type:Sequelize.BOOLEAN
             },
+            phuongthuc_thanhtoan:{
+                type:Sequelize.STRING
+            },
+            trangthai_thanhtoan:{
+                type:Sequelize.STRING
+            }
         });
     
         return Giohang;

@@ -1,0 +1,40 @@
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="result-background">
+                    <div class="result-container">
+                        <h3 class="title text-center clr-orange">Cảm ơn bạn đã mua hàng ! Đơn hàng đã được gửi đi, vui lòng nhớ và ghi lại mã số đơn hàng của bạn để theo dõi trạng thái đơn hàng</h3>
+                        <div class="row pt-3">
+                            <div class="col-sm-3">
+                                <p>Mã số đơn hàng:</p>
+                                <p>Phương thức giao hàng</p>
+                                {{#if voucher}}
+                                <p>Ưu đãi:</p>
+                                {{/if}}
+                                {{#if shopping}}
+                                <p>Phương thức thanh toán:</p>
+                                <p>Trạng thái thanh toán:</p>
+                                {{/if}}
+                                <p>Số tiền:</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="font-bold">{{id}}</p>
+                                <p class="font-bold">Giao hàng tận nơi</p>
+                                {{#if voucher}}
+                                    <p class="font-bold">{{nameVoucher}}</p>    
+                                {{/if}}
+                                {{#if shopping}}
+                                    <p class="font-bold">{{methodPayment}}</p>
+                                    <p class="font-bold">{{statusPayment}}</p>
+                                {{/if}}
+                                <p class="font-bold">{{price}}$</p>
+                            </div>
+                        </div>
+                        <p class="text-center">Quay trở về <a href="/">trang chủ</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

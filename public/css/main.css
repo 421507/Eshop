@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 13:05:32
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-29 22:00:07
+ * @Last Modified time: 2022-01-02 16:37:41
  */
 
 /*************************
@@ -1916,25 +1916,14 @@ h2.title {
   width: 47%
 }
 
-
-/* .shopper-info > form > input, 
-.form-two > form > select, 
-.form-two > form > input, 
-.form-one > form > input {
-  background:#F0F0E9;
-  border: 0 none;
-  margin-bottom:10px;
-  padding: 10px;
-  width: 100%;
-  font-weight: 300
+.form-three{
+  float: left;
+  width: 90%;
 }
 
-.form-two > form > select {
-  padding:10px 5px
-} */
-
 .shopper-info input, 
-.form-two select, 
+.form-two select,
+.form-three input,
 .form-two input, 
 .form-one input {
   background:#F0F0E9;
@@ -1949,7 +1938,7 @@ h2.title {
   padding:10px 5px
 }
 
-.form-two {
+.form-two,.form-three {
   margin-left: 5%
 }
 
@@ -1976,11 +1965,6 @@ h2.title {
   font-weight: 300;
   margin-top: 45px;
   margin-bottom: 20px
-}
-
-.payment-options {
-  margin-bottom:125px;
-  margin-top: -25px
 }
 
 .payment-options span label {
@@ -2016,8 +2000,13 @@ h2.title {
 }
 
 
+/*****************************************
+*******credit card form checkout CSS******
+******************************************/
 
-
+.disabled{
+  display: none;
+}
 /*************************
 *******Blog CSS******
 **************************/
@@ -2595,3 +2584,30 @@ h2.title {
   border: solid 1px #BA68C8
 }
 
+
+/*************************
+******* Result CSS ********
+**************************/
+
+.result-background{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffad41;
+  padding: 2rem;
+  height: 40rem;
+}
+
+.result-container{
+  width: 80%;
+  padding: 2rem;
+  background-color: white;
+}
+
+.font-bold{
+  font-weight: bold;
+}
+
+.clr-orange{
+  color: #FE980F;
+}

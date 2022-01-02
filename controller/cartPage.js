@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 22:15:05
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-01 00:50:55
+ * @Last Modified time: 2022-01-02 18:45:24
  */
 const {
     update:cartUpdate,
@@ -83,10 +83,24 @@ exports.create = async (req, res) => {
         return res.status(401).send("Something wrong please try again");
     else {
 
-        if (result.length > 0) {
+        console.log(result);
+        let detailCarts=[];
+        
+        result.forEach(item=>{
+
+            if(item.gia > 0){
+                detailCarts.push(item);
+            }
+
+        });
+
+        console.log(detailCarts);
+
+        if (detailCarts.length > 0) {
+
             let field = {
-                soluong: result[0].soluong + parseInt(req.body.amount),
-                id_giohangchitiet: result[0].id_giohangchitiet,
+                soluong: detailCarts[0].soluong + parseInt(req.body.amount),
+                id_giohangchitiet: detailCarts[0].id_giohangchitiet,
                 gia:gia_sp
             }
 
@@ -135,20 +149,24 @@ exports.update=async (req,res)=>{
     
     console.log(req.body);
     
-    const deleteDetailCarts=req.body.deleteDetailCarts;
-    const updateDetailCarts=req.body.updateDetailCarts;
+    const deleteDetailCarts=req.body.deleteDetailCarts !== '' ? req.body.deleteDetailCarts : [];
+    const updateDetailCarts=req.body.updateDetailCarts !== '' ? req.body.updateDetailCarts : [];
     const hasDiscount=req.body.discount === "true" ? true:false;
     const hasVoucher=req.body.voucher === "true"? true:false;
-    const discountIdCustomerPresent=req.body.idDiscount;
-    const voucherIdCustomerPresent=req.body.idVoucher;
+    const discountIdCustomerPresent=req.body.idDiscount === '-1' ? -1 : parseInt(req.body.idDiscount);
+    const voucherIdCustomerPresent=req.body.idVoucher === '-1' ? -1 : parseInt(req.body.idVoucher);
     
+    const payload={};
+    payload.empty=false;
+
     let result;
     if(deleteDetailCarts && deleteDetailCarts.length > 0)
         result=await detailCartRemove({id_giohangchitiet:deleteDetailCarts})
     
+    if((!updateDetailCarts || updateDetailCarts.length === 0) && voucherIdCustomerPresent === -1){
+        payload.empty=true;
 
-    if(!updateDetailCarts || updateDetailCarts.length === 0){
-        return res.status(200).send({empty:true});
+        // return res.status(200).send(payload);
     }
 
     for (let i=0;i<updateDetailCarts.length;++i){
@@ -160,16 +178,203 @@ exports.update=async (req,res)=>{
         await detailCartUpdate({soluong:parseInt(amount),id_giohangchitiet:id})
     }
     
+    if(hasVoucher){
+        payload.voucherErrorCode=0;
+
+        let props={
+            id:voucherIdCustomerPresent,
+            slug_trangthai:['pending','not_used']
+        }
+
+        const statusPresents=await customerPresentGetAll(props);
+    
+        if(statusPresents === null)
+            return res.status(401).send("Something wrong please try again");
+
+        if(statusPresents.length > 0){
+            
+            for(let i=0;i<statusPresents.length;++i){
+                
+                if(statusPresents[i].slug_trangthai === "pending"){
+
+                    const idPresent=statusPresents[0].id_present;
+
+                    result=await presentGetAll({id:idPresent});
+
+                    if(result === null)
+                        return res.status(401).send("Something wrong please try again");
+                    
+                    const present=result[0];
+
+                    const startDate=new Date(present.ngay_batdau);
+                    const endDate=new Date(present.ngay_ketthuc);
+                    const today=new Date();
+                    today.setHours(today.getHours()+7);
+
+                    if(today < startDate){
+                        payload.voucherErrorCode=1;
+                        payload.voucherMessage='Voucher hiện tại chưa thể sử dụng';
+                    }
+                    else if(today <= endDate){
+                        payload.voucherErrorCode=0;
+                    }
+                    else{
+                        payload.voucherErrorCode=1;
+                        payload.voucherMessage='Voucher hiện tại không thể sử dụng';
+
+                        result=await customerPresentUpdate({
+                            id:statusPresents[0].id,
+                            trang_thai:'Không thể sử dụng',
+                            slug_trangthai:'outdated'
+                        });
+
+                        let props={
+                            id_giohang:req.cart.id_giohang,
+                            gia:0
+                        }
+
+                        result = await detailCartRemove(props);
+
+                    }
+
+                }
+                else if(statusPresents[i].slug_trangthai === "not_used"){
+                    
+                    const idPresent=statusPresents[0].id_present;
+
+                    result=await presentGetAll({id:idPresent});
+
+                    if(result === null)
+                        return res.status(401).send("Something wrong please try again");
+                    
+                    const present=result[0];
+
+                    const startDate=new Date(present.ngay_batdau);
+                    const endDate=new Date(present.ngay_ketthuc);
+                    const today=new Date();
+                    today.setHours(today.getHours()+7);
+
+                    if(today < startDate){
+                        payload.voucherErrorCode=1;
+                        payload.voucherMessage='Voucher hiện tại chưa thể sử dụng';
+                    }
+                    else if(today <= endDate){
+                        payload.voucherErrorCode=0;
+
+                        props={
+                            id_present:present.id
+                        }
+
+                        result = await voucherGetAll(props);
+
+                        if(result === null)
+                            return res.status(401).send("Something wrong, please try again");
+                        
+                        const idProducts=result.map(item=>{
+                            return item.id_sanpham;
+                        });
+
+                        props={
+                            id_sanpham:idProducts
+                        }
+
+                        const products = await productGetAll(props);
+
+                        props=result.map(item=>{
+
+                            return {
+                                id_giohang:req.cart.id_giohang,
+                                id_sanpham:item.id_sanpham,
+                                gia:0,
+                                soluong:item.so_luong
+                            }
+                        })
+                        
+                        result=await detailCartMuliCreate(props);
+
+                        const giftProducts=products.map((item)=>{
+
+                            function findDetailCart(idSanpham,detailCarts){
+
+                                for(let i=0;i<detailCarts.length;++i){
+                                    if(detailCarts[i].id_sanpham === idSanpham)
+                                        return detailCarts[i];
+                                }
+                            }
+                            const detailCart=findDetailCart(item.id_sanpham,result);
+                            return{
+                                id_detailcart:detailCart.null,
+                                link_sanpham:`product-details?id=${item.id_sanpham}`,
+                                thumbnail:item.thumbnail,
+                                ten_sanpham:item.ten_sanpham+" (Voucher)",
+                                id_sanpham:item.id_sanpham,
+                                gia:0,
+                                so_luong:detailCart.soluong,
+                                tong_cong:0
+                            }
+                        });
+
+                        payload.giftProducts=giftProducts;
+
+                        result=await customerPresentUpdate({
+                            id:statusPresents[0].id,
+                            trang_thai:'Chuẩn bị sử dụng',
+                            slug_trangthai:'pending'
+                        });
+                    }
+                    else{
+                        payload.voucherErrorCode=1;
+                        payload.voucherMessage='Voucher hiện tại không thể sử dụng';
+
+                        result=await customerPresentUpdate({
+                            id:statusPresents[0].id,
+                            trang_thai:'Không thể sử dụng',
+                            slug_trangthai:'outdated'
+                        });
+                    }
+                }
+            }
+        }
+        else{
+            payload.voucherErrorCode=1;
+            payload.voucherMessage='Hiện tại không có voucher dành cho quý khách';
+        }
+    }
+    else if(voucherIdCustomerPresent !== -1){
+        payload.voucherErrorCode=0;
+        let props={
+            id:voucherIdCustomerPresent,
+            trang_thai:'Chưa sử dụng',
+            slug_trangthai:'not_used'
+        }
+    
+        await customerPresentUpdate(props);
+
+        props={
+            id_giohang:req.cart.id_giohang,
+            gia:0
+        }
+
+        await detailCartRemove(props);
+
+    }
+
     const cart=req.cart;
     
-    const detailCarts=await detailCartGetAll({id_giohang:cart.id_giohang})
-    
     let subTotal=0;
+
+    const detailCarts=await detailCartGetAll({
+        id_giohang:cart.id_giohang,
+    });
+
     detailCarts.forEach(item=>{
-        console.log(item);
+
         subTotal+=item.gia*item.soluong;
     });
-    subTotal=Math.ceil(subTotal);
+    
+    subTotal=Math.round(subTotal);
+
+    payload.subTotal=subTotal;
 
     result=await cartUpdate({id_giohang:cart.id_giohang,tong_tien:subTotal})
 
@@ -178,11 +383,9 @@ exports.update=async (req,res)=>{
         return res.status(401).send("Oops something wrong");
     }
     
-    const payload={};
-    payload.errorCode=0;
-    payload.discount=0;
-    
     if(hasDiscount === true){
+        payload.discountErrorCode=0;
+        payload.discount=0;
         let props={
             id:discountIdCustomerPresent
         }
@@ -212,14 +415,36 @@ exports.update=async (req,res)=>{
                 payload.discountMessage='Discount hiện tại chưa thể sử dụng';
             }
             else if(today <= endDate){
-                payload.discount=present.so_tien;
-                payload.discountErrorCode=0;
 
-                result=await customerPresentUpdate({
-                    id:statusPresents[0].id,
-                    trang_thai:'Chuẩn bị sử dụng',
-                    slug_trangthai:'pending'
-                });
+                let count=0;
+
+                detailCarts.forEach(item=>{
+                    if(item.gia > 0){
+                        count+=1;
+                    }
+                })
+
+                if(count === 0){
+                    payload.discountErrorCode=-1;
+                    payload.discountMessage='Không thể dùng discount vì Cart của bạn hiện tại chưa có món hàng nào';
+                
+                    result=await customerPresentUpdate({
+                        id:statusPresents[0].id,
+                        trang_thai:'Chưa sử dụng',
+                        slug_trangthai:'not_used'
+                    });
+                }
+                else{
+                    payload.discountErrorCode=0;
+
+                    payload.discount=present.so_tien;
+
+                    result=await customerPresentUpdate({
+                        id:statusPresents[0].id,
+                        trang_thai:'Chuẩn bị sử dụng',
+                        slug_trangthai:'pending'
+                    });
+                }
             }
             else{
                 payload.discountErrorCode=1;
@@ -234,7 +459,9 @@ exports.update=async (req,res)=>{
         }
     
     }
-    else{
+    else if(discountIdCustomerPresent !== -1){
+        payload.discount=0;
+        payload.discountErrorCode=0;
 
         let props={
             id:discountIdCustomerPresent,
@@ -245,134 +472,7 @@ exports.update=async (req,res)=>{
         await customerPresentUpdate(props);
     }
 
-    if(hasVoucher){
-
-        let props={
-            id:voucherIdCustomerPresent
-        }
-    
-        const statusPresents=await customerPresentGetAll(props);
-    
-        if(statusPresents === null)
-            return res.status(401).send("Something wrong please try again");
-
-        if(statusPresents.length > 0){
-            const idPresent=statusPresents[0].id_present;
-
-            result=await presentGetAll({id:idPresent});
-
-            if(result === null)
-                return res.status(401).send("Something wrong please try again");
-            
-            const present=result[0];
-
-            const startDate=new Date(present.ngay_batdau);
-            const endDate=new Date(present.ngay_ketthuc);
-            const today=new Date();
-            today.setHours(today.getHours()+7);
-
-            if(today < startDate){
-                payload.voucherErrorCode=1;
-                payload.voucherMessage='Voucher hiện tại chưa thể sử dụng';
-            }
-            else if(today <= endDate){
-                payload.voucherErrorCode=0;
-
-                props={
-                    id_present:present.id
-                }
-
-                result = await voucherGetAll(props);
-
-                if(result === null)
-                    return res.status(401).send("Something wrong, please try again");
-                
-                const idProducts=result.map(item=>{
-                    return item.id_sanpham;
-                });
-
-                props={
-                    id_sanpham:idProducts
-                }
-
-                const products = await productGetAll(props);
-
-                props=result.map(item=>{
-
-                    return {
-                        id_giohang:req.cart.id_giohang,
-                        id_sanpham:item.id_sanpham,
-                        gia:0,
-                        soluong:item.so_luong
-                    }
-                })
-                
-                result=await detailCartMuliCreate(props);
-
-                const giftProducts=products.map((item)=>{
-
-                    function findDetailCart(idSanpham,detailCarts){
-
-                        for(let i=0;i<detailCarts.length;++i){
-                            if(detailCarts[i].id_sanpham === idSanpham)
-                                return detailCarts[i];
-                        }
-                    }
-                    const detailCart=findDetailCart(item.id_sanpham,result);
-                    return{
-                        id_detailcart:detailCart.null,
-                        link_sanpham:`product-details?id=${item.id_sanpham}`,
-                        thumbnail:item.thumbnail,
-                        ten_sanpham:item.ten_sanpham+" (Voucher)",
-                        id_sanpham:item.id_sanpham,
-                        gia:item.gia_sanpham,
-                        so_luong:detailCart.soluong,
-                        tong_cong:0
-                    }
-                });
-
-                payload.giftProducts=giftProducts;
-
-                result=await customerPresentUpdate({
-                    id:statusPresents[0].id,
-                    trang_thai:'Chuẩn bị sử dụng',
-                    slug_trangthai:'pending'
-                });
-            }
-            else{
-                payload.voucherErrorCode=1;
-                payload.voucherMessage='Voucher hiện tại không thể sử dụng';
-
-                result=await customerPresentUpdate({
-                    id:statusPresents[0].id,
-                    trang_thai:'Không thể sử dụng',
-                    slug_trangthai:'outdated'
-                });
-            }
-        }
-
-
-    }
-    else{
-        let props={
-            id:voucherIdCustomerPresent,
-            trang_thai:'Chưa sử dụng',
-            slug_trangthai:'not_used'
-        }
-    
-        await customerPresentUpdate(props);
-
-        props={
-            id_giohang:req.cart.id_giohang,
-            gia:0
-        }
-
-        await detailCartRemove(props);
-
-    }
-
-    payload.subTotal=subTotal;
-    payload.empty=false;
+    payload.checkout=detailCarts.length > 0 ? true:false;
 
     return res.status(200).send(payload);
 }
@@ -391,7 +491,17 @@ exports.renderCartPage=async (req,res)=>{
         return res.status(401).send("Something wrong,please try again");
     }
 
-    const detailCart=await detailCartGetAll({
+    let props={
+        id_khachhang:req.customer.id_khachhang,
+        slug_trangthai:['not_used','pending']
+    }
+
+    const statusPresents=await customerPresentGetAll(props);
+
+    if(statusPresents === null)
+        return res.status(401).send("Something wrong please try again");
+
+    let detailCart=await detailCartGetAll({
         id_giohang:cart.id_giohang,
     });
 
@@ -399,16 +509,197 @@ exports.renderCartPage=async (req,res)=>{
         return res.status(401).send("Something wrong,please try again");
     }
     else if(detailCart.length === 0){
+
+        let count=0;
+
+        for(let i=0;i<statusPresents.length;++i){
+
+            const idPresent=statusPresents[i].id_present;
+    
+            result=await presentGetAll({id:idPresent});
+
+            if(result === null)
+                return res.status(401).send("Something wrong please try again");
+
+            const present=result[0];
+
+            const startDate=new Date(present.ngay_batdau);
+            const endDate=new Date(present.ngay_ketthuc);
+            const today=new Date();
+            today.setHours(today.getHours()+7);
+
+            if(statusPresents[i].loai === "voucher"){
+                if(today < startDate){
+
+                }
+                else if(today <= endDate){
+    
+                    count+=1;
+                }
+                else{
+    
+                    result=await customerPresentUpdate({
+                        id:statusPresents[i].id,
+                        trang_thai:'Không thể sử dụng',
+                        slug_trangthai:'outdated'
+                    });
+                }
+            }
+            else if(statusPresents[i].loai === "discount"){
+
+                if(today < startDate){
+                    result=await customerPresentUpdate({
+                        id:statusPresents[i].id,
+                        trang_thai:'Không thể sử dụng',
+                        slug_trangthai:'outdated'
+                    });
+                }
+                else if(today <= endDate){
+    
+                    result=await customerPresentUpdate({
+                        id:statusPresents[i].id,
+                        trang_thai:'Không thể sử dụng',
+                        slug_trangthai:'outdated'
+                    });
+                }
+                else{
+    
+                    result=await customerPresentUpdate({
+                        id:statusPresents[i].id,
+                        trang_thai:'Không thể sử dụng',
+                        slug_trangthai:'outdated'
+                    });
+                }
+            }
+            
+        }
         
-        try {
-            const result=await isAuth(req);
-            return res.render('cart',{auth:result,empty:true});
-        } catch (error) {
-            console.log(error);
-            return;
+        if (count === 0){
+            try {
+                const result=await isAuth(req); 
+                return res.render('cart',{auth:result,empty:true});
+            } catch (error) {
+                console.log(error);
+                return;
+            }
         }
         
     }
+    let hasDiscount=false;
+    let hasVoucher=false;
+    let discountPrice=0;
+    let discountIdCustomerPresent=-1;
+    let voucherIdCustomerPresent=-1;
+    let discountPendingOrNot=false;
+    let voucherPendingOrNot=false;
+    
+    if(statusPresents.length > 0){
+
+        for(let i=0;i<statusPresents.length;++i){
+
+            if(statusPresents[i].loai === "discount"){
+                const idPresent=statusPresents[i].id_present;
+
+                result=await presentGetAll({id:idPresent});
+
+                if(result === null)
+                    return res.status(401).send("Something wrong please try again");
+            
+                const present=result[0];
+
+                const startDate=new Date(present.ngay_batdau);
+                const endDate=new Date(present.ngay_ketthuc);
+                const today=new Date();
+                today.setHours(today.getHours()+7);
+
+                if(today < startDate){
+                    hasDiscount=false;
+                }
+                else if(today <= endDate){
+                    hasDiscount=true;
+                    discountIdCustomerPresent=statusPresents[i].id;
+
+                    let count=0;
+
+                    detailCart.forEach(item=>{
+                        if(item.gia > 0)
+                            count+=1;
+                    });
+
+                    if(count === 0){
+                        result=await customerPresentUpdate({
+                            id:statusPresents[i].id,
+                            trang_thai:'Chưa sử dụng',
+                            slug_trangthai:'not_used'
+                        });
+
+                        discountPendingOrNot=false;
+                    }
+                    else{
+                        
+                        discountPendingOrNot=statusPresents[i].slug_trangthai === "pending" ? true:false;
+                        if(discountPendingOrNot)
+                            discountPrice=present.so_tien;
+                    }
+                }
+                else{
+                    hasDiscount=false;
+
+                    result=await customerPresentUpdate({
+                        id:statusPresents[i].id,
+                        trang_thai:'Không thể sử dụng',
+                        slug_trangthai:'outdated'
+                    });
+                }
+            }
+            else if (statusPresents[i].loai === "voucher"){
+                const idPresent=statusPresents[i].id_present;
+
+                result=await presentGetAll({id:idPresent});
+
+                if(result === null)
+                    return res.status(401).send("Something wrong please try again");
+
+                const present=result[0];
+
+                const startDate=new Date(present.ngay_batdau);
+                const endDate=new Date(present.ngay_ketthuc);
+                const today=new Date();
+                today.setHours(today.getHours()+7);
+                
+                if(today < startDate){
+
+                    hasVoucher=false;
+                }
+                else if(today <= endDate){
+
+                    voucherIdCustomerPresent=statusPresents[i].id;
+                    hasVoucher=true;
+                    voucherPendingOrNot=statusPresents[i].slug_trangthai === "pending" ? true:false;
+                }
+                else{
+
+                    hasVoucher=false;
+
+                    result=await customerPresentUpdate({
+                        id:statusPresents[i].id,
+                        trang_thai:'Không thể sử dụng',
+                        slug_trangthai:'outdated'
+                    });
+
+                    let props={
+                        id_giohang:req.cart.id_giohang,
+                        gia:0
+                    }
+
+                    result = await detailCartRemove(props);
+                }
+            }
+
+        }
+    }
+
+    detailCart=await detailCartGetAll({id_giohang:cart.id_giohang})
 
     const idProduct=detailCart.map(item=>item.id_sanpham);
 
@@ -417,6 +708,206 @@ exports.renderCartPage=async (req,res)=>{
     let subTotal=0;
     let payload=[];
     let giftProducts=[];
+    
+    for(let i=0;i<detailCart.length;++i){
+        
+        function findProduct(id,products){
+
+            for(let i=0;i<products.length;++i){
+                if(products[i].id_sanpham === id)
+                    return products[i];
+            }
+
+        }
+
+        if(detailCart[i].gia > 0){
+            
+            subTotal+=detailCart[i].soluong*detailCart[i].gia;
+    
+            const product=findProduct(detailCart[i].id_sanpham,products);
+       
+            payload.push ({
+                id_sanpham:product.id_sanpham,
+                thumbnail:product.thumbnail,
+                ten_sanpham:product.ten_sanpham,
+                gia:detailCart[i].gia,
+                so_luong:detailCart[i].soluong,
+                tong_cong:Math.round(detailCart[i].soluong*detailCart[i].gia),
+                id_detailcart:detailCart[i].id_giohangchitiet,
+                link_sanpham:`/product-details?id=${product.id_sanpham}`,
+            });
+        }
+        else{
+
+            const product=findProduct(detailCart[i].id_sanpham,products);
+       
+            giftProducts.push ({
+                id_sanpham:product.id_sanpham,
+                thumbnail:product.thumbnail,
+                ten_sanpham:product.ten_sanpham+" (Voucher)",
+                gia:0,
+                so_luong:detailCart[i].soluong,
+                tong_cong:0,
+                id_detailcart:detailCart[i].id_giohangchitiet,
+                link_sanpham:`/product-details?id=${product.id_sanpham}`,
+            });
+        }
+    }
+
+
+    subTotal=Math.ceil(subTotal);
+    
+    result=await isAuth(req);
+    
+    return res.render('cart',{
+        data:payload,
+        giftProducts:giftProducts,
+        auth:result,
+        empty:false,
+        subTotal:subTotal,
+        total:Math.round(subTotal*(1-(discountPrice/100))) ,
+        hasDiscount:hasDiscount,
+        discount:discountPrice,
+        discountPendingOrNot:discountPendingOrNot,
+        discountIdCustomerPresent:discountIdCustomerPresent,
+        hasVoucher:hasVoucher,
+        voucherPendingOrNot:voucherPendingOrNot,
+        voucherIdCustomerPresent:voucherIdCustomerPresent,
+        checkout:detailCart.length > 0 ? true:false,
+        // cities:cities
+    });
+}
+
+exports.renderCheckoutPage=async (req,res)=>{
+
+    if(!req.uuid){
+
+        return res.status(401).send("Something wrong,please try again");
+    }
+
+    const cart=req.cart;
+
+    if(cart === null){
+
+        return res.status(401).send("Something wrong,please try again");
+    }
+
+    let detailCart=await detailCartGetAll({id_giohang:cart.id_giohang});
+
+    if(detailCart === null){
+        return res.status(401).send("Something wrong,please try again");
+    }
+    else if(detailCart.length === 0){
+
+        try {
+            const result=await isAuth(req)
+            return res.render('checkout',{checkout:false,auth:result});
+    
+        } catch (error) {
+            console.log(error);
+            return;
+        }
+    }
+
+    let props={
+        id_khachhang:req.customer.id_khachhang,
+        slug_trangthai:'pending'
+    }
+
+    const statusPresents=await customerPresentGetAll(props);
+
+    let discount=0;
+    
+    if(statusPresents === null)
+        return res.status(401).send('Something wrong please try again');
+
+    if(statusPresents.length > 0){
+
+        for(let i=0;i<statusPresents.length;++i){
+
+            const idPresent=statusPresents[i].id_present;
+
+            result=await presentGetAll({id:idPresent});
+
+            if(result === null)
+                return res.status(401).send("Something wrong please try again");
+
+            const present=result[0];
+
+            const startDate=new Date(present.ngay_batdau);
+            const endDate=new Date(present.ngay_ketthuc);
+            const today=new Date();
+            today.setHours(today.getHours()+7);
+            
+            if(statusPresents[i].loai === "discount"){
+
+                if(today < startDate){
+                }
+                else if(today <= endDate){    
+                    let count=0;
+
+                    detailCart.forEach(item=>{
+                        if(item.gia > 0)
+                            count+=1;
+                    });
+
+                    if(count === 0){
+                        result=await customerPresentUpdate({
+                            id:statusPresents[i].id,
+                            trang_thai:'Chưa sử dụng',
+                            slug_trangthai:'not_used'
+                        });
+
+                    }
+                    else{
+                        
+                        discount=present.so_tien;
+                    }        
+                }
+                else{
+
+                    result=await customerPresentUpdate({
+                        id:statusPresents[i].id,
+                        trang_thai:'Không thể sử dụng',
+                        slug_trangthai:'outdated'
+                    });
+                }   
+            }
+            else if(statusPresents[i].loai === "voucher"){
+                
+                if(today < startDate){
+                }
+                else if(today <= endDate){
+                }
+                else{
+
+                    result=await customerPresentUpdate({
+                        id:statusPresents[i].id,
+                        trang_thai:'Không thể sử dụng',
+                        slug_trangthai:'outdated'
+                    });
+
+                    let props={
+                        id_giohang:req.cart.id_giohang,
+                        gia:0
+                    }
+
+                    result = await detailCartRemove(props);
+                }
+            }
+        }
+    }
+
+    detailCart=await detailCartGetAll({id_giohang:cart.id_giohang});
+
+    const idProduct=detailCart.map(item=>item.id_sanpham);
+
+    const products=await productGetAll({id_sanpham:idProduct});
+
+    let subTotal=0;
+
+    let giftProducts=[];
+    let payload=[];
     
     for(let i=0;i<detailCart.length;++i){
         
@@ -464,248 +955,8 @@ exports.renderCartPage=async (req,res)=>{
         }
     }
 
-
-    subTotal=Math.ceil(subTotal);
-    
-    let props={
-        id_khachhang:req.customer.id,
-        slug_trangthai:['not_used','pending']
-    }
-
-    const statusPresents=await customerPresentGetAll(props);
-
-    if(statusPresents === null)
-        return res.status(401).send("Something wrong please try again");
-
-    let hasDiscount=false;
-    let hasVoucher=false;
-    let discountPrice=0;
-    let discountIdCustomerPresent=-1;
-    let voucherIdCustomerPresent=-1;
-    let discountPendingOrNot=false;
-    let voucherPendingOrNot=false;
-    if(statusPresents.length > 0){
-
-        for(let i=0;i<statusPresents.length;++i){
-
-            if(statusPresents[i].loai === "discount"){
-
-                const idPresent=statusPresents[i].id_present;
-
-                result=await presentGetAll({id:idPresent});
-
-                if(result === null)
-                    return res.status(401).send("Something wrong please try again");
-            
-                const present=result[0];
-
-                const startDate=new Date(present.ngay_batdau);
-                const endDate=new Date(present.ngay_ketthuc);
-                const today=new Date();
-                today.setHours(today.getHours()+7);
-
-                if(today < startDate){
-                    hasDiscount=false;
-                }
-                else if(today <= endDate){
-                    discountIdCustomerPresent=statusPresents[i].id;
-                    hasDiscount=true;
-                    discountPendingOrNot=statusPresents[i].slug_trangthai === "pending" ? true:false;
-                    if(discountPendingOrNot)
-                        discountPrice=present.so_tien;
-
-                }
-                else{
-                    hasDiscount=false;
-
-                    result=await customerPresentUpdate({
-                        id:statusPresents[0].id,
-                        trang_thai:'Không thể sử dụng',
-                        slug_trangthai:'outdated'
-                    });
-                }
-            }
-            else if (statusPresents[i].loai === "voucher"){
-                const idPresent=statusPresents[i].id_present;
-
-                result=await presentGetAll({id:idPresent});
-
-                if(result === null)
-                    return res.status(401).send("Something wrong please try again");
-
-                const present=result[0];
-
-                const startDate=new Date(present.ngay_batdau);
-                const endDate=new Date(present.ngay_ketthuc);
-                const today=new Date();
-                today.setHours(today.getHours()+7);
-                
-                if(today < startDate){
-
-                    hasVoucher=false;
-                }
-                else if(today <= endDate){
-
-                    voucherIdCustomerPresent=statusPresents[i].id;
-                    hasVoucher=true;
-                    voucherPendingOrNot=statusPresents[i].slug_trangthai === "pending" ? true:false;
-                }
-                else{
-
-                    hasVoucher=false;
-
-                    result=await customerPresentUpdate({
-                        id:statusPresents[0].id,
-                        trang_thai:'Không thể sử dụng',
-                        slug_trangthai:'outdated'
-                    });
-                }
-            }
-
-        }
-
-        
-    }
-    
-    result=await isAuth(req);
-    
-    return res.render('cart',{
-        data:payload,
-        giftProducts:giftProducts,
-        auth:result,
-        empty:false,
-        subTotal:subTotal,
-        total:subTotal ,
-        hasDiscount:hasDiscount,
-        discount:discountPrice,
-        discountPendingOrNot:discountPendingOrNot,
-        discountIdCustomerPresent:discountIdCustomerPresent,
-        hasVoucher:hasVoucher,
-        voucherPendingOrNot:voucherPendingOrNot,
-        voucherIdCustomerPresent:voucherIdCustomerPresent,
-        // cities:cities
-    });
-}
-
-exports.renderCheckoutPage=async (req,res)=>{
-
-    if(!req.uuid){
-
-        return res.status(401).send("Something wrong,please try again");
-    }
-
-    const cart=req.cart;
-
-    if(cart === null){
-
-        return res.status(401).send("Something wrong,please try again");
-    }
-
-    const detailCart=await detailCartGetAll({id_giohang:cart.id_giohang});
-
-    if(detailCart === null){
-        return res.status(401).send("Something wrong,please try again");
-    }
-    else if(detailCart.length === 0){
-
-        try {
-            const result=await isAuth(req)
-            return res.render('checkout',{checkout:false,auth:result});
-    
-        } catch (error) {
-            console.log(error);
-            return;
-        }
-    }
-
-    const idProduct=detailCart.map(item=>item.id_sanpham);
-
-    const products=await productGetAll({id_sanpham:idProduct});
-
-    let subTotal=0;
-    const payload=detailCart.map(item=>{
-
-        function findProduct(id,products){
-
-            for(let i=0;i<products.length;++i){
-                if(products[i].id_sanpham === id)
-                    return products[i];
-            }
-
-        }
-
-        const product=findProduct(item.id_sanpham,products);
-
-        subTotal+=Math.round(item.gia*item.soluong);
-        
-        return {
-            id_sanpham:product.id_sanpham,
-            thumbnail:product.thumbnail,
-            ten_sanpham:product.ten_sanpham,
-            gia:item.gia,
-            so_luong:item.soluong,
-            tong_cong:Math.round(item.soluong*item.gia),
-            id_detailcart:item.id_giohangchitiet,
-            link_sanpham:`/product-details?id=${product.id_sanpham}`,
-        }
-    });
-
-    console.log(cart.id_giohang);
-
-    let props={
-        id_khachhang:req.customer.id,
-        slug_trangthai:'pending'
-    }
-
-    const statusPresents=await customerPresentGetAll(props);
-
-    let discount=0;
-    
-    if(statusPresents === null)
-        return res.status(401).send('Something wrong please try again');
-
-    if(statusPresents.length > 0){
-
-        for(let i=0;i<statusPresents.length;++i){
-            
-            if(statusPresents[i].loai === "discount"){
-
-                const idPresent=statusPresents[i].id_present;
-
-                result=await presentGetAll({id:idPresent});
-
-                if(result === null)
-                    return res.status(401).send("Something wrong please try again");
-                
-                const present=result[0];
-
-                const startDate=new Date(present.ngay_batdau);
-                const endDate=new Date(present.ngay_ketthuc);
-                const today=new Date();
-
-                if(today < startDate){
-                }
-                else if(today <= endDate){            
-                    discount=present.so_tien;
-
-                }
-                else{
-
-                    result=await customerPresentUpdate({
-                        id:statusPresents[i].id,
-                        trang_thai:'Không thể sử dụng',
-                        slug_trangthai:'outdated'
-                    });
-                }   
-            }
-            else if(statusPresents[i].loai === "voucher"){
-
-                
-            }
-        }
-    }
-
-    const total=Math.ceil(subTotal*(1-(discount/100)));
+    subTotal=Math.round(subTotal);
+    const total=Math.round(subTotal*(1-(discount/100)));
 
     const cities=await cityGetAll({});
 
@@ -713,6 +964,7 @@ exports.renderCheckoutPage=async (req,res)=>{
 
     return res.render('checkout',{
         data:payload,
+        giftProducts:giftProducts,
         subTotal:subTotal,
         total:total,
         id_cart:cart.id_giohang,
@@ -725,17 +977,46 @@ exports.renderCheckoutPage=async (req,res)=>{
 
 exports.checkout=async (req,res)=>{
     let result=null;
+    let voucher=false;
+    let nameVoucher="";
+    let shopping=false;
     const cart=req.cart;
 
     console.log(req.body);
 
-    const detailCart=await detailCartGetAll({id_giohang:cart.id_giohang});
+    let detailCart=await detailCartGetAll({id_giohang:cart.id_giohang});
+
+    if(detailCart === null){
+        return res.status(401).send("Something wrong please try again");
+    }
 
     if(detailCart.length === 0){
         return res.status(401).send("Can not check out for an empty cart!");
     }
 
-    const {email,name,phone,sonha,street,ward,district,city,idcity,province}=req.body;
+    detailCart.every(item=>{
+        if(item.gia > 0){
+            shopping=true;
+            return true;
+        }
+    
+    });
+
+    const {
+        email,
+        name,
+        phone,
+        sonha,
+        street,
+        ward,
+        district,
+        city,
+        idcity,
+        province,
+        message,
+        methodPayment,
+        statusPayment
+    }=req.body;
 
     let payload={
         so_nha:sonha,
@@ -785,7 +1066,7 @@ exports.checkout=async (req,res)=>{
     }
 
     let props={
-        id_khachhang:req.customer.id,
+        id_khachhang:req.customer.id_khachhang,
         slug_trangthai:'pending'
     }
 
@@ -799,26 +1080,68 @@ exports.checkout=async (req,res)=>{
         
         for(let i=0;i<statusPresents.length;++i){
 
+            const idPresent=statusPresents[i].id_present;
+
+            result=await presentGetAll({id:idPresent});
+
+            if(result === null)
+                return res.status(401).send("Something wrong please try again");
+            
+            const present=result[0];
+
+            const startDate=new Date(present.ngay_batdau);
+            const endDate=new Date(present.ngay_ketthuc);
+            const today=new Date();
+            today.setHours(today.getHours()+7);
+
             if(statusPresents[i].loai === "discount"){
                 
-                const idPresent=statusPresents[i].id_present;
-
-                result=await presentGetAll({id:idPresent});
-
-                if(result === null)
-                    return res.status(401).send("Something wrong please try again");
-                
-                const present=result[0];
-
-                const startDate=new Date(present.ngay_batdau);
-                const endDate=new Date(present.ngay_ketthuc);
-                const today=new Date();
-
                 if(today < startDate){
                 }
                 else if(today <= endDate){
-                    discountPrice=present.so_tien;
 
+                    let count=0;
+
+                    detailCart.forEach(item=>{
+                        if(item.gia > 0)
+                            count+=1;
+                    });
+
+                    if(count === 0){
+                        result=await customerPresentUpdate({
+                            id:statusPresents[i].id,
+                            trang_thai:'Chưa sử dụng',
+                            slug_trangthai:'not_used'
+                        });
+
+                    }
+                    else{
+                        
+                        discountPrice=present.so_tien;
+
+                        result=await customerPresentUpdate({
+                            id:statusPresents[i].id,
+                            trang_thai:'Đã sử dụng',
+                            slug_trangthai:'used'
+                        });
+                    }      
+                    
+                }
+                else{
+                    result=await customerPresentUpdate({
+                        id:statusPresents[i].id,
+                        trang_thai:'Không thể sử dụng',
+                        slug_trangthai:'outdated'
+                    });
+                }
+            }
+            else if(statusPresents[i].loai === "voucher"){
+                
+                if(today < startDate){
+                }
+                else if(today <= endDate){
+                    voucher=true;
+                    nameVoucher=present.ten;
                     result=await customerPresentUpdate({
                         id:statusPresents[i].id,
                         trang_thai:'Đã sử dụng',
@@ -831,27 +1154,30 @@ exports.checkout=async (req,res)=>{
                         trang_thai:'Không thể sử dụng',
                         slug_trangthai:'outdated'
                     });
+
+                    result=await detailCartRemove({
+                        id_giohang:cart.id_giohang,
+                        gia:0
+                    });
                 }
-            }
-            else if(statusPresents[i].loai === "voucher"){
-                
             }
         }
     }
 
-    total=Math.ceil(total*(1-(discountPrice/100)));
+    total=Math.round(total*(1-(discountPrice/100)));
     
     var today = new Date();
-    var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    today.setHours(today.getHours()+7);
+    const dateTime=today.toISOString();
     
-    var dateTime = date+' '+time;
     payload={
         id_diachi:address.id_diachi,
         id_giohang:cart.id_giohang,
         tong_tien:total,
         ngay_dat:dateTime,
         check_out:true,
+        phuongthuc_thanhtoan:methodPayment,
+        trangthai_thanhtoan:statusPayment
     }
     result=await cartUpdate(payload);
 
@@ -881,18 +1207,25 @@ exports.checkout=async (req,res)=>{
         trang_thai:statusShipping[0].id,
         ngay_nhan:dateTime,
         gia:cities.gia_ship,
-        id_giohang:cart.id_giohang
+        id_giohang:cart.id_giohang,
+        mieu_ta:message
     }
 
-    console.log(payload);
+    const shipping=await shippingCreate(payload);
 
-    result=await shippingCreate(payload);
-
-    if(result===null){
+    if(shipping===null){
         return res.status(401).send("Something wrong please try again");
     }
 
-    return res.status(200).send('ok');
+    res.status(200).send({
+        id:cart.id_giohang,
+        methodPayment:methodPayment,
+        statusPayment:statusPayment,
+        total:total,
+        shopping:shopping,
+        voucher:voucher,
+        nameVoucher:nameVoucher
+    });
 }
 
 exports.handleDetailCart=async (req,res)=>{
