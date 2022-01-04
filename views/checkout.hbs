@@ -10,32 +10,6 @@
 				{{/if}}
 			</ol>
 		</div>
-		<!--/breadcrums-->
-
-		{{!-- <div class="step-one">
-			<h2 class="heading">Step1</h2>
-		</div> --}}
-		{{!-- <div class="checkout-options">
-			<h3>New User</h3>
-			<p>Checkout options</p>
-			<ul class="nav">
-				<li>
-					<label><input type="checkbox"> Register Account</label>
-				</li>
-				<li>
-					<label><input type="checkbox"> Guest Checkout</label>
-				</li>
-				<li>
-					<a href=""><i class="fa fa-times"></i>Cancel</a>
-				</li>
-			</ul>
-		</div>
-		<!--/checkout-options--> --}}
-
-		{{!-- <div class="register-req">
-			<p>Please use Register And Checkout to easily get access to your order history, or use Checkout as Guest</p>
-		</div>
-		<!--/register-req--> --}}
 
 		{{#if checkout}}
 		<div class="shopper-informations">
@@ -48,22 +22,26 @@
 							<p>Bill To</p>
 							<div class="form-one">
 								<input id="id_cart" value="{{id_cart}}" style="display: none;" />
-								<input id="email" type="email" placeholder="Email*" name="email" />
-								<input id="name" type="text" placeholder="Name*" name="name" required/>
-								<input id="phone" type="text" placeholder="Phone" name="phone" required/>
+								<input id="email" type="email" placeholder="Email*" name="email" value="{{user.email}}"/>
+								<input id="name" type="text" placeholder="Name*" name="name" value="{{user.name}}" required/>
+								<input id="phone" type="text" placeholder="Phone" name="phone" value="{{user.phone}}" required/>
 							</div>
 							<div class="form-two">
-								<input id="sonha" type="text" placeholder="Số nhà" name="sonha" required/>
-								<input id="street" type="text" placeholder="Tên đường" name="street" required/>
-								<input id="ward" type="text" placeholder="Phường" name="ward" />
-								<input id="district" type="text" placeholder="Quận" name="district" />
+								<input id="sonha" type="text" placeholder="Số nhà" name="sonha" value="{{address.so_nha}}" required/>
+								<input id="street" type="text" placeholder="Tên đường" name="street" value="{{address.ten_duong}}" required/>
+								<input id="ward" type="text" placeholder="Phường" name="ward" value="{{address.phuong}}" />
+								<input id="district" type="text" placeholder="Quận" name="district" value="{{address.quan}}" />
 								<select id="city" required>
 									<option value="">Thành phố</option>
 									{{#cities}}
-										<option value="{{dataValues.id}}">{{dataValues.ten_thanhpho}}</option>
+										{{#if selected}}
+										<option value="{{id}}" selected>{{ten_thanhpho}}</option>
+										{{else}}
+										<option value="{{id}}">{{ten_thanhpho}}</option>
+										{{/if}}
 									{{/cities}}
 								</select>
-								<input id="province" type="text" placeholder="Tỉnh" name="province" />
+								<input id="province" type="text" placeholder="Tỉnh" name="province" value="{{address.tinh}}" />
 							</div>
 						</div>
 					</div>

@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 22:15:05
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-03 02:14:28
+ * @Last Modified time: 2022-01-04 13:33:42
  */
 const {
     update:cartUpdate,
@@ -14,14 +14,16 @@ const {
     update:productUpdate
 } = require('./service/sanpham');
 const {
-    create:addressCreate
+    create:addressCreate,
+    getByPk:addressGetByPk,
 }=require('./service/diachi');
 const {
     getAll: customerGetAll,
     update:customerUpdate
 }=require('./service/khachhang');
 const {
-    isAuth
+    isAuth,
+    getUser
 } = require('./service/auth');
 const {
     create: detailCartCreate,
@@ -57,16 +59,15 @@ exports.create = async (req, res) => {
     let gia_sp, result, condition;
     const cart=req.cart;
     
-
     if (!req.params.id) {
         return res.status(401).send("Id product can not be found!");
     }
 
-    result = await productGetByPk(parseInt(req.params.id));
-    if (result === null)
-        return res.status(401).send('Something wrong please try again');
+    const product = await productGetByPk(parseInt(req.params.id));
+    if (product === null)
+        return res.status(401).send('This product is no longer available in our system');
     else{
-        if(result.data.soluong_tonkho < req.body.amount)
+        if(product.soluong_tonkho < req.body.amount)
             return res.status(401).send('Hết hàng');
         
         const discountProduct=await discountProductGetAll({id_sanpham:req.params.id});
@@ -82,15 +83,15 @@ exports.create = async (req, res) => {
             now.setHours(now.getHours()+7);
 
             if(now >= start && now <= end){
-                gia_sp=Math.round(result.data.gia_sanpham*(1-discountProduct[0].gia_giam/100));
+                gia_sp=Math.round(product.gia_sanpham*(1-discountProduct[0].gia_giam/100));
             }
             else{
-                gia_sp = result.data.gia_sanpham;
+                gia_sp = product.gia_sanpham;
             }
         
         }
         else
-            gia_sp = result.data.gia_sanpham;
+            gia_sp = product.gia_sanpham;
     }
 
     if (!req.body.amount) {
@@ -143,7 +144,10 @@ exports.create = async (req, res) => {
                 id_sanpham: req.params.id,
                 // gia: parseInt(req.body.amount) * gia_sp,
                 gia: gia_sp,
-                soluong: parseInt(req.body.amount)
+                soluong: parseInt(req.body.amount),
+                thumbnail:product.thumbnail,
+                ten_sanpham:product.ten_sanpham
+
             };
 
             result = await detailCartCreate(record);
@@ -181,8 +185,10 @@ exports.update=async (req,res)=>{
     const discountIdCustomerPresent=req.body.idDiscount === '-1' ? -1 : parseInt(req.body.idDiscount);
     const voucherIdCustomerPresent=req.body.idVoucher === '-1' ? -1 : parseInt(req.body.idVoucher);
     
+    const cart=req.cart;
     const payload={};
     payload.empty=false;
+    
 
     let result;
     if(deleteDetailCarts && deleteDetailCarts.length > 0)
@@ -414,8 +420,6 @@ exports.update=async (req,res)=>{
         await detailCartRemove(props);
 
     }
-
-    const cart=req.cart;
 
     detailCarts=await detailCartGetAll({
         id_giohang:cart.id_giohang,
@@ -868,15 +872,15 @@ exports.renderCheckoutPage=async (req,res)=>{
         return res.status(401).send("Something wrong,please try again");
     }
 
+    const authResult=await isAuth(req);
+
     let detailCart=await detailCartGetAll({id_giohang:cart.id_giohang});
-    let authResult;
     if(detailCart === null){
         return res.status(401).send("Something wrong,please try again");
     }
     else if(detailCart.length === 0){
 
         try {
-            authResult=await isAuth(req)
             return res.render('checkout',{checkout:false,auth:authResult});
     
         } catch (error) {
@@ -894,7 +898,6 @@ exports.renderCheckoutPage=async (req,res)=>{
 
         if(count === 0){
             try {
-                authResult=await isAuth(req)
                 return res.render('checkout',{checkout:false,auth:authResult});
         
             } catch (error) {
@@ -1035,9 +1038,72 @@ exports.renderCheckoutPage=async (req,res)=>{
     subTotal=Math.round(subTotal);
     const total=Math.round(subTotal*(1-(discount/100)));
 
-    const cities=await cityGetAll({});
+    let cities=await cityGetAll({});
+    let _cities;
+    let user={
+        email:'',
+        phone:'',
+        name:''
+    }
 
-    result=await isAuth(req);
+    _cities=cities.map(item=>{
+        return {
+            id:item.id,
+            ten_thanhpho:item.ten_thanhpho,
+            zipcode:item.zipcode,
+            gia_ship:item.gia_ship,
+            slug:item.slug,
+            selected: false
+        }
+    });
+    
+    let address={
+        so_nha:'',
+        ten_duong:'',
+        phuong:'',
+        quan:'',
+        thanh_pho:'',
+        quan:''
+    }
+    
+    if(authResult === true){
+        const _user=await getUser(req);
+
+        if (_user.email !== undefined && _user.email !== null)
+            user.email=_user.email;
+        if (_user.ten !== undefined && _user.ten !== null)
+            user.name=_user.ten;
+        if (_user.phone !== undefined && _user.phone !== null)
+            user.phone=_user.phone;
+
+        if(_user.id_diachi !== undefined && _user.id_diachi !== null){
+            const _address=await addressGetByPk(_user.id_diachi);
+            
+            if(_address.thanh_pho !== undefined && _address.thanh_pho !== null){
+                
+                _cities.forEach((item,index)=>{
+                    if(item.slug === _address.thanh_pho)
+                        _cities[index].selected=true;
+                })
+                
+            }
+            
+            if(_address.so_nha !== undefined && _address.so_nha !== null)
+                address.so_nha=_address.so_nha;
+            
+            if(_address.ten_duong !== undefined && _address.ten_duong !== null)
+                address.ten_duong=_address.ten_duong;
+            
+            if(_address.phuong !== undefined && _address.phuong !== null)
+                address.phuong=_address.phuong;
+                
+            if(_address.quan !== undefined && _address.quan !== null)
+                address.quan=_address.quan;
+
+            if(_address.tinh !== undefined && _address.tinh !== null)
+                address.tinh=_address.tinh;
+        }
+    }
 
     return res.render('checkout',{
         data:payload,
@@ -1046,9 +1112,11 @@ exports.renderCheckoutPage=async (req,res)=>{
         total:total,
         id_cart:cart.id_giohang,
         checkout:true,
-        auth:result,
-        cities:cities,
+        auth:authResult,
+        cities:_cities,
         discount:discount,
+        address:address,
+        user:user
     });
 }
 
@@ -1072,7 +1140,7 @@ exports.renderHistoryPage=async (req,res) =>{
             const payload=carts.map(item=>{
 
                 return{
-                    ngay_dat:item.ngay_dat,
+                    ngay_dat:new Date(item.ngay_dat).toISOString(),
                     tong_tien:item.tong_tien,
                     methodPayment:item.phuongthuc_thanhtoan === "checkpayment" ? "Check payment" : "Credit card",
                     statusPayment:item.trangthai_thanhtoan === "chuathanhtoan" ? "Chưa thanh toán" : "Đã thanh toán",
@@ -1099,53 +1167,39 @@ exports.renderHistoryPage=async (req,res) =>{
             return res.render('detailCart',{empty:true,auth:true});
         }
         else{
-            const idProducts=detailCarts.map(item=>item.id_sanpham);
-
-            const products=await productGetAll({id_sanpham:idProducts});
-
+            
             let subTotal=0;
             let payload=[];
             let giftProducts=[];
             let discount=0;
             for(let i=0;i<detailCarts.length;++i){
         
-                function findProduct(id,products){
-        
-                    for(let i=0;i<products.length;++i){
-                        if(products[i].id_sanpham === id)
-                            return products[i];
-                    }
-        
-                }
-        
                 if(detailCarts[i].gia > 0){
                     subTotal+=detailCarts[i].soluong*detailCarts[i].gia;               
-                    const product=findProduct(detailCarts[i].id_sanpham,products);
-                    
+                    const id=detailCarts[i].id_sanpham !== undefined && detailCarts[i].id_sanpham !== null ? detailCarts[i].id_sanpham : -1;
                     payload.push ({
-                        id_sanpham:product.id_sanpham,
-                        thumbnail:product.thumbnail,
-                        ten_sanpham:product.ten_sanpham,
+                        id_sanpham:id,
+                        thumbnail:detailCarts[i].thumbnail,
+                        ten_sanpham:detailCarts[i].ten_sanpham,
                         gia:detailCarts[i].gia,
                         so_luong:detailCarts[i].soluong,
                         tong_cong:Math.round(detailCarts[i].soluong*detailCarts[i].gia),
                         id_detailcart:detailCarts[i].id_giohangchitiet,
-                        link_sanpham:`/product-details?id=${product.id_sanpham}`,
+                        link_sanpham:`/product-details?id=${id}`,
                     });
                 }
                 else{
         
-                    const product=findProduct(detailCarts[i].id_sanpham,products);
-
+                    const id = detailCarts[i].id_sanpham !== undefined && detailCarts[i].id_sanpham !== null ? detailCarts[i].id_sanpham : -1
                     giftProducts.push ({
-                        id_sanpham:product.id_sanpham,
-                        thumbnail:product.thumbnail,
-                        ten_sanpham:product.ten_sanpham+" (Voucher)",
+                        id_sanpham:id,
+                        thumbnail:detailCarts[i].thumbnail,
+                        ten_sanpham:detailCarts[i].ten_sanpham+" (Voucher)",
                         gia:0,
                         so_luong:detailCarts[i].soluong,
                         tong_cong:0,
                         id_detailcart:detailCarts[i].id_giohangchitiet,
-                        link_sanpham:`/product-details?id=${product.id_sanpham}`,
+                        link_sanpham:`/product-details?id=${id}`,
                     });
                 }
             }
@@ -1235,15 +1289,19 @@ exports.checkout=async (req,res)=>{
         methodPayment,
         statusPayment
     }=req.body;
-
+    
+    let cities=await cityGetAll({id:idcity});
+    cities=cities[0];
+    
     let payload={
         so_nha:sonha,
         street:street,
         ward:ward,
         district:district,
-        city:city,
+        city:cities.slug,
         province:province
     }
+    
     const address=await addressCreate(payload);
     
     if(address === null){
@@ -1401,8 +1459,7 @@ exports.checkout=async (req,res)=>{
         return res.status(401).send("Something wrong please try again");
     }   
 
-    let cities=await cityGetAll({id:idcity});
-    cities=cities[0];
+    
 
     const statusShipping=await statusShippingGetAll({slug:'shipping'});
     payload={

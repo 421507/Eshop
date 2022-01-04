@@ -10,16 +10,29 @@
                 </div>
                 <form id='profile-form' method="post">
                     <div class="row mt-2">
-                    <div class="col-md-12"><label class="labels">Name</label><input type="text" class="form-control" placeholder="first name" name="name" value={{user.ten}}></div>
+                    <div class="col-md-12"><label class="labels">Name</label><input type="text" class="form-control" placeholder="first name" name="name" value="{{user.name}}"></div>
                     </div>
                     <div class="row mt-3">
                         <div class="col-md-12"><label class="labels">Phone</label><input type="text" class="form-control" name="phone" value="{{user.phone}}"></div>
-                        <div class="col-md-12"><label class="labels">Số nhà</label><input type="text" class="form-control"  name="sonha" value="{{diachi.so_nha}}"></div>
-                        <div class="col-md-12"><label class="labels">Tên đường</label><input type="text" class="form-control" name="street" value="{{diachi.ten_duong}}"></div>
-                        <div class="col-md-12"><label class="labels">Phường</label><input type="text" class="form-control"  name="ward" value="{{diachi.phuong}}"></div>
-                        <div class="col-md-12"><label class="labels">Quận</label><input type="text" class="form-control" name="district" value="{{diachi.quan}}"></div>
-                        <div class="col-md-12"><label class="labels">Thành phố</label><input type="text" class="form-control" name="city" value="{{diachi.thanh_pho}}"></div>
-                        <div class="col-md-12"><label class="labels">Tỉnh</label><input type="text" class="form-control" name="province" value="{{diachi.tinh}}"></div>
+                        <div class="col-md-12"><label class="labels">Số nhà</label><input type="text" class="form-control"  name="sonha" value="{{address.so_nha}}"></div>
+                        <div class="col-md-12"><label class="labels">Tên đường</label><input type="text" class="form-control" name="street" value="{{address.ten_duong}}"></div>
+                        <div class="col-md-12"><label class="labels">Phường</label><input type="text" class="form-control"  name="ward" value="{{address.phuong}}"></div>
+                        <div class="col-md-12"><label class="labels">Quận</label><input type="text" class="form-control" name="district" value="{{address.quan}}"></div>
+                        <div class="col-md-12">
+                            <label class="labels">Thành phố</label>
+                            {{!-- <input type="text" class="form-control" name="city" value="{{address.thanh_pho}}"> --}}
+                            <select name="city" class="form-control" required>
+                                <option value="">Thành phố</option>
+                                {{#cities}}
+                                    {{#if selected}}
+                                    <option value="{{id}}" selected>{{ten_thanhpho}}</option>
+                                    {{else}}
+                                    <option value="{{id}}">{{ten_thanhpho}}</option>
+                                    {{/if}}
+                                {{/cities}}
+                            </select>
+                        </div>
+                        <div class="col-md-12"><label class="labels">Tỉnh</label><input type="text" class="form-control" name="province" value="{{address.tinh}}"></div>
                         <div class="col-md-12"><label class="labels">Email</label><input type="email" class="form-control" placeholder="education" name="email" value="{{user.email}}"></div>
                     </div>
                     <div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="submit">Save Profile</button></div>

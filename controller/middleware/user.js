@@ -2,13 +2,14 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-09 00:19:54
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-03 00:20:40
+ * @Last Modified time: 2022-01-03 14:59:44
  */
 const { verifyToken } = require('../service/token');
 const { getUser } = require('../service/user');
 const { v4: uuidv4 } = require('uuid');
 const { create: customerCreate,getAll: customerGetAll } = require('../service/khachhang');
 const {create:cartCreate,getAll: cartGetAll } = require('../service/giohang');
+const {isAuth:serviceIsAuth}=require('../service/auth');
 
 exports.isAuth = async (req, res, next) => {
     // Lấy access token từ header
@@ -41,28 +42,7 @@ exports.isAuth = async (req, res, next) => {
         }
         else if(customers.length === 0){
 
-            let uuid=req.cookies.uuid;
-
-            if(uuid !== undefined){
-
-                let customer=await customerCreate({uuid:uuid,id_user:user.id_user});
-                customer.id_khachhang=customer.null;
-                req.customer=customer;
-            }
-            else{
-                uuid= uuidv4();
-
-                const option={
-                    maxAge:1000*60*60*24*365,
-                    httpOnly:true
-                }
-        
-                res.cookie('uuid',uuid,option);
-                
-                let customer=await customerCreate({uuid:uuid,id_user:user.id_user});
-                customer.id_khachhang=customer.null;
-                req.customer=customer;
-            }
+            return res.redirect('/');
         }
         else{
             req.customer=customers[0];
@@ -78,7 +58,7 @@ exports.isIdentify=async (req,res,next) => {
 
     let uuid=req.cookies.uuid;
     let customer,cart,payload;
-    if(!uuid){
+    if(!uuid || uuid === ''){
 
         uuid= uuidv4();
 
@@ -108,27 +88,35 @@ exports.isIdentify=async (req,res,next) => {
     else{
 
         customer = await customerGetAll({ uuid: uuid });
-  
+
         if (customer === null)
             return res.status(401).send("Something wrong please try again");
         else
             customer = customer[0];
 
-        payload = {
-            id_khachhang: customer.id_khachhang,
-            check_out: false,
-        };
-
-        try {
-            cart = await cartGetAll(payload);
+        if(customer.id_user !== undefined && customer.id_user !== null){
             
-        } catch (error) {
-            console.log(error);
-        }
+            const auth=await serviceIsAuth(req);
 
+            if(!auth){
+                uuid= uuidv4();
 
-        if (cart !== null){
-            if (cart.length === 0){
+                const option={
+                    maxAge:1000*60*60*24*365,
+                    httpOnly:true
+                }
+
+                res.cookie('uuid',uuid,option);
+
+                customer = await customerCreate({ uuid: uuid });
+
+                if (customer === null) {
+                    return res.status(401).send('Something wrong please try again');
+                }else{
+                    customer.id_khachhang=customer.null;
+
+                }
+
                 cart = await cartCreate({ id_khachhang: customer.id_khachhang });
                 if (cart === null)
                     return res.status(401).send('Something wrong please try again');
@@ -137,12 +125,70 @@ exports.isIdentify=async (req,res,next) => {
                 }
             }
             else{
-                cart = cart[0];
+                
+                payload = {
+                    id_khachhang: customer.id_khachhang,
+                    check_out: false,
+                };
+        
+                try {
+                    cart = await cartGetAll(payload);
+                    
+                } catch (error) {
+                    console.log(error);
+                }
+        
+        
+                if (cart !== null){
+                    if (cart.length === 0){
+                        cart = await cartCreate({ id_khachhang: customer.id_khachhang });
+                        if (cart === null)
+                            return res.status(401).send('Something wrong please try again');
+                        else {
+                            cart.id_giohang = cart.null;
+                        }
+                    }
+                    else{
+                        cart = cart[0];
+                    }
+                }
+                    
+                else {
+                    res.status(401).send('Something wrong while retrieving giohang')
+                }
             }
         }
-            
-        else {
-            res.status(401).send('Something wrong while retrieving giohang')
+        else{
+            payload = {
+                id_khachhang: customer.id_khachhang,
+                check_out: false,
+            };
+    
+            try {
+                cart = await cartGetAll(payload);
+                
+            } catch (error) {
+                console.log(error);
+            }
+    
+    
+            if (cart !== null){
+                if (cart.length === 0){
+                    cart = await cartCreate({ id_khachhang: customer.id_khachhang });
+                    if (cart === null)
+                        return res.status(401).send('Something wrong please try again');
+                    else {
+                        cart.id_giohang = cart.null;
+                    }
+                }
+                else{
+                    cart = cart[0];
+                }
+            }
+                
+            else {
+                res.status(401).send('Something wrong while retrieving giohang')
+            }
         }
     }
 

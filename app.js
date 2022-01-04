@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 13:05:32
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-03 01:00:18
+ * @Last Modified time: 2022-01-04 17:18:46
  */
 const createError = require('http-errors');
 const express = require('express');
@@ -26,6 +26,13 @@ const productdetailsRouter = require('./routes/product-details');
 const profileRouter = require('./routes/profile');
 const resultRouter = require('./routes/result');
 
+// admin router
+const adminIndexRouter=require('./routes/admin');
+const adminLoginRouter=require('./routes/admin/login');
+const adminLogoutRouter=require('./routes/admin/logout');
+const adminProductsRouter=require('./routes/admin/products');
+const adminProductDetailsRouter=require('./routes/admin/product-details');
+
 const app = express();
 
 const db = require('./models/index')
@@ -33,7 +40,7 @@ const db = require('./models/index')
 const { create } = require('express-handlebars');
 
 const hbs = create({
-  defaultLayout:'layout',
+  // defaultLayout:'client',
   extname:'.hbs',
   helpers:require('./config/helpers.js')
 });
@@ -69,11 +76,21 @@ app.use('/users', usersRouter);
 app.use('/profile', profileRouter);
 app.use('/result', resultRouter);
 
+// admin route
+app.use('/admin',adminIndexRouter);
+app.use('/admin/login', adminLoginRouter);
+app.use('/admin/logout', adminLogoutRouter);
+app.use('/admin/products', adminProductsRouter);
+app.use('/admin/productdetails', adminProductDetailsRouter);
+
 // api route
 require("./routes/api/sanpham")(app);
 require("./routes/api/user")(app);
 require("./routes/api/giohang")(app);
 require("./routes/api/review")(app);
+require("./routes/api/admin/user")(app);
+require("./routes/api/admin/products")(app);
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-16 18:03:48
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-01 16:28:18
+ * @Last Modified time: 2022-01-04 15:08:27
  */
 const db = require("../../models/index");
 const Giohangchitiet=db.giohangchitiet;
@@ -21,6 +21,10 @@ const getAll=async (props)=>{
         condition.soluong=props.soluong;
     if(props.id_giohangchitiet !== undefined)
         condition.id_giohangchitiet=props.id_giohangchitiet;
+    if(props.thumbnail !== undefined)
+        condition.thumbnail=props.thumbnail;
+    if(props.ten_sanpham !== undefined)
+        condition.ten_sanpham=props.ten_sanpham;
 
     try {
         const result=await Giohangchitiet.findAll({where:condition});
@@ -43,6 +47,10 @@ const create=async (props)=>{
         field.gia=props.gia;
     if(props.soluong)
         field.soluong=props.soluong;
+    if(props.ten_sanpham)
+        field.ten_sanpham=props.ten_sanpham;
+    if(props.thumbnail)
+        field.thumbnail=props.thumbnail;
 
     try {
         const result=await Giohangchitiet.create(field);
@@ -67,14 +75,19 @@ const multicreate=async (props)=>{
 const update=async (props)=>{
 
     const condition={};
-    condition.id_giohangchitiet=props.id_giohangchitiet;
-
+    if(props.id_giohangchitiet !== undefined)
+        condition.id_giohangchitiet=props.id_giohangchitiet;
+    if(props.id_sanpham !== undefined)
+        condition.id_sanpham=props.id_sanpham;
+        
     const field={};
 
-    if(props.soluong)
+    if(props.soluong !== undefined)
         field.soluong=props.soluong;
-    if(props.gia)
-        field.gia=props.gia
+    if(props.gia !== undefined)
+        field.gia=props.gia;
+    if(props.id_sanpham !== undefined)
+        field.id_sanpham=null;
 
     try {
         const result=await Giohangchitiet.update(field,{where:condition,returning:true});
@@ -99,6 +112,10 @@ const remove=async (props)=>{
         condition.soluong=props.soluong;
     if(props.id_giohangchitiet !== undefined)
         condition.id_giohangchitiet=props.id_giohangchitiet;
+    if(props.ten_sanpham !== undefined)
+        condition.ten_sanpham=props.ten_sanpham;
+    if(props.thumbnail !== undefined)
+        condition.thumbnail=props.thumbnail;
 
     try {
         const result=await Giohangchitiet.destroy({where:condition});

@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 22:06:41
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-30 23:24:10
+ * @Last Modified time: 2022-01-03 15:08:19
  */
 
  module.exports = (sequelize, Sequelize) => {
@@ -21,7 +21,10 @@
             },
             gia_ship:{
                 type:Sequelize.DOUBLE
-            }
+            },
+            slug:{
+                type:Sequelize.STRING
+            },
         });
         return Thanhpho;
     } catch (error) {

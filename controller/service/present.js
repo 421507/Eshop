@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-31 15:03:54
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-31 22:24:06
+ * @Last Modified time: 2022-01-04 14:58:37
  */
 const db = require("../../models/index");
 const Present = db.present;
@@ -67,4 +67,21 @@ const update=async props =>{
 
 }
 
-module.exports={getAll,update};
+const remove=async props=>{
+
+    const condition={};
+
+    if(props.id)
+        condition.id=props.id;
+
+    try {
+        const result=await Present.destroy({where:condition});
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+
+}
+
+module.exports={getAll,update,remove};

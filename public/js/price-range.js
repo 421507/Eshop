@@ -1,3 +1,9 @@
+/**
+ * @Author: Le Vu Huy
+ * @Date:   2021-11-24 13:05:32
+ * @Last Modified by:   Le Vu Huy
+ * @Last Modified time: 2022-01-03 20:17:00
+ */
 /* =========================================================
  * bootstrap-slider.js v2.0.0
  * http://www.eyecon.ro/bootstrap-slider

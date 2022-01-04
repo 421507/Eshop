@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-31 14:47:20
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-03 01:33:54
+ * @Last Modified time: 2022-01-04 14:54:23
  */
 const db = require("../../models/index");
 const KhachhangPresent=db.khachhang_present;
@@ -64,5 +64,21 @@ const update=async props=>{
 
 }
 
+const remove=async props=>{
 
-module.exports={getAll,update}
+    const condition={};
+
+    if(props.id_present !== undefined)
+        condition.id_present=props.id_present;
+    
+    try {
+        const result=await KhachhangPresent.destroy({where:condition});
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+
+module.exports={getAll,update,remove}

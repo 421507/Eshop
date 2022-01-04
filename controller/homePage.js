@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 22:15:05
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-29 21:25:53
+ * @Last Modified time: 2022-01-04 00:06:50
  */
 
 const { getAll } = require('./service/sanpham');
@@ -156,14 +156,14 @@ exports.renderHomePage = async (req, res) => {
 
     isAuth(req)
       .then(result => {
-        
+
         res.render('index',
           {
             products: products,
             brands: brands,
             types: types,
             samples: samples,
-            auth: result
+            auth: result,
           });
       })
       .catch(err => {

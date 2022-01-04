@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-09 15:13:36
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-31 21:57:47
+ * @Last Modified time: 2022-01-03 16:39:28
  */
 const db = require('../../models/index');
 const Diachi=db.diachi;
@@ -34,17 +34,17 @@ exports.update=async (props)=>{
 
     const field={};
 
-    if(props.sonha)
+    if(props.sonha !== undefined)
         field.so_nha=props.sonha;
-    if(props.street)
+    if(props.street !== undefined)
         field.ten_duong=props.street;
-    if(props.ward)
+    if(props.ward !== undefined)
         field.phuong=props.ward;
-    if(props.district)
+    if(props.district !== undefined)
         field.quan=props.district;
-    if(props.city)
+    if(props.city !== undefined)
         field.thanh_pho=props.city;
-    if(props.province)
+    if(props.province !== undefined)
         field.tinh=props.province;
     
     try {

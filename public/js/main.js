@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 13:05:32
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-03 02:11:44
+ * @Last Modified time: 2022-01-04 01:13:51
  */
 /*price range*/
 
@@ -17,6 +17,7 @@ var RGBChange = function () {
 $(document).ready(function () {
 	localStorage.removeItem('detailCarts');
 	$(function () {
+
 		$.scrollUp({
 			scrollName: 'scrollUp', // Element ID
 			scrollDistance: 300, // Distance from top/bottom before showing element (px)
@@ -86,7 +87,7 @@ $(document).ready(function () {
 					password: password
 				}
 			}).done(function (data) {
-				window.location.replace('/');
+				window.location.href='/';
 
 				console.log(data);
 			}).fail(function (data) {
@@ -181,7 +182,7 @@ $(document).ready(function () {
 				}
 			}).done(function (data) {
 				console.log(data);
-				window.location.replace(`/result?id=${data.id}&method=${data.methodPayment}&status=${data.statusPayment}&total=${data.total}&voucher=${data.voucher}&nameVoucher=${data.nameVoucher}&shopping=${data.shopping}`);
+				window.location.href=`/result?id=${data.id}&method=${data.methodPayment}&status=${data.statusPayment}&total=${data.total}&voucher=${data.voucher}&nameVoucher=${data.nameVoucher}&shopping=${data.shopping}`;
 			}).fail(function (data) {
 				alert(data.responseText);
 				console.log(data);
@@ -547,5 +548,19 @@ function handlePayment(element){
 
 function viewDetailCart(element){
 
-	window.location.replace(`/history?id=${element}`);
+	window.location.href=`/history?id=${element}`;
+}
+
+function searchMinMax(){
+
+	
+	const value=$('#sl2').val();
+	let result;
+	if(value === "")
+		result=[250,450];
+	else{
+		result=value.split(",");
+	}
+
+	window.location.href=`/products?min=${result[0]}&max=${result[1]}`;
 }

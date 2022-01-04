@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-27 23:22:26
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-31 15:17:27
+ * @Last Modified time: 2022-01-04 14:11:27
  */
 const db = require("../../models/index");
 const Review = db.review;
@@ -88,4 +88,23 @@ exports.create=async (props) =>{
         return null;
     }
 
+}
+
+exports.remove=async (props) =>{
+
+    const condition={};
+
+    if(props.idreview !== undefined)
+        condition.idreview=props.idreview;
+
+    if(props.id_sanpham !== undefined)
+        condition.id_sanpham=props.id_sanpham;
+    
+    try {
+        const result=await Review.destroy({where:condition});
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
 }
