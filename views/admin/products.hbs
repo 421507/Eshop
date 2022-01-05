@@ -1,6 +1,6 @@
 <div class="container mt-5">
     <div class="row tm-content-row">
-        <div class="col-sm-12 col-md-12 col-lg-8 col-xl-8 tm-block-col">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 tm-block-col">
             <div class="tm-bg-primary-dark tm-block tm-block-products">
                 <div class="tm-product-table-container">
                     <table class="table table-hover tm-table-small tm-product-table">
@@ -16,8 +16,8 @@
                         </thead>
                         <tbody>
                             {{#data}}
-                            <tr id="{{id}}">
-                                <th scope="row"><input type="checkbox" /></th>
+                            <tr id="product-{{id}}">
+                                <th scope="row"><input type="checkbox" id="product_{{id}}" onchange="selectProducts(this)"/></th>
                                 <td class="tm-product-name">
                                     <a href='{{url_update}}'>
                                         {{ten_sanpham}}
@@ -27,9 +27,7 @@
                                 <td>{{soluong_tonkho}}</td>
                                 <td>{{ngay_list}}</td>
                                 <td>
-                                    {{!-- <a href='{{url_delete}}' class="tm-product-delete-link">
-                                        <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                                    </a> --}}
+                                    
                                     <a onclick="deleteProduct({{id}})" class="tm-product-delete-link">
                                         <i class="far fa-trash-alt tm-product-delete-icon"></i>
                                     </a>
@@ -40,112 +38,77 @@
                     </table>
                 </div>
                 <!-- table container -->
-                <a href="/addproduct" class="btn btn-primary btn-block text-uppercase mb-3">Add new product</a>
-                <button class="btn btn-primary btn-block text-uppercase">
+                <a href="/admin/addproduct" class="btn btn-primary btn-block text-uppercase mb-3">Add new product</a>
+                <button class="btn btn-primary btn-block text-uppercase" onclick="deleteSelectedProducts()">
                     Delete selected products
                 </button>
             </div>
         </div>
-        <div class="col-sm-12 col-md-12 col-lg-4 col-xl-4 tm-block-col">
+        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 tm-block-col">
             <div class="tm-bg-primary-dark tm-block tm-block-product-categories">
-                <h2 class="tm-block-title">Product Categories</h2>
+                <h2 class="tm-block-title">Product Brands</h2>
                 <div class="tm-product-table-container">
                     <table class="table tm-table-small tm-product-table">
                         <tbody>
-                            <tr>
+                            {{#brands}}
+                            <tr id="brand-{{id}}">
+                                <td class="tm-product-name">{{ten}}</td>
+                                <td class="text-center">
+                                    <a onclick="deleteBrand({{id}})" class="tm-product-delete-link">
+                                        <i class="far fa-trash-alt tm-product-delete-icon"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {{/brands}}
+                            {{!-- <tr>
                                 <td class="tm-product-name">Product Category 1</td>
                                 <td class="text-center">
                                     <a href="#" class="tm-product-delete-link">
                                         <i class="far fa-trash-alt tm-product-delete-icon"></i>
                                     </a>
                                 </td>
-                            </tr>
-                            <tr>
-                                <td class="tm-product-name">Product Category 2</td>
-                                <td class="text-center">
-                                    <a href="#" class="tm-product-delete-link">
-                                        <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="tm-product-name">Product Category 3</td>
-                                <td class="text-center">
-                                    <a href="#" class="tm-product-delete-link">
-                                        <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="tm-product-name">Product Category 4</td>
-                                <td class="text-center">
-                                    <a href="#" class="tm-product-delete-link">
-                                        <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="tm-product-name">Product Category 5</td>
-                                <td class="text-center">
-                                    <a href="#" class="tm-product-delete-link">
-                                        <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="tm-product-name">Product Category 6</td>
-                                <td class="text-center">
-                                    <a href="#" class="tm-product-delete-link">
-                                        <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="tm-product-name">Product Category 7</td>
-                                <td class="text-center">
-                                    <a href="#" class="tm-product-delete-link">
-                                        <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="tm-product-name">Product Category 8</td>
-                                <td class="text-center">
-                                    <a href="#" class="tm-product-delete-link">
-                                        <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="tm-product-name">Product Category 9</td>
-                                <td class="text-center">
-                                    <a href="#" class="tm-product-delete-link">
-                                        <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="tm-product-name">Product Category 10</td>
-                                <td class="text-center">
-                                    <a href="#" class="tm-product-delete-link">
-                                        <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="tm-product-name">Product Category 11</td>
-                                <td class="text-center">
-                                    <a href="#" class="tm-product-delete-link">
-                                        <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                                    </a>
-                                </td>
-                            </tr>
+                            </tr> --}}
+                            
                         </tbody>
                     </table>
                 </div>
                 <!-- table container -->
                 <button class="btn btn-primary btn-block text-uppercase mb-3">
-                    Add new category
+                    Add new brand
+                </button>
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 tm-block-col">
+            <div class="tm-bg-primary-dark tm-block tm-block-product-categories">
+                <h2 class="tm-block-title">Product Type</h2>
+                <div class="tm-product-table-container">
+                    <table class="table tm-table-small tm-product-table">
+                        <tbody>
+                            {{#types}}
+                            <tr id="type-{{id}}">
+                                <td class="tm-product-name">{{ten}}</td>
+                                <td class="text-center">
+                                    <a onclick="deleteType({{id}})" class="tm-product-delete-link">
+                                        <i class="far fa-trash-alt tm-product-delete-icon"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {{/types}}
+                            {{!-- <tr>
+                                <td class="tm-product-name">Product Category 1</td>
+                                <td class="text-center">
+                                    <a href="#" class="tm-product-delete-link">
+                                        <i class="far fa-trash-alt tm-product-delete-icon"></i>
+                                    </a>
+                                </td>
+                            </tr> --}}
+                            
+                        </tbody>
+                    </table>
+                </div>
+                <!-- table container -->
+                <button class="btn btn-primary btn-block text-uppercase mb-3">
+                    Add new type
                 </button>
             </div>
         </div>

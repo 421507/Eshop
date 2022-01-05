@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-01 16:34:23
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-04 17:48:02
+ * @Last Modified time: 2022-01-05 15:34:30
  */
 const db = require("../../models/index");
 const Sanpham = db.sanpham;
@@ -203,11 +203,34 @@ const getByPk =async (pk) => {
     }
 }
 
+const setFkNull=async (props) => {
+
+    const condition={};
+    const field={};
+    if(props.id_thuonghieu !== undefined){
+        condition.id_thuonghieu=props.id_thuonghieu
+        field.id_thuonghieu=null;
+    }
+    if(props.id_loaisp !== undefined){
+        condition.id_loaisp=props.id_loaisp
+        field.id_loaisp=null;
+    }
+
+    try {
+        const result=await Sanpham.update(field,{where:condition});
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
 const update=async (props)=>{
 
     const condition={};
         
-    condition.id_sanpham=props.id_sanpham;
+    if(props.id_sanpham !== undefined)
+        condition.id_sanpham=props.id_sanpham;
 
     const field={};
 
@@ -270,10 +293,48 @@ const remove=async (props)=>{
     }
 }
 
+const create=async (props)=>{
+
+    const field={};
+
+    if(props.ten_sanpham !== undefined)
+        field.ten_sanpham=props.ten_sanpham;
+    if(props.gia_sanpham !== undefined)
+        field.gia_sanpham=props.gia_sanpham;
+    if(props.mieuta !== undefined)
+        field.mieuta=props.mieuta;
+    if(props.soluong_tonkho !== undefined)
+        field.soluong_tonkho=props.soluong_tonkho;
+    if(props.ngay_list !== undefined)
+        field.ngay_list=props.ngay_list;
+    if(props.soluong_daban !== undefined)
+        field.soluong_daban=props.soluong_daban;
+    if(props.mau_sac !== undefined)
+        field.mau_sac=props.mau_sac;
+    if(props.size !== undefined)
+        field.mau_sac=props.mau_sac;
+    if(props.id_thuonghieu !== undefined)
+        field.id_thuonghieu=props.id_thuonghieu;
+    if(props.thumbnail !== undefined)
+        field.thumbnail=props.thumbnail;
+    if(props.id_loaisp !== undefined)
+        field.id_loaisp=props.id_loaisp;
+
+    try {
+        const result=await Sanpham.create(field);
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
 module.exports = { 
     getAll, 
     getByPk,
     _getAll,
     update,
-    remove 
+    remove,
+    setFkNull,
+    create
 };

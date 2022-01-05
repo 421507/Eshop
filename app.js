@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 13:05:32
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-04 17:18:46
+ * @Last Modified time: 2022-01-05 15:15:31
  */
 const createError = require('http-errors');
 const express = require('express');
@@ -32,6 +32,7 @@ const adminLoginRouter=require('./routes/admin/login');
 const adminLogoutRouter=require('./routes/admin/logout');
 const adminProductsRouter=require('./routes/admin/products');
 const adminProductDetailsRouter=require('./routes/admin/product-details');
+const adminAddProductRouter=require('./routes/admin/add-product');
 
 const app = express();
 
@@ -82,6 +83,7 @@ app.use('/admin/login', adminLoginRouter);
 app.use('/admin/logout', adminLogoutRouter);
 app.use('/admin/products', adminProductsRouter);
 app.use('/admin/productdetails', adminProductDetailsRouter);
+app.use('/admin/addproduct', adminAddProductRouter);
 
 // api route
 require("./routes/api/sanpham")(app);
@@ -90,6 +92,8 @@ require("./routes/api/giohang")(app);
 require("./routes/api/review")(app);
 require("./routes/api/admin/user")(app);
 require("./routes/api/admin/products")(app);
+require("./routes/api/admin/brands")(app);
+require("./routes/api/admin/types")(app);
 
 
 // catch 404 and forward to error handler

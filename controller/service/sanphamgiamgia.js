@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2022-01-02 22:56:14
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-04 14:12:57
+ * @Last Modified time: 2022-01-05 16:12:25
  */
 const db = require("../../models/index");
 const Sanphamgiamgia = db.sanphamgiamgia;
@@ -41,6 +41,28 @@ exports.remove=async (props)=>{
     
     try {
         const result=await Sanphamgiamgia.destroy({where:condition});
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+exports.create=async (props)=>{
+
+    const field={};
+
+    if(props.id_sanpham !== undefined)
+        field.id_sanpham=props.id_sanpham;
+    if(props.gia_giam !== undefined)
+        field.gia_giam=props.gia_giam;
+    if(props.ngay_batdau !== undefined)
+        field.ngay_batdau=props.ngay_batdau;
+    if(props.ngay_ketthuc !== undefined)
+        field.ngay_ketthuc=props.ngay_ketthuc;
+    
+    try {
+        const result=await Sanphamgiamgia.create(field);
         return result;
     } catch (error) {
         console.log(error);

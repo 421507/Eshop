@@ -57,6 +57,51 @@
 
                                 </select>
                             </div>
+                            <div class="form-group mb-3">
+                                    <label for="type">Discount</label>
+                                    {{#if isDiscount}}
+                                    <input class="form-control" type="checkbox" id="discount" onchange="handleCheckDiscount()" checked/>
+                                    {{else}}
+                                    <input class="form-control" type="checkbox" id="discount" onchange="handleCheckDiscount()"/>
+                                    {{/if}}
+                                </div>
+                                {{#if isDiscount}}
+                                <div class="form-group mb-3 discount-group">
+                                    <input class="form-control" type="text" id="discount-number" placeholder="Amount" value="{{discount}}"/>
+                                </div>
+                                <div class="row discount-group">
+                                    <div class="form-group mb-3 col-xs-12 col-sm-6">
+                                        <label for="start">Start date
+                                        </label>
+                                        <input id="start" name="start" type="datetime-local" class="form-control validate"
+                                        value="{{start}}"/>
+                                    </div>
+                                    <div class="form-group mb-3 col-xs-12 col-sm-6">
+                                        <label for="end">End date
+                                        </label>
+                                        <input id="end" name="end" type="datetime-local" class="form-control validate"
+                                        value="{{end}}"/>
+                                    </div>
+                                </div>
+                                {{else}}
+                                <div class="form-group mb-3 discount-group disabled">
+                                    <input class="form-control" type="text" id="discount-number" placeholder="Amount" value="{{discount}}"/>
+                                </div>
+                                <div class="row discount-group disabled">
+                                    <div class="form-group mb-3 col-xs-12 col-sm-6">
+                                        <label for="start">Start date
+                                        </label>
+                                        <input id="start" name="start" type="datetime-local" class="form-control validate"
+                                        value="{{start}}"/>
+                                    </div>
+                                    <div class="form-group mb-3 col-xs-12 col-sm-6">
+                                        <label for="end">End date
+                                        </label>
+                                        <input id="end" name="end" type="datetime-local" class="form-control validate"
+                                        value="{{end}}"/>
+                                    </div>
+                                </div>
+                                {{/if}}
                             <div class="row">
                                 <div class="form-group mb-3 col-xs-12 col-sm-6">
                                     <label for="price">Price
