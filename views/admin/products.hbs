@@ -16,12 +16,10 @@
                         </thead>
                         <tbody>
                             {{#data}}
-                            <tr id="product-{{id}}">
+                            <tr id="product-{{id}}" onclick="viewProductDetail(this.id)" style="cursor: pointer;">
                                 <th scope="row"><input type="checkbox" id="product_{{id}}" onchange="selectProducts(this)"/></th>
                                 <td class="tm-product-name">
-                                    <a href='{{url_update}}'>
-                                        {{ten_sanpham}}
-                                    </a>
+                                    {{ten_sanpham}}
                                 </td>
                                 <td>{{gia_sanpham}}</td>
                                 <td>{{soluong_tonkho}}</td>
@@ -73,9 +71,9 @@
                     </table>
                 </div>
                 <!-- table container -->
-                <button class="btn btn-primary btn-block text-uppercase mb-3">
+                <a href="{{urlAddBrand}}" class="btn btn-primary btn-block text-uppercase mb-3">
                     Add new brand
-                </button>
+                </a>
             </div>
         </div>
         <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 tm-block-col">
@@ -107,9 +105,9 @@
                     </table>
                 </div>
                 <!-- table container -->
-                <button class="btn btn-primary btn-block text-uppercase mb-3">
+                <a href="{{urlAddType}}" class="btn btn-primary btn-block text-uppercase mb-3">
                     Add new type
-                </button>
+                </a>
             </div>
         </div>
     </div>

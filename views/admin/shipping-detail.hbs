@@ -1,0 +1,114 @@
+<div class="container tm-mt-big tm-mb-big">
+    <div class="row">
+        <div class="col-xl-9 col-lg-10 col-md-12 col-sm-12 mx-auto">
+            <div class="tm-bg-primary-dark tm-block tm-block-h-auto">
+                <div class="row">
+                    <div class="col-12">
+                        <h2 class="tm-block-title d-inline-block">Edit Order</h2>
+                    </div>
+                </div>
+                <div class="row tm-edit-product-row">
+                    <div class="col-12">
+                        <form method="post" id="update-order-form" class="tm-edit-product-form">
+                        <input id="id_shipping" value="{{data.id}}" style="display: none;"/>
+                        <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12">
+                                <div class="form-group mb-3">
+                                    <label for="name">Shipper
+                                    </label>
+                                    <input id="name" name="name" type="text"
+                                        class="form-control validate" value="{{data.shipperName}}"/>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="description">Description</label>
+                                    <textarea id="description" class="form-control validate tm-small" rows="5"
+                                    >{{data.description}}</textarea>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="date-listed">Day Created
+                                    </label>
+                                    <input id="date-listed" name="date-created" type="text" value="{{data.dateCreate}}"
+                                        class="form-control validate" disabled />
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="date-delivered">Day Delivered
+                                    </label>
+                                    <input id="date-delivered" name="date-delivered" type="text" value="{{data.dateEnd}}"
+                                        class="form-control validate" disabled/>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="sonha">Số nhà</label>
+                                    <input id="sonha" class="form-control validate" type="text" value="{{data.numHouse}}" name="sonha"
+                                    />
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="street">Đường</label>
+                                    <input id="street" class="form-control validate" type="text" value="{{data.street}}" name="street"
+                                    />
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="ward">Phường</label>
+                                    <input id="ward" class="form-control validate" type="text" value="{{data.ward}}" name="ward"
+                                    />
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="district">Quận</label>
+                                    <input id="district" class="form-control validate" type="text" value="{{data.district}}" name="district"
+                                    />
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="city">Thành phố</label>
+                                    <select class="custom-select tm-select-accounts" id="city" name="city" required>
+                                        <option value="">Select city</option>
+                                        {{#data.cities}}
+                                        {{#if selected}}
+                                        <option value='{{id}}' selected>{{name}}</option>
+                                        {{else}}
+                                        <option value='{{id}}'>{{name}}</option>
+                                        {{/if}}
+                                        {{/data.cities}}
+                                    </select>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="province">Tỉnh</label>
+                                    <input id="province" class="form-control validate" type="text" value="{{data.province}}" name="province"
+                                    />
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="status">Status</label>
+                                    <select class="custom-select tm-select-accounts" id="status" name="status" required>
+                                        <option value="">Select status</option>
+                                        {{#data.status}}
+                                        {{#if selected}}
+                                        <option value='{{id}}' selected>{{name}}</option>
+                                        {{else}}
+                                        <option value='{{id}}'>{{name}}</option>
+                                        {{/if}}
+                                        {{/data.status}}
+
+                                    </select>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="form-group mb-3 col-xs-12 col-sm-6">
+                                        <label for="price">Price
+                                        </label>
+                                        <input id="price" name="price" type="text" value="{{data.price}}"
+                                            class="form-control validate" data-large-mode="true" disabled/>
+                                    </div>
+                                    <div class="form-group mb-3 col-xs-12 col-sm-6">
+                                        <a href="{{data.cart}}">View cart</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary btn-block text-uppercase">Update Now</button>
+                            </div>
+                        </div>
+                    </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

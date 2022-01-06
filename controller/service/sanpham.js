@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-01 16:34:23
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-05 15:34:30
+ * @Last Modified time: 2022-01-06 14:49:12
  */
 const db = require("../../models/index");
 const Sanpham = db.sanpham;
@@ -182,8 +182,7 @@ const getAll = async ( props) => {
     try {
         const data = await Sanpham.findAndCountAll({ limit, offset, where: condition })
         const resp = getPagingData(data, props.page, limit,props);
-        if(props.type)
-            resp.table=_data;
+     
         return resp;
     } catch (error) {
         console.log(error);

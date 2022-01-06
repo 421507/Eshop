@@ -12,52 +12,52 @@
                         <input id="id_sanpham" value="{{data.id_sanpham}}" style="display: none;"/>
                         <div class="row">
                             <div class="col-xl-6 col-lg-6 col-md-12">
-                            <div class="form-group mb-3">
-                                <label for="name">Product Name
-                                </label>
-                                <input id="name" name="name" type="text" value="{{data.ten_sanpham}}"
-                                    class="form-control validate" />
-                            </div>
-                            <div class="form-group mb-3">
-                                <label for="date-listed">Day Listed
-                                </label>
-                                <input id="date-listed" name="date-listed" type="text" value="{{data.ngay_list}}"
-                                    class="form-control validate" disabled />
-                            </div>
-                            <div class="form-group mb-3">
-                                <label for="description">Description</label>
-                                <textarea id="description" class="form-control validate tm-small" rows="5"
-                                    required>{{data.mieuta}}</textarea>
-                            </div>
-                            <div class="form-group mb-3">
-                                <label for="brand">Brands</label>
-                                <select class="custom-select tm-select-accounts" id="brand" name="brand" required>
-                                    <option value="">Select brand</option>
-                                    {{#brands}}
-                                    {{#if selected}}
-                                    <option value='{{id_thuonghieu}}' selected>{{ten_thuonghieu}}</option>
-                                    {{else}}
-                                    <option value='{{id_thuonghieu}}'>{{ten_thuonghieu}}</option>
-                                    {{/if}}
-                                    {{/brands}}
+                                <div class="form-group mb-3">
+                                    <label for="name">Product Name
+                                    </label>
+                                    <input id="name" name="name" type="text" value="{{data.ten_sanpham}}"
+                                        class="form-control validate" />
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="date-listed">Day Listed
+                                    </label>
+                                    <input id="date-listed" name="date-listed" type="text" value="{{data.ngay_list}}"
+                                        class="form-control validate" disabled />
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="description">Description</label>
+                                    <textarea id="description" class="form-control validate tm-small" rows="5"
+                                        required>{{data.mieuta}}</textarea>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="brand">Brands</label>
+                                    <select class="custom-select tm-select-accounts" id="brand" name="brand" required>
+                                        <option value="">Select brand</option>
+                                        {{#brands}}
+                                        {{#if selected}}
+                                        <option value='{{id_thuonghieu}}' selected>{{ten_thuonghieu}}</option>
+                                        {{else}}
+                                        <option value='{{id_thuonghieu}}'>{{ten_thuonghieu}}</option>
+                                        {{/if}}
+                                        {{/brands}}
 
-                                </select>
-                            </div>
-                            <div class="form-group mb-3">
-                                <label for="type">Type</label>
-                                <select class="custom-select tm-select-accounts" id="type" name="type" required>
-                                    <option value="">Select type</option>
-                                    {{#types}}
-                                    {{#if selected}}
-                                    <option value='{{id_loaisp}}' selected>{{ten_loaisp}}</option>
-                                    {{else}}
-                                    <option value='{{id_loaisp}}'>{{ten_loaisp}}</option>
-                                    {{/if}}
-                                    {{/types}}
+                                    </select>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="type">Type</label>
+                                    <select class="custom-select tm-select-accounts" id="type" name="type" required>
+                                        <option value="">Select type</option>
+                                        {{#types}}
+                                        {{#if selected}}
+                                        <option value='{{id_loaisp}}' selected>{{ten_loaisp}}</option>
+                                        {{else}}
+                                        <option value='{{id_loaisp}}'>{{ten_loaisp}}</option>
+                                        {{/if}}
+                                        {{/types}}
 
-                                </select>
-                            </div>
-                            <div class="form-group mb-3">
+                                    </select>
+                                </div>
+                                <div class="form-group mb-3">
                                     <label for="type">Discount</label>
                                     {{#if isDiscount}}
                                     <input class="form-control" type="checkbox" id="discount" onchange="handleCheckDiscount()" checked/>
@@ -102,36 +102,36 @@
                                     </div>
                                 </div>
                                 {{/if}}
-                            <div class="row">
-                                <div class="form-group mb-3 col-xs-12 col-sm-6">
-                                    <label for="price">Price
-                                    </label>
-                                    <input id="price" name="price" type="text" value="{{data.gia_sanpham}}"
-                                        class="form-control validate" data-large-mode="true" />
+                                <div class="row">
+                                    <div class="form-group mb-3 col-xs-12 col-sm-6">
+                                        <label for="price">Price
+                                        </label>
+                                        <input id="price" name="price" type="text" value="{{data.gia_sanpham}}"
+                                            class="form-control validate" data-large-mode="true" />
+                                    </div>
+                                    <div class="form-group mb-3 col-xs-12 col-sm-6">
+                                        <label for="stock">Units In Stock
+                                        </label>
+                                        <input id="stock" name="stock" type="text" value="{{data.soluong_tonkho}}"
+                                            class="form-control validate" />
+                                    </div>
                                 </div>
-                                <div class="form-group mb-3 col-xs-12 col-sm-6">
-                                    <label for="stock">Units In Stock
-                                    </label>
-                                    <input id="stock" name="stock" type="text" value="{{data.soluong_tonkho}}"
-                                        class="form-control validate" />
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-12 mx-auto mb-4">
+                                <div class="tm-product-img-edit mx-auto">
+                                    <img src='{{data.thumbnail}}' alt="Product image" class="img-fluid d-block mx-auto">
+                                    <i class="fas fa-cloud-upload-alt tm-upload-icon"
+                                        onclick="document.getElementById('fileInput').click();"></i>
+                                </div>
+                                <div class="custom-file mt-3 mb-3">
+                                    <input id="fileInput" type="file" style="display:none;" />
+                                    <input type="button" class="btn btn-primary btn-block mx-auto" value="CHANGE IMAGE NOW"
+                                        onclick="document.getElementById('fileInput').click();" />
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-xl-6 col-lg-6 col-md-12 mx-auto mb-4">
-                            <div class="tm-product-img-edit mx-auto">
-                                <img src='{{data.thumbnail}}' alt="Product image" class="img-fluid d-block mx-auto">
-                                <i class="fas fa-cloud-upload-alt tm-upload-icon"
-                                    onclick="document.getElementById('fileInput').click();"></i>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary btn-block text-uppercase">Update Now</button>
                             </div>
-                            <div class="custom-file mt-3 mb-3">
-                                <input id="fileInput" type="file" style="display:none;" />
-                                <input type="button" class="btn btn-primary btn-block mx-auto" value="CHANGE IMAGE NOW"
-                                    onclick="document.getElementById('fileInput').click();" />
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-primary btn-block text-uppercase">Update Now</button>
-                        </div>
                         </div>
                     </form>
                 </div>

@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-15 15:51:04
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-05 14:29:39
+ * @Last Modified time: 2022-01-06 17:01:15
  */
 const db = require("../../models/index");
 const Thuonghieu = db.thuonghieu;
@@ -57,4 +57,20 @@ const remove=async props=>{
     }
 }
 
-module.exports={getAll,remove};
+const create=async props=>{
+
+    const field={};
+
+    if(props.ten_thuonghieu !== undefined)
+        field.ten_thuonghieu=props.ten_thuonghieu;
+
+    try {
+        const result=await Thuonghieu.create(field);
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+module.exports={getAll,remove,create};

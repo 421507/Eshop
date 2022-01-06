@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 22:15:05
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-04 13:33:42
+ * @Last Modified time: 2022-01-07 02:33:02
  */
 const {
     update:cartUpdate,
@@ -343,11 +343,22 @@ exports.update=async (req,res)=>{
 
                             props=result.map(item=>{
 
+                                function getProduct(id){
+                                    for (let index = 0; index < products.length; index++) {
+                                        const element = products[index];
+                                        if(element.id_sanpham === id)
+                                            return element;
+                                    }
+                                    return null;
+                                }
+                                const product=getProduct(item.id_sanpham);
                                 return {
                                     id_giohang:req.cart.id_giohang,
                                     id_sanpham:item.id_sanpham,
                                     gia:0,
-                                    soluong:item.so_luong
+                                    soluong:item.so_luong,
+                                    thumbnail:product.thumbnail,
+                                    ten_sanpham:product.ten_sanpham
                                 }
                             })
                             
@@ -1459,15 +1470,14 @@ exports.checkout=async (req,res)=>{
         return res.status(401).send("Something wrong please try again");
     }   
 
-    
-
     const statusShipping=await statusShippingGetAll({slug:'shipping'});
     payload={
         trang_thai:statusShipping[0].id,
         ngay_nhan:dateTime,
         gia:cities.gia_ship,
         id_giohang:cart.id_giohang,
-        mieu_ta:message
+        mieu_ta:message,
+        id_diachi:address.id_diachi
     }
 
     const shipping=await shippingCreate(payload);

@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2022-01-04 12:22:45
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-05 16:58:31
+ * @Last Modified time: 2022-01-06 21:58:30
  */
 
 const {
@@ -20,7 +20,9 @@ const{
 }=require('../service/loaisanpham');
 const{
     create:discountProductCreate,
-    getAll:discountProductGetAll
+    getAll:discountProductGetAll,
+    update:discountProductUpdate,
+    remove:discountProductRemove
 }=require('../service/sanphamgiamgia');
 
 exports.renderListing = async (req, res) => {
@@ -36,7 +38,6 @@ exports.renderListing = async (req, res) => {
             soluong_tonkho: item.soluong_tonkho,
             ngay_list: new Date(item.ngay_list).toISOString(),
             url_delete: `/admin/api/product/delete?id=${item.id_sanpham}`,
-            url_update: `/admin/productdetails?id=${item.id_sanpham}`
         };
 
     });
@@ -66,7 +67,9 @@ exports.renderListing = async (req, res) => {
         brands:brands,
         types:types,
         auth:true,
-        layout:'admin'
+        layout:'admin',
+        urlAddBrand:'http://localhost:3000/admin/addbrand',
+        urlAddType:'http://localhost:3000/admin/addtype'
     });
 }
 
@@ -179,16 +182,13 @@ exports.renderDetail=async (req,res)=>{
         const start=new Date(discountProducts[0].ngay_batdau);
         const end=new Date(discountProducts[0].ngay_ketthuc);
         const now=new Date();
-        
-        console.log(start);
-        console.log(end);
-        console.log(now);
 
         if(now >= start && now <= end){
             isDiscount=true;
-
-            startDate=start.toLocaleString();
-            endDate=end.toLocaleString();
+            start.setHours(start.getHours()+7);
+            end.setHours(end.getHours()+7);
+            startDate=start.toISOString().substring(0,start.toISOString().indexOf('.'));
+            endDate=end.toISOString().substring(0,end.toISOString().indexOf('.'));
             discount=discountProducts[0].gia_giam;
         }
         
@@ -215,6 +215,10 @@ exports.update=async (req,res)=>{
     const brand=req.body.brand;
     const type=req.body.type;
     const price=req.body.price;
+    const isDiscount=req.body.isDiscount === "true" ? true:false;
+    const discountPrice=req.body.discount;
+    const startdate=req.body.start;
+    const enddate=req.body.end;
 
     const id=req.params.id;
 
@@ -237,6 +241,48 @@ exports.update=async (req,res)=>{
         return res.status(401).send("Something wrong please try again");
     else if(result.length === 0)
         return res.status(401).send("ID type invalid");
+
+    const discount=await discountProductGetAll({id_sanpham:id});
+    if(discount === null){
+        return res.status(401).send("Something wrong please try again");
+    }
+
+    if (isDiscount){
+
+        if(discount.length > 0){
+
+            result=await discountProductUpdate({
+                id_sanpham_giamgia:discount[0].id_sanpham_giamgia,
+                gia_giam:discountPrice,
+                ngay_ketthuc:enddate,
+                ngay_batdau:startdate
+            });
+
+            if(result === null)
+                return res.status(401).send("Something wrong please try again"); 
+        }
+        else{
+            result=await discountProductCreate({
+                id_sanpham:id,
+                gia_giam:discountPrice,
+                ngay_batdau:startdate,
+                ngay_ketthuc:enddate
+            });
+
+            if(result === null)
+                return res.status(401).send("Something wrong please try again");
+        }
+    }
+    else{
+        if(discount.length > 0){
+            result=await discountProductRemove({
+                id_sanpham_giamgia:discount[0].id_sanpham_giamgia
+            });
+
+            if(result === null)
+                return res.status(401).send("Something wrong please try again");
+        }
+    }
     
     const product = await productUpdate({
         id_sanpham:id,

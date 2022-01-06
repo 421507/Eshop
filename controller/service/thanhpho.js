@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-30 21:13:57
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-03 15:08:36
+ * @Last Modified time: 2022-01-06 20:52:03
  */
 const db = require("../../models/index");
 const Thanhpho = db.thanhpho;
@@ -25,6 +25,16 @@ exports.getAll=async (props)=>{
     
     try {
         const result=await Thanhpho.findAll({where:condition});
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+exports.getByPk=async pk=>{
+    try {
+        const result=await Thanhpho.findByPk(pk);
         return result;
     } catch (error) {
         console.log(error);

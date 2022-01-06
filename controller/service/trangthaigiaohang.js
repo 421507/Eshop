@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-30 21:13:57
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-31 00:36:07
+ * @Last Modified time: 2022-01-06 21:02:06
  */
 const db = require("../../models/index");
 const Trangthaigiaohang = db.trangthaigiaohang;
@@ -21,6 +21,17 @@ exports.getAll = async (props) => {
 
     try {
         const result = await Trangthaigiaohang.findAll({ where: condition });
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+exports.getByPk=async pk=>{
+    
+    try {
+        const result=await Trangthaigiaohang.findByPk(pk);
         return result;
     } catch (error) {
         console.log(error);

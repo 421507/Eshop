@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-09 15:13:36
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-03 16:39:28
+ * @Last Modified time: 2022-01-06 20:55:53
  */
 const db = require('../../models/index');
 const Diachi=db.diachi;
@@ -24,7 +24,7 @@ exports.getByPk=async (pk) =>{
 
 exports.update=async (props)=>{
 
-    if(props.id_diachi === null){
+    if(props.id_diachi === null || props.id_diachi === undefined){
 
         return await this.create(props);
     }
@@ -81,4 +81,21 @@ exports.create=async (props)=>{
         console.log(error);
         return null;
     }
+}
+
+exports.getAll=async props=>{
+
+    const condition={};
+
+    if(props.id_diachi !== undefined)
+        condition.id_diachi=props.id_diachi;
+    
+    try {
+        const result=await Diachi.findAll({where:condition});
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+
 }

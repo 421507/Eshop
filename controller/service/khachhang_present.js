@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-31 14:47:20
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-04 14:54:23
+ * @Last Modified time: 2022-01-07 02:13:30
  */
 const db = require("../../models/index");
 const KhachhangPresent=db.khachhang_present;
@@ -80,5 +80,26 @@ const remove=async props=>{
     }
 }
 
+const increaseExpireDate=async props=>{
 
-module.exports={getAll,update,remove}
+    const condition={};
+    condition.slug_trangthai='outdated';
+    condition.id_present=props.id_present;
+
+    const field={};
+    field.slug_trangthai='not used';
+    field.trang_thai='Chưa sử dụng';
+
+    try {
+        const result=await KhachhangPresent.update(field,{where:condition});
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+    
+
+}
+
+
+module.exports={getAll,update,remove,increaseExpireDate}

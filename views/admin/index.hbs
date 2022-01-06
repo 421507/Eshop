@@ -114,15 +114,40 @@
                                 <tr>
                                     <th scope="col">ORDER NO.</th>
                                     <th scope="col">STATUS</th>
-                                    <th scope="col">OPERATORS</th>
+                                    <th scope="col">SHIPPER</th>
                                     <th scope="col">LOCATION</th>
-                                    <th scope="col">DISTANCE</th>
+                                    <th scope="col">PRICE</th>
                                     <th scope="col">START DATE</th>
-                                    <th scope="col">EST DELIVERY DUE</th>
+                                    <th scope="col">DELIVERED DATE</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
+                                {{#data.shippings}}
+                                <tr id="{{id}}" onclick="viewShippingDetail(this.id)" style="cursor: pointer;">
+                                    <th scope="row"><b>{{id}}</b></th>
+                                    <td>
+                                        {{#if moving}}
+                                        <div class="tm-status-circle moving">
+                                        </div>{{status}}
+                                        {{else if delivered}}
+                                        <div class="tm-status-circle moving">
+                                        </div>{{status}}
+                                        {{else if pending}}
+                                        <div class="tm-status-circle pending">
+                                        </div>{{status}}
+                                        {{else if cancelled}}
+                                        <div class="tm-status-circle cancelled">
+                                        </div>{{status}}
+                                        {{/if}}
+                                    </td>
+                                    <td><b>{{shipper}}</b></td>
+                                    <td><b>{{address}}</b></td>
+                                    <td><b>{{price}}$</b></td>
+                                    <td>{{start}}</td>
+                                    <td>{{end}}</td>
+                                </tr>
+                                {{/data.shippings}}
+                                {{!-- <tr>
                                     <th scope="row"><b>#122349</b></th>
                                     <td>
                                         <div class="tm-status-circle moving">
@@ -253,7 +278,7 @@
                                     <td><b>150 km</b></td>
                                     <td>15:00, 12 OCT 2018</td>
                                     <td>09:20, 26 OCT 2018</td>
-                                </tr>
+                                </tr> --}}
                             </tbody>
                         </table>
                     </div>

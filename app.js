@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 13:05:32
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-05 15:15:31
+ * @Last Modified time: 2022-01-07 02:53:06
  */
 const createError = require('http-errors');
 const express = require('express');
@@ -33,6 +33,12 @@ const adminLogoutRouter=require('./routes/admin/logout');
 const adminProductsRouter=require('./routes/admin/products');
 const adminProductDetailsRouter=require('./routes/admin/product-details');
 const adminAddProductRouter=require('./routes/admin/add-product');
+const adminAddBrandRouter=require('./routes/admin/add-brand');
+const adminAddTypeRouter=require('./routes/admin/add-type');
+const adminShippingDetailRouter=require('./routes/admin/shipping-detail');
+const adminProfileRouter=require('./routes/admin/profile');
+const adminPresentsRouter=require('./routes/admin/presents');
+const adminPresentDetailRouter=require('./routes/admin/present-detail');
 
 const app = express();
 
@@ -84,6 +90,12 @@ app.use('/admin/logout', adminLogoutRouter);
 app.use('/admin/products', adminProductsRouter);
 app.use('/admin/productdetails', adminProductDetailsRouter);
 app.use('/admin/addproduct', adminAddProductRouter);
+app.use('/admin/addbrand', adminAddBrandRouter);
+app.use('/admin/addtype', adminAddTypeRouter);
+app.use('/admin/shippingdetails', adminShippingDetailRouter);
+app.use('/admin/profile', adminProfileRouter);
+app.use('/admin/presents', adminPresentsRouter);
+app.use('/admin/presentdetail', adminPresentDetailRouter);
 
 // api route
 require("./routes/api/sanpham")(app);
@@ -94,6 +106,8 @@ require("./routes/api/admin/user")(app);
 require("./routes/api/admin/products")(app);
 require("./routes/api/admin/brands")(app);
 require("./routes/api/admin/types")(app);
+require("./routes/api/admin/shippings")(app);
+require("./routes/api/admin/presents")(app);
 
 
 // catch 404 and forward to error handler

@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 22:15:05
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-04 00:06:50
+ * @Last Modified time: 2022-01-06 15:09:55
  */
 
 const { getAll } = require('./service/sanpham');
@@ -72,23 +72,47 @@ exports.renderHomePage = async (req, res) => {
 
     });
 
-    const resu = await getAll({ page: 0, size: 20, type: lstIdLoaiSp });
+    let resu=[];
+    let promiseFunc=[];
+    for(let i=0;i<lstIdLoaiSp.length;++i){
+
+      promiseFunc.push(getAll({ page: 0, size: 4, type: lstIdLoaiSp[i] }));
+      
+    }
+    const result = await Promise.all(promiseFunc);
+
+    result.forEach(item=>{
+      item.sanpham.forEach(it=>{
+        resu.push({
+          id_sanpham:it.id_sanpham,
+          ten_sanpham:it.ten_sanpham,
+          gia_sanpham:it.gia_sanpham,
+          mieuta:it.mieuta,
+          soluong_tonkho:it.soluong_tonkho,
+          ngay_list:it.ngay_list,
+          soluong_daban:it.soluong_daban,
+          mau_sac:it.mau_sac,
+          size:it.size,
+          id_thuonghieu:it.id_thuonghieu,
+          thumbnail:it.thumbnail,
+          id_loaisp:it.id_loaisp
+        });
+      });
+      
+    });
 
     let samples = [];
 
-    resu.sanpham.forEach((item) => {
+    resu.forEach((item) => {
 
-      const getName = (id) => {
+    
+      const getNameType = (id) => {
 
-        for (let i = 0; i < types.length; ++i)
-          if (types[i].id_loaisp === id)
+        for(let i=0;i<types.length;++i){
+
+          if(id === types[i].id_loaisp)
             return types[i].ten_loaisp;
-      }
-      const getNameType = (idsp, data) => {
-
-        for (let i = 0; i < data.length; ++i)
-          if (data[i].id_sanpham === idsp)
-            return getName(data[i].id_loaisp);
+        }
 
       }
 
@@ -106,7 +130,7 @@ exports.renderHomePage = async (req, res) => {
         return -1;
       }
 
-      const nameType = getNameType(item.id_sanpham, resu.table);
+      const nameType = getNameType(item.id_loaisp);
       const index = check(samples, nameType);
       if (index !== -1) {
 
@@ -153,6 +177,8 @@ exports.renderHomePage = async (req, res) => {
       }
 
     });
+
+    console.log(samples);
 
     isAuth(req)
       .then(result => {

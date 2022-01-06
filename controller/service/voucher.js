@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-31 23:30:40
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-04 15:01:18
+ * @Last Modified time: 2022-01-07 03:38:01
  */
 const db = require("../../models/index");
 const Voucher = db.voucher;
@@ -10,8 +10,10 @@ const {
     remove:customerPresentRemove
 }=require('./khachhang_present');
 const{
-    remove:presentRemove
+    remove:presentRemove,
+    update:presentUpdate
 }=require('./present');
+
 
 exports.getAll=async props=>{
 
@@ -108,4 +110,132 @@ exports.remove=async props=>{
         return null;
     }
 
+}
+
+exports.multiCreate=async props=>{
+
+    try {
+        const result=Voucher.bulkCreate(props);
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+
+}
+
+exports.update=async props=>{
+
+    const condition={};
+
+    if(props.id !== undefined)
+        condition.id=props.id;
+    const field={};
+
+    if(props.so_luong !== undefined)
+        field.so_luong=props.so_luong;
+
+    try {
+        const result=await Voucher.update(field,{where:condition});
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+
+}
+
+exports.createOrUpdate=async props=>{
+    const id_present=props.id_present;
+    const newVouchers=props.vouchers;
+    
+    const vouchers=await this.getAll({
+        id_present:id_present
+    });
+    const unselectProducts=[];
+    const selectProducts=[];
+    const idProducts=[];
+    console.log(newVouchers);
+    newVouchers.forEach(item=>{
+
+        idProducts.push(item.id);
+        
+        function getVoucher(id){
+            for (let index = 0; index < vouchers.length; index++) {
+                const element = vouchers[index];
+                if(element.id_sanpham === id)
+                    return element;
+            }
+            return null;
+        }
+
+        const voucher=getVoucher(parseInt(item.id));
+        if(voucher !== null){
+            selectProducts.push({
+                id:voucher.id,
+                amount:item.amount
+            });
+        }
+        else{
+            unselectProducts.push({
+                id_sanpham:item.id,
+                so_luong:item.amount,
+                id_present:id_present
+            });
+        }
+    });
+
+    if(unselectProducts.length > 0){
+        let result=await this.multiCreate(unselectProducts);
+    }
+    const promiseFunc=[];
+    
+    for (let index = 0; index < selectProducts.length; index++) {
+        const element = selectProducts[index];
+        promiseFunc.push(this.update({
+            id:element.id,
+            so_luong:element.amount
+        }));
+    }
+
+    if(promiseFunc.length > 0){
+        let result = await Promise.all(promiseFunc);
+
+        for (let index = 0; index < result.length; index++) {
+            const element = result[index];
+            if(element ===  null)
+                return null;
+        }
+    }
+    const{
+        _getAll,
+    }=require('./sanpham');
+    
+    const products=await _getAll({id_sanpham:idProducts});
+    //  products=await productGetAll({id_sanpham:idProducts});
+
+    let value=0;
+
+    products.forEach(item=>{
+
+        function getVoucher(id){
+            for (let index = 0; index < newVouchers.length; index++) {
+                const element = newVouchers[index];
+                if(parseInt(element.id) === id)
+                    return element;
+            }
+            return null;
+        }
+        const voucher=getVoucher(item.id_sanpham);
+        
+        value+=item.gia_sanpham*parseInt(voucher.amount);
+
+    });
+
+    let result=await presentUpdate({
+        id:id_present,
+        so_tien:value
+    });
+
+    return result;
 }
