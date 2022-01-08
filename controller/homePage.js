@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 22:15:05
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-06 15:09:55
+ * @Last Modified time: 2022-01-08 18:24:40
  */
 
 const { getAll } = require('./service/sanpham');
@@ -37,7 +37,7 @@ exports.renderHomePage = async (req, res) => {
 
     const types = await typeGetAll();
 
-    const typeBrand = await typeBrandGetAll();
+    const typeBrand = await typeBrandGetAll({});
     const lstIdLoaiSp = [];
 
     types.forEach((item, index) => {

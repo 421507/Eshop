@@ -2,13 +2,15 @@
  * @Author: Le Vu Huy
  * @Date:   2022-01-06 23:11:33
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-07 02:54:43
+ * @Last Modified time: 2022-01-07 14:53:43
  */
 
 const{
     getAll:presentGetAll,
     getByPk:presentGetByPk,
     update:presentUpdate,
+    create:presentCreate,
+    remove:presentRemove
 }=require('../service/present');
 const{
     getAll:voucherGetAll,
@@ -102,8 +104,10 @@ exports.renderDetail=async (req,res)=>{
     }
 
     const startObj=new Date(present.ngay_batdau);
+    startObj.setHours(startObj.getHours()+7);
     const endObj=new Date(present.ngay_ketthuc);
-    
+    endObj.setHours(endObj.getHours()+7);
+
     const payload={
         id:present.id,
         name:present.ten,
@@ -198,6 +202,102 @@ exports.update=async (req,res)=>{
                 return res.status(400).send("Something wrong please try again");
         }
     }
+
+    return res.status(200).send("OK");
+}
+
+exports.renderAdd=async (req,res)=>{
+
+    const _products=await productGetAll({});
+
+    const products=_products.map(item=>{
+
+            return{
+                id:item.id_sanpham,
+                price:item.gia_sanpham,
+                amount:0,
+                name:item.ten_sanpham
+            };
+        });
+
+    const payload={
+        types:[
+            {
+                name:"discount"
+            },
+            {
+                name:"voucher"
+            }
+        ],
+        products:products
+    }
+
+
+    return res.render('admin/add-present',{
+        auth:true,
+        layout:'admin',
+        data:payload
+    });
+
+
+}
+
+exports.create=async (req,res)=>{
+    console.log(req.body);
+    const type=req.body.type;
+    const name=req.body.name;
+    const start=req.body.start;
+    const end=req.body.end;
+    const amount=req.body.amount;
+
+    if(type === 'discount'){
+
+        const price=req.body.price;
+        const result=await presentCreate({
+            ten:name,
+            ngay_batdau:start,
+            ngay_ketthuc:end,
+            so_luong:amount,
+            so_tien:price,
+            loai:type
+        });
+
+        if(result === null)
+            return res.status(401).send("Something wrong please try again");
+    }
+    else{
+        const result=await presentCreate({
+            ten:name,
+            ngay_batdau:start,
+            ngay_ketthuc:end,
+            so_luong:amount,
+            vouchers:req.body.vouchers,
+            loai:type
+        });
+
+        if(result === null)
+            return res.status(401).send("Something wrong please try again");
+    }
+    return res.status(200).send("OK");
+}
+
+exports.remove=async (req,res)=>{
+
+    const id=req.params.id;
+
+    if(id === undefined || id === null){
+        return res.status(401).send("ID not found");
+    }
+
+    if(parseInt(id) < 1)
+        return res.status(401).send("ID invalid");
+
+    const result=await presentRemove({
+        id:id
+    });
+
+    if(result === null)
+        return res.status(401).send("Something wrong please try again");
 
     return res.status(200).send("OK");
 }

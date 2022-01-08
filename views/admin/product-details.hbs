@@ -9,7 +9,7 @@
                 </div>
                 <div class="row tm-edit-product-row">
                     <form method="post" id="update-product-form" class="tm-edit-product-form">
-                        <input id="id_sanpham" value="{{data.id_sanpham}}" style="display: none;"/>
+                        <input id="id-sanpham" value="{{data.id_sanpham}}" style="display: none;"/>
                         <div class="row">
                             <div class="col-xl-6 col-lg-6 col-md-12">
                                 <div class="form-group mb-3">
@@ -120,14 +120,62 @@
                             <div class="col-xl-6 col-lg-6 col-md-12 mx-auto mb-4">
                                 <div class="tm-product-img-edit mx-auto">
                                     <img src='{{data.thumbnail}}' alt="Product image" class="img-fluid d-block mx-auto">
-                                    <i class="fas fa-cloud-upload-alt tm-upload-icon"
-                                        onclick="document.getElementById('fileInput').click();"></i>
+                        
                                 </div>
                                 <div class="custom-file mt-3 mb-3">
-                                    <input id="fileInput" type="file" style="display:none;" />
-                                    <input type="button" class="btn btn-primary btn-block mx-auto" value="CHANGE IMAGE NOW"
-                                        onclick="document.getElementById('fileInput').click();" />
+                                    <input id="thumbnail" type="file" style="display:none;" />
+                                    <input type="button" class="btn btn-primary btn-block mx-auto" value="UPLOAD THUMNAIL"
+                                        onclick="document.getElementById('thumbnail').click();" />
                                 </div>
+                                <div class="custom-file mt-3 mb-3">
+                                    <input type="button" class="btn btn-primary btn-block mx-auto" value="CHANGE NOW"
+                                        onclick="uploadThumbnail()"/>
+                                </div>
+                                <div class="row mt-3 mb-3">
+                                    {{#data.subphotos}}
+                                    <div class="col-xl-4 col-lg-4 col-md-12">
+                                        <div class="tm-product-img-edit mx-auto">
+                                            <img src='{{url}}' alt="Product image" class="img-fluid d-block mx-auto" style="width: 100%; max-height:5rem">
+                                        </div>
+                                        
+                                    </div>
+                                    {{/data.subphotos}}
+                                    <div class="col-xl-12 col-lg-12 col-md-12">
+                                        <div class="custom-file mt-3 mb-3">
+                                            <input id="subphotos" type="file" style="display:none;" multiple/>
+                                            <input type="button" class="btn btn-primary btn-block mx-auto" value="UPLOAD SUBPHOTOS"
+                                                onclick="document.getElementById('subphotos').click();" />
+                                        </div>
+                                    </div>
+                                    {{!-- <div class="col-xl-4 col-lg-4 col-md-12">
+                                        <div class="tm-product-img-edit mx-auto">
+                                            <img src='/images/download.png' alt="Product image" class="img-fluid d-block mx-auto" style="width: 60%;">
+                                            <i class="fas fa-cloud-upload-alt tm-upload-icon"
+                                                onclick="document.getElementById('fileInput').click();"></i>
+                                        </div>
+                                    </div> --}}
+                                    {{!-- <div class="col-xl-4 col-lg-4 col-md-12">
+                                        <div class="tm-product-img-edit mx-auto">
+                                            <img src='/images/download.png' alt="Product image" class="img-fluid d-block mx-auto" style="width: 60%;">
+                                            <i class="fas fa-cloud-upload-alt tm-upload-icon"
+                                                onclick="document.getElementById('fileInput').click();"></i>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 col-lg-4 col-md-12">
+                                        <div class="tm-product-img-edit mx-auto">
+                                            <img src='/images/download.png' alt="Product image" class="img-fluid d-block mx-auto" style="width: 60%;">
+                                            <i class="fas fa-cloud-upload-alt tm-upload-icon"
+                                                onclick="document.getElementById('fileInput').click();"></i>
+                                        </div>
+                                    </div> --}}
+                                    <div class="col-xl-12 col-lg-12 col-md-12">
+                                        <div class="custom-file mt-3 mb-3">
+                                            <input type="button" class="btn btn-primary btn-block mx-auto" value="CHANGE NOW"
+                                                onclick="uploadSubphoto()"/>
+                                        </div>
+                                    </div>
+                                </div>
+                               
                             </div>
                             <div class="col-12">
                                 <button type="submit" class="btn btn-primary btn-block text-uppercase">Update Now</button>

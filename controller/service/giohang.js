@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-16 17:05:18
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-02 15:32:51
+ * @Last Modified time: 2022-01-08 02:01:29
  */
 const db = require("../../models/index");
 const Giohang=db.giohang;
@@ -121,4 +121,38 @@ const getByPk=async (id)=>{
 
 }
 
-module.exports={getAll,create,update,getByPk}
+const remove=async props=>{
+    const condition={};
+
+    if(props.id_khachhang !== undefined)
+        condition.id_khachhang=props.id_khachhang;
+
+    try {
+        const _carts=await getAll({id_khachhang:props.id_khachhang});
+        const idCarts=_carts.map(item=>item.id_giohang);
+
+        const{
+            remove:detailCartRemove
+        }=require('./giohangchitiet');
+        const{
+            remove:customerPresentRemove
+        }=require('./khachhang_present');
+        const{
+            remove:shippingRemove
+        }=require('./shipping');
+
+        await Promise.all([
+            detailCartRemove({id_giohang:idCarts}),
+            customerPresentRemove({id_giohang:idCarts}),
+            shippingRemove({id_giohang:idCarts})
+        ]);
+        
+        const result=await Giohang.destroy({where:condition});
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+module.exports={getAll,create,update,getByPk,remove}

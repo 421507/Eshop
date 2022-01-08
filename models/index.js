@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 13:18:17
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-02 22:56:52
+ * @Last Modified time: 2022-01-08 21:02:50
  */
 const dbConfig = require("../config/db.config.js");
 
@@ -37,7 +37,7 @@ db.diachi=require('./diachi')(sequelize,Sequelize);
 db.thuonghieu=require('./thuonghieu')(sequelize,Sequelize);
 db.loaisanpham=require('./loaisanpham')(sequelize,Sequelize);
 db.loaisp_thuonghieu=require('./loaisp_thuonghieu')(sequelize,Sequelize);
-db.loaispchitiet=require('./loaispchitiet')(sequelize,Sequelize);
+// db.loaispchitiet=require('./loaispchitiet')(sequelize,Sequelize);
 db.review=require('./review')(sequelize,Sequelize);
 db.shipping=require('./shipping')(sequelize,Sequelize);
 db.thanhpho=require('./thanhpho')(sequelize,Sequelize);
@@ -48,6 +48,11 @@ db.voucher=require('./voucher')(sequelize,Sequelize);
 db.trangthaithanhtoan=require('./trangthaithanhtoan')(sequelize,Sequelize);
 db.phuongthucthanhtoan=require('./phuongthucthanhtoan')(sequelize,Sequelize);
 db.sanphamgiamgia=require('./sanphamgiamgia')(sequelize,Sequelize);
+db.group=require('./group')(sequelize,Sequelize);
+db.group_user=require('./group_user')(sequelize,Sequelize);
+db.gopy=require('./gopy')(sequelize,Sequelize);
+db.theodoi=require('./theodoi')(sequelize,Sequelize);
+db.usernotactive=require('./usernotactive')(sequelize,Sequelize);
 
 
 module.exports = db;

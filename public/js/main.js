@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 13:05:32
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-06 20:14:20
+ * @Last Modified time: 2022-01-08 21:41:55
  */
 /*price range*/
 
@@ -101,12 +101,14 @@ $(document).ready(function () {
 			event.preventDefault();
 			const username = $('input#register-username').val();
 			const password = $('input#register-password').val();
+			const email = $('input#register-email').val();
 			$.ajax({
 				type: 'POST',
 				url: 'http://localhost:3000/api/user/register',
 				data: {
 					username: username,
-					password: password
+					password: password,
+					email:email
 				}
 			}).done(function (data) {
 				alert(data);
@@ -159,6 +161,13 @@ $(document).ready(function () {
 			}
 			else{
 				alert("Hãy chọn một phương thức thanh toán");
+				return;
+			}
+
+			const credit_card=$('input#name-credit-card').val();
+			var cardno = /^(?:3[47][0-9]{13})$/;
+			if(credit_card.match(cardno)){
+				alert("Invalid card number");
 				return;
 			}
 			
@@ -258,7 +267,13 @@ $(document).ready(function () {
 				console.log(data);
 			});
 
-		})
+		});
+
+		$('#changepass-form').submit(event=>{
+
+			event.preventDefault();
+			alert("AAAAAAAAAAAAAAAAAAAA");
+		});
 
 	});
 
@@ -360,8 +375,14 @@ function updateCart() {
 
 			if (data.voucherErrorCode !== undefined && data.voucherErrorCode !== 0) {
 				alert(data.voucherMessage);
-				$('li#voucher-checkbox-container').css('display', 'none');
-				$('input#discount').attr('checked', false);
+				if(data.voucherErrorCode === -1){
+					$('input#voucher').attr('checked', false);
+				}
+				else{
+					$('li#voucher-checkbox-container').css('display', 'none');
+					$('input#voucher').attr('checked', false);
+				}
+				
 
 				$('tr.cart_detail-voucher').remove();
 			}
@@ -563,4 +584,82 @@ function searchMinMax(){
 	}
 
 	window.location.href=`/products?min=${result[0]}&max=${result[1]}`;
+}
+
+function forgetPassword(){
+
+	const username = $('#login-username').val();
+
+	if(username === ""){
+		alert("Hãy nhập username");
+		return;
+	}
+
+	$.ajax({
+		type:'POST',
+		url:'http://localhost:3000/api/user/forgetpass',
+		data:{
+			username:username
+		}
+	}).done(data=>{
+		alert(data);
+		console.log(data);
+	}).fail(data=>{
+		alert(data.responseText);
+		console.log(data.responseText);
+	});
+}
+
+function changePassword(){
+
+	// $('#main').append(
+	// 	`<div class='row col-md-12'>
+	// 		<form action='/api/user/changepass' method='post'>
+	// 			<div class='col-md-12'>
+	// 			<label class='labels'>Old pass</label><input name='oldpass' class='form-control' type='password' required/>
+	// 			</div>
+	// 			<div class='col-md-12'>
+	// 			<label class='labels'>New pass</label><input name='newpass' class='form-control' type='password' required/>
+	// 			</div>
+	// 			<div class='col-md-12'>
+	// 			<input type='submit' value='Submit'/>
+	// 			</div>
+	// 		</form>
+	// 	</div>`
+	// );
+
+	// $('#changepass-btn').remove();
+
+	if($('#changepass-form').hasClass('disabled')){
+		$('#changepass-form').removeClass('disabled')
+	}
+	else{
+		$('#changepass-form').addClass('disabled')
+	}
+}
+
+function mySubmit() {
+	const oldpass=$('#oldpass').val();
+	const newpass=$('#newpass').val();
+
+	if(oldpass === '' || newpass === ''){
+		alert("Oldpass and Newpass can not be empty");
+		return;
+	}
+
+	$.ajax({
+		type:'POST',
+		url:'http://localhost:3000/api/user/changepass',
+		data:{
+			oldpass:oldpass,
+			newpass:newpass
+		}
+	}).done(data=>{
+		alert(data);
+		console.log(data);
+
+	}).fail(data=>{
+		alert(data.responseText);
+		console.log(data.responseText);
+	});
 }

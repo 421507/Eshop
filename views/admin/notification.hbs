@@ -1,0 +1,59 @@
+<div class="container tm-mt-big tm-mb-big">
+    <div class="row">
+        <div class="col-xl-9 col-lg-10 col-md-12 col-sm-12 mx-auto">
+            <div class="tm-bg-primary-dark tm-block tm-block-h-auto">
+                <div class="row">
+                    <div class="col-12">
+                        <h2 class="tm-block-title d-inline-block">Notification View</h2>
+                    </div>
+                </div>
+                <div class="row tm-edit-product-row">
+                    <div class="col-12">
+                        <form method="post" id="add-present-form" class="tm-edit-product-form">
+                        <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12">
+                                <div class="form-group mb-3">
+                                    <label for="name">Name
+                                    </label>
+                                    <input id="name" name="name" type="text"
+                                        class="form-control validate" value="{{data.name}}" disabled/>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="form-group mb-3 col-xs-12 col-sm-6">
+                                        <label for="email">Email
+                                        </label>
+                                        <input id="email" name="email" type="email" value="{{data.email}}"
+                                            class="form-control validate" disabled/>
+                                    </div>
+                                    <div class="form-group mb-3 col-xs-12 col-sm-6">
+                                        <label for="subject">Subject
+                                        </label>
+                                        <input id="subject" name="subject" type="text" value="{{data.subject}}"
+                                            class="form-control validate" disabled />
+                                    </div>
+                                    <div class="form-group mb-3 col-xs-12 col-sm-12">
+                                        <label for="message">Message
+                                        </label>
+                                        <textarea id="message" name="message" type="text"
+                                            class="form-control validate" disabled>{{data.message}}</textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="date-created">Date Submit
+                                    </label>
+                                    <input id="date-created" name="date-created" type="text" value="{{data.date}}"
+                                        class="form-control validate" disabled/>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <a href='/admin/reply?id={{data.id}}'class="btn btn-primary btn-block text-uppercase">Reply</a>
+                            </div>
+                        </div>
+                    </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

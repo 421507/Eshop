@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-15 15:51:04
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-06 21:07:46
+ * @Last Modified time: 2022-01-08 15:28:51
  */
 const db = require("../../models/index");
 const Shipping = db.shipping;
@@ -115,4 +115,23 @@ const update=async props=>{
     }
 }
 
-module.exports = { getAll,create,getByPk,update };
+const remove=async props=>{
+
+    const condition={};
+
+    if(props.id_giohang !== undefined)
+        condition.id_giohang=props.id_giohang;
+    if(props.trang_thai !== undefined)
+        condition.trang_thai=props.trang_thai;
+    
+    try {
+        const result=await Shipping.destroy({where:condition});
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+
+}
+
+module.exports = { getAll,create,getByPk,update,remove };

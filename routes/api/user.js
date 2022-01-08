@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-08 23:04:43
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-16 15:11:37
+ * @Last Modified time: 2022-01-08 20:41:09
  */
 
 module.exports = app => {
@@ -18,6 +18,8 @@ module.exports = app => {
         res.send(req.user);
     });
     router.post("/",isAuth,user.update);
+    router.post("/forgetpass",user.handleForgetPass);
+    router.post("/changepass",isAuth,user.handleChangePass);
   
     app.use('/api/user', router);
 };

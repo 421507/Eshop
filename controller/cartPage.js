@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 22:15:05
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-07 02:33:02
+ * @Last Modified time: 2022-01-08 21:47:35
  */
 const {
     update:cartUpdate,
@@ -80,7 +80,6 @@ exports.create = async (req, res) => {
             const start=new Date(discountProduct[0].ngay_batdau);
             const end=new Date(discountProduct[0].ngay_ketthuc);
             const now=new Date();
-            now.setHours(now.getHours()+7);
 
             if(now >= start && now <= end){
                 gia_sp=Math.round(product.gia_sanpham*(1-discountProduct[0].gia_giam/100));
@@ -241,7 +240,7 @@ exports.update=async (req,res)=>{
                 const startDate=new Date(present.ngay_batdau);
                 const endDate=new Date(present.ngay_ketthuc);
                 const today=new Date();
-                today.setHours(today.getHours()+7);
+                
 
                 if(statusPresents[i].slug_trangthai === "pending"){
 
@@ -479,7 +478,6 @@ exports.update=async (req,res)=>{
             const startDate=new Date(present.ngay_batdau);
             const endDate=new Date(present.ngay_ketthuc);
             const today=new Date();
-            today.setHours(today.getHours()+7);
 
             if(today < startDate){
                 payload.discountErrorCode=1;
@@ -597,7 +595,6 @@ exports.renderCartPage=async (req,res)=>{
             const startDate=new Date(present.ngay_batdau);
             const endDate=new Date(present.ngay_ketthuc);
             const today=new Date();
-            today.setHours(today.getHours()+7);
 
             if(statusPresents[i].loai === "voucher"){
                 if(today < startDate){
@@ -681,7 +678,6 @@ exports.renderCartPage=async (req,res)=>{
                 const startDate=new Date(present.ngay_batdau);
                 const endDate=new Date(present.ngay_ketthuc);
                 const today=new Date();
-                today.setHours(today.getHours()+7);
 
                 if(today < startDate){
                     hasDiscount=false;
@@ -736,7 +732,6 @@ exports.renderCartPage=async (req,res)=>{
                 const startDate=new Date(present.ngay_batdau);
                 const endDate=new Date(present.ngay_ketthuc);
                 const today=new Date();
-                today.setHours(today.getHours()+7);
                 
                 if(today < startDate){
 
@@ -946,7 +941,6 @@ exports.renderCheckoutPage=async (req,res)=>{
             const startDate=new Date(present.ngay_batdau);
             const endDate=new Date(present.ngay_ketthuc);
             const today=new Date();
-            today.setHours(today.getHours()+7);
             
             if(statusPresents[i].loai === "discount"){
 
@@ -1379,7 +1373,6 @@ exports.checkout=async (req,res)=>{
             const startDate=new Date(present.ngay_batdau);
             const endDate=new Date(present.ngay_ketthuc);
             const today=new Date();
-            today.setHours(today.getHours()+7);
 
             if(statusPresents[i].loai === "discount"){
                 
@@ -1438,7 +1431,6 @@ exports.checkout=async (req,res)=>{
     total=Math.round(total*(1-(discountPrice/100)));
     
     var today = new Date();
-    today.setHours(today.getHours()+7);
     const dateTime=today.toISOString();
     
     payload={
@@ -1470,7 +1462,7 @@ exports.checkout=async (req,res)=>{
         return res.status(401).send("Something wrong please try again");
     }   
 
-    const statusShipping=await statusShippingGetAll({slug:'shipping'});
+    const statusShipping=await statusShippingGetAll({slug:'pending'});
     payload={
         trang_thai:statusShipping[0].id,
         ngay_nhan:dateTime,

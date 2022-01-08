@@ -16,9 +16,9 @@
                         </thead>
                         <tbody>
                             {{#data.presents}}
-                            <tr id="present-{{id}}" onclick="viewPresentDetail(this.id)" style="cursor: pointer;">
+                            <tr id="{{id}}">
                                 <th scope="row"><input type="checkbox" id="present_{{id}}" onchange="selectPresent(this)"/></th>
-                                <td class="tm-product-name">
+                                <td class="tm-product-name" id="present-{{id}}" onclick="viewPresentDetail(this.id)" style="cursor: pointer;">
                                     {{name}}
                                 </td>
                                 <td>{{start}}</td>
@@ -36,9 +36,9 @@
                     </table>
                 </div>
                 <!-- table container -->
-                <a href="/admin/addproduct" class="btn btn-primary btn-block text-uppercase mb-3">Add new product</a>
+                <a href="/admin/addpresent" class="btn btn-primary btn-block text-uppercase mb-3">Add new present</a>
                 <button class="btn btn-primary btn-block text-uppercase" onclick="deleteSelectedProducts()">
-                    Delete selected products
+                    Delete selected presents
                 </button>
             </div>
         </div>

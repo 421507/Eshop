@@ -12,7 +12,7 @@
                     <div class="row mt-2">
                     <div class="col-md-12"><label class="labels">Name</label><input type="text" class="form-control" placeholder="first name" name="name" value="{{user.name}}"></div>
                     </div>
-                    <div class="row mt-3">
+                    <div class="row mt-3" id="main">
                         <div class="col-md-12"><label class="labels">Phone</label><input type="text" class="form-control" name="phone" value="{{user.phone}}"></div>
                         <div class="col-md-12"><label class="labels">Số nhà</label><input type="text" class="form-control"  name="sonha" value="{{address.so_nha}}"></div>
                         <div class="col-md-12"><label class="labels">Tên đường</label><input type="text" class="form-control" name="street" value="{{address.ten_duong}}"></div>
@@ -34,8 +34,22 @@
                         </div>
                         <div class="col-md-12"><label class="labels">Tỉnh</label><input type="text" class="form-control" name="province" value="{{address.tinh}}"></div>
                         <div class="col-md-12"><label class="labels">Email</label><input type="email" class="form-control" placeholder="education" name="email" value="{{user.email}}"></div>
+                        <div class='row col-md-12 disabled' id="changepass-form">
+                            <div class='col-md-12'>
+                            <label class='labels'>Old pass</label><input name='oldpass' id='oldpass' class='form-control' type='password'/>
+                            </div>
+                            <div class='col-md-12'>
+                            <label class='labels'>New pass</label><input name='newpass' id='newpass' class='form-control' type='password'/>
+                            </div>
+                            <div class='col-md-12'>
+                            <button type="button" onclick="mySubmit()">Change now</button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="submit">Save Profile</button></div>
+                    <div class="mt-5 text-center">
+                        <button class="btn btn-primary profile-button" type="submit">Save Profile</button>
+                        <button class="btn btn-primary profile-button" type="button" onclick="changePassword()">Change password</button>
+                    </div>
                 </form>
             </div>
         </div>

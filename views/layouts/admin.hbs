@@ -42,7 +42,7 @@
                                     <span class="sr-only">(current)</span>
                                 </a>
                             </li>
-                            <li class="nav-item dropdown">
+                            {{!-- <li class="nav-item dropdown">
 
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
                                     aria-haspopup="true" aria-expanded="false">
@@ -56,7 +56,7 @@
                                     <a class="dropdown-item" href="#">Weekly Report</a>
                                     <a class="dropdown-item" href="#">Yearly Report</a>
                                 </div>
-                            </li>
+                            </li> --}}
                             <li class="nav-item">
                                 <a class="nav-link" href="/admin/products">
                                     <i class="fas fa-shopping-cart"></i>
@@ -70,9 +70,15 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="/accounts">
+                                <a class="nav-link" href="/admin/accounts">
                                     <i class="far fa-user"></i>
                                     Accounts
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin/customers">
+                                    <i class="fas fa-users"></i>
+                                    Customers
                                 </a>
                             </li>
                             <li class="nav-item dropdown">
@@ -86,7 +92,7 @@
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" href="/admin/profile">Profile</a>
                                     <a class="dropdown-item" href="#">Billing</a>
-                                    <a class="dropdown-item" href="#">Customize</a>
+                                    <a class="dropdown-item" href="/admin/customize">Customize</a>
                                 </div>
                             </li>
                         {{/if}}

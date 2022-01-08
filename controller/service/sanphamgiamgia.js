@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2022-01-02 22:56:14
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-06 16:17:29
+ * @Last Modified time: 2022-01-08 11:39:29
  */
 const db = require("../../models/index");
 const Sanphamgiamgia = db.sanphamgiamgia;
@@ -96,4 +96,16 @@ exports.update=async (props) =>{
         console.log(error);
         return null;
     }
+}
+
+exports.getByPk=async pk=>{
+
+    try {
+        const result=await Sanphamgiamgia.findByPk(pk);
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+
 }

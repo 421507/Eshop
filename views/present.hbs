@@ -1,0 +1,36 @@
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="result-background">
+                    <div class="result-container">
+                        {{#if empty}}
+                        <h3 class="title text-center clr-orange">Xin lỗi, bạn không nhận được ưu đãi vì {{message}}</h3>
+                        {{else}}
+                        <h3 class="title text-center clr-orange">Cảm ơn bạn đã quan tâm ! Bạn đã nhận được ưu đãi</h3>
+                        <div class="row pt-3">
+                            <div class="col-sm-3">
+                                <p>Mã số ưu đãi:</p>
+                                <p>Loại ưu đãi</p>
+                                <p>Trị giá:</p>
+                                <p>Ngày bắt đầu</p>
+                                <p>Ngày kết thúc</p>
+                                <p>Điều kiện</p>
+                            </div>
+                            <div class="col-sm-9">
+                                <p class="font-bold">{{id}}</p>
+                                <p class="font-bold">{{type}}</p>
+                                <p class="font-bold">{{value}}</p>
+                                <p class="font-bold">{{start}}</p>
+                                <p class="font-bold">{{end}}</p>
+                                <p class="font-bold">{{condition}}</p>
+                            </div>
+                        </div>
+                        {{/if}}
+                        <p class="text-center">Quay trở về <a href="/">trang chủ</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,71 @@
+<div class="container mt-5">
+
+    <!-- row -->
+    <div class="row tm-content-row">
+        <div class="tm-block-col tm-col-avatar">
+            <div class="tm-bg-primary-dark tm-block tm-block-avatar">
+                <h2 class="tm-block-title">Change Avatar</h2>
+                <div class="tm-avatar-container">
+                    <img src="/admin/img/avatar.png" alt="Avatar" class="tm-avatar img-fluid mb-4" />
+                    <a href="#" class="tm-avatar-delete-link">
+                        <i class="far fa-trash-alt tm-product-delete-icon"></i>
+                    </a>
+                </div>
+                <button class="btn btn-primary btn-block text-uppercase">
+                    Upload New Photo
+                </button>
+            </div>
+        </div>
+        <div class="tm-block-col tm-col-account-settings">
+            <div class="tm-bg-primary-dark tm-block tm-block-settings">
+                <h2 class="tm-block-title">Add Account</h2>
+                <form id="add-account-form" class="tm-signup-form row">
+                    <input id="id-account" value="" style="display: none;"/>
+                    <div class="form-group col-lg-6">
+                        <label for="username">Username</label>
+                        <input id="username" name="username" type="text" class="form-control validate" value="" required/>
+                    </div>
+                    <div class="form-group col-lg-6">
+                        <label for="password">Password</label>
+                        <input id="password" name="password" type="password" class="form-control validate"
+                            value="" required/>
+                    </div>
+                    <div class="form-group col-lg-6">
+                        <label class="tm-hide-sm">&nbsp;</label>
+                        <button type="submit" class="btn btn-primary btn-block text-uppercase">
+                            Add new account
+                        </button>
+                    </div>
+                    
+                </form>
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 tm-block-col">
+            <div class="tm-bg-primary-dark tm-block t m-block-products">
+                <div class="tm-product-table-container">
+                    <table class="table table-hover tm-table-small tm-product-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">&nbsp;</th>
+                                <th scope="col">NAME</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#data.groups}}
+                            <tr id="group-{{id}}">
+                                <th scope="row"><input type="checkbox" id="{{id}}" class="select-row" onchange="selectGroup(this)"/></th>
+                                <td class="tm-product-name" onclick="viewGroupDetail({{id}})" style="cursor: pointer;">{{name}}</td>
+                            </tr>
+                            {{/data.groups}}
+                            
+                        </tbody>
+                    </table>
+                </div>
+                <!-- table container -->
+                <button class="btn btn-primary btn-block text-uppercase mb-3" onclick="updatePermission()">
+                    Update
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

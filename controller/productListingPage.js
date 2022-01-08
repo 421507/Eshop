@@ -2,14 +2,14 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-27 22:53:50
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-03 21:01:15
+ * @Last Modified time: 2022-01-08 19:22:30
  */
 
 const { getAll } = require('./service/sanpham');
 const { getAll: brandgetAll } = require('./service/thuonghieu');
 const { getAll: typeGetAll } = require('./service/loaisanpham');
 const { getAll: typeBrandGetAll } = require('./service/loaisp_thuonghieu');
-
+const {isAuth}=require('./service/auth');
 exports.renderProductList = async (req, res) => {
 
     const page = req.query.page && parseInt(req.query.page) > -1 ? parseInt(req.query.page) : 0;
@@ -17,6 +17,8 @@ exports.renderProductList = async (req, res) => {
     const type = req.query.type && parseInt(req.query.type) > 0 ? parseInt(req.query.type) : null;
     const min = req.query.min && parseInt(req.query.min) > 0 ? parseInt(req.query.min) : null;
     const max = req.query.max && parseInt(req.query.max) > 0 ? parseInt(req.query.max) : null;
+    const description=req.query.description !== undefined && req.query.description !== null ? req.query.description : null;
+    
     const props = {};
     props.page = page;
     props.size = 12;
@@ -29,6 +31,9 @@ exports.renderProductList = async (req, res) => {
     }
     if (max !== null) {
         props.max = max;
+    }
+    if(description !== null){
+        props.description=description
     }
 
     const result = await getAll(props);
@@ -51,7 +56,7 @@ exports.renderProductList = async (req, res) => {
 
     const types = await typeGetAll();
 
-    const typeBrand = await typeBrandGetAll();
+    const typeBrand = await typeBrandGetAll({});
 
     types.forEach((item, index) => {
 
@@ -77,6 +82,7 @@ exports.renderProductList = async (req, res) => {
 
     });
 
+    const auth=await isAuth(req);
 
     res.render(
         'products',
@@ -86,7 +92,8 @@ exports.renderProductList = async (req, res) => {
             needArrow: result.needArrow,
             arrowUrl: result.arrowUrl,
             brands:brands,
-            types:types
+            types:types,
+            auth:auth
         }
     );
 };

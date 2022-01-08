@@ -2,8 +2,12 @@
  * @Author: Le Vu Huy
  * @Date:   2022-01-02 17:31:50
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-02 18:44:43
+ * @Last Modified time: 2022-01-07 19:30:20
  */
+const{
+    isAuth
+}=require('./service/auth');
+
 exports.renderPage=async (req,res) => {
 
     const id=req.query.id;
@@ -14,6 +18,8 @@ exports.renderPage=async (req,res) => {
     const nameVoucher=req.query.nameVoucher;
     const shopping=req.query.shopping === "true" ? true : false;
 
+    const auth=await isAuth(req);
+
     res.render('result',{
         id:id,
         methodPayment:methodPayment === "creditcard" ? "Credit card" : "Thanh toán khi nhận hàng",
@@ -21,6 +27,7 @@ exports.renderPage=async (req,res) => {
         price:total,
         voucher:voucher,
         nameVoucher:nameVoucher,
-        shopping:shopping    
+        shopping:shopping  ,
+        auth:auth  
     });
 }

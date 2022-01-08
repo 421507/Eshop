@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-09 02:35:55
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-06 17:58:11
+ * @Last Modified time: 2022-01-08 11:26:29
  */
 const{
     getAll:shippingGetAll
@@ -16,6 +16,9 @@ const{
 const{
     getAll:cityGetAll,
 }=require('../service/thanhpho');
+const{
+    getAll:gopYGetAll,
+}=require('../service/gopy');
 
 
 exports.renderHomePage = async (req, res) => {
@@ -96,9 +99,24 @@ exports.renderHomePage = async (req, res) => {
 
     });
 
+    const _gopy=await gopYGetAll({reply:false});
+
+    const noti=_gopy.map(item=>{
+        const now=new Date();
+        now.setHours(now.getHours()+7);
+        const date=new Date(item.create_at);
+        const time=Math.round((now.getTime()-date.getTime())/(3600 * 1000));
+        return{
+            url:`/admin/noti?id=${item.id}`,
+            name:item.name,
+            time:time
+        }
+    });
+
     const payload={
         name:user.ten,
-        shippings:shippings
+        shippings:shippings,
+        noti:noti
     }
     
     res.render('admin/index', { 

@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-08 22:28:11
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-03 00:47:58
+ * @Last Modified time: 2022-01-08 04:26:56
  */
 module.exports = (sequelize,Sequelize) => {
     try {
@@ -35,6 +35,12 @@ module.exports = (sequelize,Sequelize) => {
         },
         id_diachi:{
           type: Sequelize.INTEGER
+        },
+        role:{
+          type: Sequelize.STRING
+        },
+        avatar:{
+          type: Sequelize.STRING
         },
       });
     

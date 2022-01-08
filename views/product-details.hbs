@@ -86,39 +86,39 @@
 					<div class="col-sm-5">
 						<div class="view-product">
 							<img src={{data.detailImg}} alt="" />
-							<h3>ZOOM</h3>
+							{{!-- <h3>ZOOM</h3> --}}
 						</div>
 						<div id="similar-product" class="carousel slide" data-ride="carousel">
 
 							<!-- Wrapper for slides -->
-							<div class="carousel-inner">
-								<div class="item active">
-									{{#each data.similarImg}}
-									<a href=""><img src={{this}} alt=""></a>
-									{{/each}}
-
-								</div>
-								<div class="item">
-									{{#each data.similarImg}}
-									<a href=""><img src={{this}} alt=""></a>
-									{{/each}}
-								</div>
+							{{!-- <div class="carousel-inner">
 								<div class="item">
 									{{#each data.similarImg}}
 									<a href=""><img src={{this}} alt=""></a>
 									{{/each}}
 
 								</div>
+								<div class="item" style="">
+									{{#each data.similarImg}}
+									<a href=""><img src={{this}} alt=""></a>
+									{{/each}}
+								</div>
+								<div class="item">
+									{{#each data.similarImg}}
+									<a href=""><img src={{this}} alt=""></a>
+									{{/each}}
 
-							</div>
+								</div>
+
+							</div> --}}
 
 							<!-- Controls -->
-							<a class="left item-control" href="#similar-product" data-slide="prev">
+							{{!-- <a class="left item-control" href="#similar-product" data-slide="prev">
 								<i class="fa fa-angle-left"></i>
 							</a>
 							<a class="right item-control" href="#similar-product" data-slide="next">
 								<i class="fa fa-angle-right"></i>
-							</a>
+							</a> --}}
 						</div>
 
 					</div>
@@ -155,6 +155,7 @@
 							<p><b>Availability:</b> {{data.availability}}</p>
 							<p><b>Condition:</b> New</p>
 							<p><b>Brand:</b> {{data.brand}}</p>
+							<p><b>Time Views:</b> {{timesView}}</p>
 							<a href=""><img src="images/product-details/share.png" class="share img-responsive"
 									alt="" /></a>
 						</div>
@@ -169,14 +170,14 @@
 					<div class="col-sm-12">
 						<ul class="nav nav-tabs">
 							<li><a href="#details" data-toggle="tab">Details</a></li>
-							<li><a href="#companyprofile" data-toggle="tab">Company Profile</a></li>
-							<li><a href="#tag" data-toggle="tab">Tag</a></li>
+							{{!-- <li><a href="#companyprofile" data-toggle="tab">Company Profile</a></li>
+							<li><a href="#tag" data-toggle="tab">Tag</a></li> --}}
 							<li class="active"><a href="#reviews" data-toggle="tab">Reviews (5)</a></li>
 						</ul>
 					</div>
 					<div class="tab-content">
 						<div class="tab-pane fade" id="details">
-							<div class="col-sm-3">
+							{{!-- <div class="col-sm-3">
 								<div class="product-image-wrapper">
 									<div class="single-products">
 										<div class="productinfo text-center">
@@ -227,10 +228,14 @@
 										</div>
 									</div>
 								</div>
-							</div>
+							</div> --}}
+							<p>Description: {{data.description}}</p>
+							<p>Listing date: {{data.listDate}}</p>
+							<p>Product type: {{data.type}}</p>
+							<p>Product brand: {{data.brand}}</p>
 						</div>
 
-						<div class="tab-pane fade" id="companyprofile">
+						{{!-- <div class="tab-pane fade" id="companyprofile">
 							<div class="col-sm-3">
 								<div class="product-image-wrapper">
 									<div class="single-products">
@@ -338,7 +343,7 @@
 									</div>
 								</div>
 							</div>
-						</div>
+						</div> --}}
 
 						<div class="tab-pane fade active in" id="reviews">
 							<div class="col-sm-12" id="_reviews">
@@ -357,10 +362,13 @@
 								<p><b>Write Your Review</b></p>
 
 								<form id='review-form'>
+									{{#if auth}}
+									{{else}}
 									<span class="review-form-input">
 										<input type="text" placeholder="Your Name" id="name" />
 										<input type="email" placeholder="Email Address" id="email" />
 									</span>
+									{{/if}}
 									<textarea id="description"></textarea>
 									<b>Rating: </b>
 									{{!-- <img src="images/product-details/rating.png" alt="" /> --}}
@@ -389,12 +397,27 @@
 
 				<div class="recommended_items">
 					<!--recommended_items-->
-					<h2 class="title text-center">recommended items</h2>
+					<h2 class="title text-center">Related items</h2>
 
 					<div id="recommended-item-carousel" class="carousel slide" data-ride="carousel">
 						<div class="carousel-inner">
 							<div class="item active">
+								{{#activeRelateProducts}}
 								<div class="col-sm-4">
+									<div class="product-image-wrapper">
+										<div class="single-products">
+											<div class="productinfo text-center">
+												<img src="{{thumbnail}}" alt="" />
+												<h2>${{price}}</h2>
+												<p>{{name}}</p>
+												<a href='{{url}}' class="btn btn-default add-to-cart"><i
+														class="fa fa-shopping-cart"></i>View</a>
+											</div>
+										</div>
+									</div>
+								</div>
+								{{/activeRelateProducts}}
+								{{!-- <div class="col-sm-4">
 									<div class="product-image-wrapper">
 										<div class="single-products">
 											<div class="productinfo text-center">
@@ -432,10 +455,10 @@
 											</div>
 										</div>
 									</div>
-								</div>
+								</div> --}}
 							</div>
 							<div class="item">
-								<div class="col-sm-4">
+								{{!-- <div class="col-sm-4">
 									<div class="product-image-wrapper">
 										<div class="single-products">
 											<div class="productinfo text-center">
@@ -473,7 +496,22 @@
 											</div>
 										</div>
 									</div>
+								</div> --}}
+								{{#unactiveRelateProducts}}
+								<div class="col-sm-4">
+									<div class="product-image-wrapper">
+										<div class="single-products">
+											<div class="productinfo text-center">
+												<img src="{{thumbnail}}" alt="" />
+												<h2>${{price}}</h2>
+												<p>{{name}}</p>
+												<a href='{{url}}' class="btn btn-default add-to-cart"><i
+														class="fa fa-shopping-cart"></i>View</a>
+											</div>
+										</div>
+									</div>
 								</div>
+								{{/unactiveRelateProducts}}
 							</div>
 						</div>
 						<a class="left recommended-item-control" href="#recommended-item-carousel" data-slide="prev">

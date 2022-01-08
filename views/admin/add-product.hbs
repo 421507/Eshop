@@ -9,6 +9,7 @@
                 </div>
                 <div class="row tm-edit-product-row">
                     <form id="add-product-form" class="tm-edit-product-form" method='post'>
+                        <input id="id-sanpham" value="" style="display: none;"/>
                         <div class="row">
                             <div class="col-xl-6 col-lg-6 col-md-12">
                                 <div class="form-group mb-3">
@@ -79,13 +80,48 @@
                             <div class="col-xl-6 col-lg-6 col-md-12 mx-auto mb-4">
                                 <div class="tm-product-img-dummy mx-auto">
                                     <i class="fas fa-cloud-upload-alt tm-upload-icon"
-                                        onclick="document.getElementById('fileInput').click();"></i>
+                                        onclick="document.getElementById('thumbnail').click();"></i>
                                 </div>
                                 <div class="custom-file mt-3 mb-3">
-                                    <input id="fileInput" type="file" style="display:none;" />
+                                    <input id="thumbnail" type="file" style="display:none;" />
                                     <input type="button" class="btn btn-primary btn-block mx-auto"
-                                        value="UPLOAD PRODUCT IMAGE"
-                                        onclick="document.getElementById('fileInput').click();" />
+                                        value="UPLOAD THUMBNAIL"
+                                        onclick="uploadThumbnail()" />
+                                </div>
+                                <div class="row mt-3 mb-3">
+                                    <div class="col-xl-4 col-lg-4 col-md-12">
+                                        <div class="tm-product-img-dummy mx-auto" style="max-height: 6rem;">
+                                            <i class="fas fa-cloud-upload-alt tm-upload-icon"
+                                                onclick="document.getElementById('subphoto-1').click();"></i>
+                                        </div>
+                                        <div class="custom-file mt-3 mb-3" >
+                                            <input id="subphoto-1" class="subphotos" type="file" style="display:none;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 col-lg-4 col-md-12">
+                                        <div class="tm-product-img-dummy mx-auto" style="max-height: 6rem;">
+                                            <i class="fas fa-cloud-upload-alt tm-upload-icon"
+                                                onclick="document.getElementById('subphoto-2').click();"></i>
+                                        </div>
+                                        <div class="custom-file mt-3 mb-3">
+                                            <input id="subphoto-2" class="subphotos" type="file" style="display:none;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 col-lg-4 col-md-12" >
+                                        <div class="tm-product-img-dummy mx-auto" style="max-height: 6rem;">
+                                            <i class="fas fa-cloud-upload-alt tm-upload-icon"
+                                                onclick="document.getElementById('subphoto-3').click();"></i>
+                                        </div>
+                                        <div class="custom-file mt-3 mb-3">
+                                            <input id="subphoto-3" class="subphotos" type="file" style="display:none;" />
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-12 col-lg-12 col-md-12">
+                                        <div class="custom-file mt-3 mb-3">
+                                            <input type="button" class="btn btn-primary btn-block mx-auto" value="UPLOAD SUBPHOTOS"
+                                                onclick="_uploadSubphoto()"/>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-12">

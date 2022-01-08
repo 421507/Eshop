@@ -2,13 +2,16 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-20 23:41:13
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-04 15:34:04
+ * @Last Modified time: 2022-01-08 23:29:38
  */
 
 // const {remove:detailCartRemove,update:detailCartUpdate}=require('./service/giohangchitiet');
 // const {update:cartUpdate,getAll: cartGetAll}=require('./service/giohang');
 // const { getAll: customerGetAll } = require('./service/khachhang');
-const { getByPk } = require('./service/sanpham');
+const {
+    getByPk,
+    getRelatedProducts:productGetRelated
+} = require('./service/sanpham');
 const { getAllByProduct } = require('./service/hinhanh');
 const { getAll: brandGetAll } = require('./service/thuonghieu');
 const { getAll: typeGetAll } = require('./service/loaisanpham');
@@ -19,6 +22,14 @@ const {
 } = require('./service/sanphamgiamgia');
 const{
     isAuth
+}=require('./service/auth');
+const {
+    getAll: theodoiGetAll,
+    increaseSoLanXem,
+    create:theodoiCreate
+} = require('./service/theodoi');
+const{
+    getUser
 }=require('./service/auth');
 
 exports.renderProductDetail = async (req, res) => {
@@ -97,6 +108,7 @@ exports.renderProductDetail = async (req, res) => {
 
     const brand = await brandGetAll({ id_thuonghieu: result.id_thuonghieu });
     const reviews = await reviewGetAll({ id_sanpham: result.id_sanpham });
+    const type=await typeGetAll({id_loaisp:result.id_loaisp});
     let _reviews=[];
     let ratingMark = 5;
     let positiveRating = 1;
@@ -110,8 +122,9 @@ exports.renderProductDetail = async (req, res) => {
 
     ratingMark = Math.ceil(ratingMark / positiveRating);
 
-    const detailImg = resu.url[0].url;
-    resu.url.splice(0, 1);
+    const detailImg = result.thumbnail;
+    // const detailImg = resu.url[0].url;
+    // resu.url.splice(0, 1);
     const similarImg = resu.url.map(item => item.url);
 
     const name = result.ten_sanpham;
@@ -133,6 +146,9 @@ exports.renderProductDetail = async (req, res) => {
     data.brand = brand[0].ten_thuonghieu;
     data.isNew = diffDays > 7 ? false : true;
     data.rating = ratingMark;
+    data.description=result.mieuta;
+    data.listDate=new Date(result.ngay_list).toLocaleString();
+    data.type=type[0].ten_loaisp;
 
     if (reviews !== null) {
 
@@ -172,7 +188,7 @@ exports.renderProductDetail = async (req, res) => {
 
     const types = await typeGetAll();
 
-    const typeBrand = await typeBrandGetAll();
+    const typeBrand = await typeBrandGetAll({});
 
     types.forEach((item, index) => {
         
@@ -197,13 +213,64 @@ exports.renderProductDetail = async (req, res) => {
         }
 
     });
-    
+
+    const timeVisit=await theodoiGetAll({
+        uuid:req.uuid,
+        id_sanpham:id
+    });
+    let times=1;
+    if(timeVisit.length > 0){
+        times=timeVisit[0].solanxem+1;
+        increaseSoLanXem({
+            uuid:req.uuid,
+            id_sanpham:id,
+            solanxem:timeVisit[0].solanxem
+        });
+    }
+    else{
+        theodoiCreate({
+            uuid:req.uuid,
+            id_sanpham:id,
+        });
+    }
+
+    const _relatedProducts=await productGetRelated(req.query.id);
+    const activeRelateProducts=[];
+    const unactiveRelateProducts=[];
+    for (let index = 0; index < 3; index++) {
+        const element = _relatedProducts[index];
+        if(element === undefined)
+            break;
+        activeRelateProducts.push({
+            price:element.gia_sanpham,
+            thumbnail:element.thumbnail,
+            name:element.ten_sanpham,
+            url:`/product-details?id=${element.id_sanpham}`
+        });
+        
+    }
+    for (let index = 3; index <6 ; index++) {
+        const element = _relatedProducts[index];
+        if(element === undefined)
+            break;
+        unactiveRelateProducts.push({
+            price:element.gia_sanpham,
+            thumbnail:element.thumbnail,
+            name:element.ten_sanpham,
+            url:`/product-details?id=${element.id_sanpham}`
+        });
+        
+    }
+
     return res.render('product-details', { 
         data: data,
         brands:brands,
         types:types ,
         reviews:_reviews,
         auth:auth,
+        timesView:times,
+        activeRelateProducts:activeRelateProducts,
+        unactiveRelateProducts:unactiveRelateProducts,
         empty:false
     });
 
@@ -221,10 +288,18 @@ exports.addReview = async (req, res) => {
     }
 
     const id_product = req.query.product;
-    const email = req.body.email;
-    const name = req.body.name;
+    let email = req.body.email;
+    let name = req.body.name;
     const description = req.body.description;
     const rating = req.body.rating;
+
+    const auth=await isAuth(req);
+
+    if(auth){
+        const user=await getUser(req);
+        email = user.email;
+        name=user.ten;
+    }
 
     const result = await reviewCreate({
         id_sanpham: id_product,

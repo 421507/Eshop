@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-01 16:34:23
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-06 14:49:12
+ * @Last Modified time: 2022-01-08 23:38:53
  */
 const db = require("../../models/index");
 const Sanpham = db.sanpham;
@@ -48,6 +48,7 @@ const getPagingData = (data, page, limit,props) => {
     let type='';
     let min='';
     let max='';
+    let description='';
     if (props && props.brand)
         brand=`&brand=${props.brand}`;
     if(props && props.type)
@@ -56,12 +57,14 @@ const getPagingData = (data, page, limit,props) => {
         min=`&min=${props.min}`;
     if(props && props.max)
         max=`&max=${props.max}`;
+    if(props && props.description)
+        description=`&description=${props.description}`;
         
     if (currentPage > 0) {
         
         pages.push({
             isActive: false,
-            pageUrl:`/products?page=${currentPage - 1}${brand}${type}${min}${max}`,
+            pageUrl:`/products?page=${currentPage - 1}${brand}${type}${min}${max}${description}`,
             pageNumber: currentPage
         });
     }
@@ -69,20 +72,20 @@ const getPagingData = (data, page, limit,props) => {
     if(sanpham.length > 0)
         pages.push({
             isActive: true,
-            pageUrl: `/products?page=${currentPage}${brand}${type}${min}${max}`,
+            pageUrl: `/products?page=${currentPage}${brand}${type}${min}${max}${description}`,
             pageNumber: currentPage + 1
         });
 
     if (currentPage + 2 <= totalPages) {
         pages.push({
             isActive: false,
-            pageUrl: `/products?page=${currentPage + 1}${brand}${type}${min}${max}`,
+            pageUrl: `/products?page=${currentPage + 1}${brand}${type}${min}${max}${description}`,
             pageNumber: currentPage + 2
         });
 
         if (currentPage + 2 < totalPages) {
             needArrow = true;
-            arrowUrl = `/products?page=${currentPage + 2}${brand}${type}${min}${max}`
+            arrowUrl = `/products?page=${currentPage + 2}${brand}${type}${min}${max}${description}`
         }
 
     }
@@ -177,7 +180,14 @@ const getAll = async ( props) => {
                 [Op.between]:[props.min,props.max]
             };
         }
+        if(props.description !== undefined){
+            condition.ten_sanpham={
+                [Op.like]:`%${props.description}%`
+            }
+        }
     }
+
+    console.log(condition);
     
     try {
         const data = await Sanpham.findAndCountAll({ limit, offset, where: condition })
@@ -274,7 +284,20 @@ const remove=async (props)=>{
         condition.id_sanpham=props.id_sanpham;
     
     try {
-        
+        if(props.id_thuonghieu !== undefined){
+            const{
+                update:brandUpdate,
+                getByPk:brandGetByPk
+            }=require('./thuonghieu');
+
+            const brand=await brandGetByPk(props.id_thuonghieu);
+
+            brandUpdate({
+                id_thuonghieu:props.id_thuonghieu,
+                so_sanpham:brand.so_sanpham-1
+            });
+        }
+
         const values =await Promise.all([
             imageRemove({id_sanpham:props.id_sanpham}),
             discountProductRemove({id_sanpham:props.id_sanpham}),
@@ -320,12 +343,48 @@ const create=async (props)=>{
         field.id_loaisp=props.id_loaisp;
 
     try {
+
+        if(props.id_thuonghieu !== undefined){
+
+            const{
+                update:brandUpdate,
+                getByPk:brandGetByPk
+            }=require('./thuonghieu');
+
+            const brand=await brandGetByPk(props.id_thuonghieu);
+
+            brandUpdate({
+                id_thuonghieu:props.id_thuonghieu,
+                so_sanpham:brand.so_sanpham+1
+            });
+        }
+
         const result=await Sanpham.create(field);
         return result;
     } catch (error) {
         console.log(error);
         return null;
     }
+}
+
+const getRelatedProducts=async pk=>{
+
+    const product=await getByPk(pk);
+
+    const condition={
+        [Op.or]:[{id_loaisp:product.id_loaisp},{id_thuonghieu:product.id_thuonghieu}],
+        id_sanpham:{
+            [Op.ne]:product.id_sanpham
+        }
+    };
+
+    try {
+        return await Sanpham.findAll({where:condition});
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+
 }
 
 module.exports = { 
@@ -335,5 +394,6 @@ module.exports = {
     update,
     remove,
     setFkNull,
-    create
+    create,
+    getRelatedProducts
 };

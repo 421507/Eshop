@@ -31,7 +31,17 @@
                     <div class="tm-bg-primary-dark tm-block tm-block-taller tm-block-overflow">
                         <h2 class="tm-block-title">Notification List</h2>
                         <div class="tm-notification-items">
+                            {{#data.noti}}
                             <div class="media tm-notification-item">
+                                <div class="tm-gray-circle"><img src="img/notification-01.jpg" alt="Avatar Image" class="rounded-circle"></div>
+                                <div class="media-body">
+                                    <p class="mb-2"><b>{{name}}</b> sent you new <a href="{{url}}"
+                                            class="tm-notification-link">email</a>.</p>
+                                    <span class="tm-small tm-text-color-secondary">{{time}}h ago.</span>
+                                </div>
+                            </div>
+                            {{/data.noti}}
+                            {{!-- <div class="media tm-notification-item">
                                 <div class="tm-gray-circle"><img src="img/notification-01.jpg" alt="Avatar Image" class="rounded-circle"></div>
                                 <div class="media-body">
                                     <p class="mb-2"><b>Jessica</b> and <b>6 others</b> sent you new <a href="#"
@@ -102,7 +112,7 @@
                                             class="tm-notification-link">product updates</a>.</p>
                                     <span class="tm-small tm-text-color-secondary">6h ago.</span>
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                 </div>
