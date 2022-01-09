@@ -11,6 +11,7 @@
                     <div class="col-12">
                         <form method="post" id="update-order-form" class="tm-edit-product-form">
                         <input id="id_shipping" value="{{data.id}}" style="display: none;"/>
+                        <input id="id_cart" value="{{data.cart}}" style="display: none;"/>
                         <div class="row">
                             <div class="col-xl-12 col-lg-12 col-md-12">
                                 <div class="form-group mb-3">
@@ -96,9 +97,9 @@
                                         <input id="price" name="price" type="text" value="{{data.price}}"
                                             class="form-control validate" data-large-mode="true" disabled/>
                                     </div>
-                                    <div class="form-group mb-3 col-xs-12 col-sm-6">
+                                    {{!-- <div class="form-group mb-3 col-xs-12 col-sm-6">
                                         <a href="{{data.cart}}">View cart</a>
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </div>
                             <div class="col-12">

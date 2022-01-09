@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2022-01-08 14:07:06
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-08 17:44:57
+ * @Last Modified time: 2022-01-10 04:59:02
  */
 const{
     getAll:statusDeliverGetAll,
@@ -517,8 +517,18 @@ exports.updateCity=async (req,res)=>{
     }=req.body;
 
     let result=await cityGetAll({slug:slug});
+    console.log(result);
+    if(result.length > 2){
 
-    if(result.length > 0){
+        return res.status(401).send("Slug đã tồn tại");
+        
+    }
+    else if(result.length >0){
+        result=await cityGetAll({zipcode:zipcode});
+
+        if(result.length > 2)
+
+            return res.status(401).send("Zipcode đã tồn tại");
 
         result=await cityUpdate({
             id:id,
@@ -526,8 +536,16 @@ exports.updateCity=async (req,res)=>{
             zipcode:zipcode,
             gia_ship:price
         });
+        
     }
     else{
+
+        result=await cityGetAll({zipcode:zipcode});
+
+        if(result.length > 2)
+
+            return res.status(401).send("Zipcode đã tồn tại");
+
         result=await cityUpdate({
             id:id,
             ten_thanhpho:city,
@@ -577,9 +595,18 @@ exports.createCity=async (req,res)=>{
 
     if(result.length > 0){
 
-        return res.status(401).send("Slug đã tồn tại")
+        return res.status(401).send("Slug đã tồn tại");
+
     }
     else{
+
+        result=await cityGetAll({zipcode:zipcode});
+
+        if(result.length > 0)
+
+            return res.status(401).send("Zipcode đã tồn tại");
+
+            
         result=await cityCreate({
             ten_thanhpho:city,
             zipcode:zipcode,

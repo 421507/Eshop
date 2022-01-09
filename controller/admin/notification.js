@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2022-01-08 08:03:13
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-08 08:34:22
+ * @Last Modified time: 2022-01-10 05:03:21
  */
 const{
     getByPk:notiGetByPk,
@@ -94,5 +94,5 @@ exports.reply=async (req,res)=>{
 
     transporter.sendMail(mailOptions);
 
-    return res.send(200).send("OK");
+    return res.status(200).send("OK");
 }

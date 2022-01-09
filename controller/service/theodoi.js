@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2022-01-08 18:38:07
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-08 18:55:34
+ * @Last Modified time: 2022-01-10 03:39:47
  */
 const db = require("../../models/index");
 const Theodoi = db.theodoi;
@@ -71,4 +71,19 @@ exports.create=async props=>{
         console.log(error);
         return null;
     }
+}
+
+exports.remove=async props=>{
+
+    const condition={};
+    condition.id_sanpham=props.id_sanpham;
+
+    try {
+        return await Theodoi.destroy({where:condition});
+
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+
 }

@@ -2,10 +2,11 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-16 18:03:48
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-04 15:08:27
+ * @Last Modified time: 2022-01-10 03:51:10
  */
 const db = require("../../models/index");
 const Giohangchitiet=db.giohangchitiet;
+const {fn,literal, Op}=require('sequelize');
 
 const getAll=async (props)=>{
     
@@ -126,4 +127,29 @@ const remove=async (props)=>{
     }
 }
 
-module.exports={getAll,create,update,remove,multicreate};
+const getTopProducts=async ()=>{
+
+    try {
+        const result=await Giohangchitiet.findAll({
+            attributes:['id_sanpham',[fn('COUNT','id_giohangchitiet'),'detailCartCount']],
+            group:['id_sanpham'],
+            order:[
+                [literal('detailCartCount'),'DESC']
+            ],
+            limit:10,
+            where:{
+                id_sanpham:{
+                    [Op.ne]:null
+                }
+            }
+        });
+
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+
+}
+
+module.exports={getAll,create,update,remove,multicreate,getTopProducts};

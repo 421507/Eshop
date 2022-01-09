@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2022-01-04 01:28:57
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-09 01:16:42
+ * @Last Modified time: 2022-01-10 04:36:41
  */
 const {
     getUser:userGetUser,
@@ -49,6 +49,11 @@ const{
 const{
     getGroupBlocked
 }=require('../service/group');
+const{
+    getUser:userNotActiveGetUser,
+    create:userNotActiveCreate,
+    remove:userNotActiveRemove
+}=require('../service/usernotactive');
 
 const bcrypt  =require('bcrypt');
 
@@ -63,8 +68,13 @@ exports.login = async(req,res)=>{
     const user = await userGetUser(username);
 
     if (!user) {
-		return res.status(401).send("Username không tồn tại");
-	}
+
+        const _user =await userNotActiveGetUser(username);
+        if(!_user)
+            return res.status(401).send("Username không tồn tại");
+        else
+        return res.status(401).send("Tài khoản chưa được kích hoạt");
+    }
 
     const block=await isBlocked(user.id_user);
 
@@ -77,7 +87,7 @@ exports.login = async(req,res)=>{
         return res.status(401).send("Mật khẩu không chính xác");
     }
 
-    if(user.role !== 'admin')
+    if(user.role === null || user.role === undefined || user.role !== 'admin')
         return res.status(401).send("Bạn không được quyền vào trang này");
 
     const accessTokenLife = process.env.ACCESS_TOKEN_LIFE;
@@ -113,13 +123,23 @@ exports.login = async(req,res)=>{
 exports.register=async (req,res)=>{
     
     const username = req.body.username;
-
+    const email = req.body.email;
+    const name = req.body.name;
+    
     const user = await userGetUser(username);
+    
     
     if(user !== null)
         res.status(409).send("Tài khoản đã tồn tại");
     
     else{
+
+        const _user=await userNotActiveGetUser(username);
+        
+        if(_user !== null)
+            res.status(409).send("Tài khoản đã tồn tại");
+
+        
         const saltRounds = 10;
         try {
             bcrypt.hash(req.body.password, saltRounds, async (err, hash) => {
@@ -128,21 +148,38 @@ exports.register=async (req,res)=>{
                     console.log(err);
                 }
                 else{
-                    const newUser = await userCreateUser(username,hash);
+                    const userNotActive=await userNotActiveCreate({
+                        username:username,
+                        password:hash,
+                        email:email,
+                        name:name
+                    });
 
-                    if (newUser === null) {
+                    if (userNotActive === null) {
                         return res
                             .status(401)
                             .send('Có lỗi trong quá trình tạo tải khoản, xin vui lòng thử lại');
                     }
 
-                    const uuid=uuidv4();
+                    const mailOption={
+                        from:process.env.GMAIL,
+                        to:email,
+                        subject:"Link kích hoạt",
+                        text:`http://localhost:3000/admin/active?username=${username}`
+                    }
+    
+                    transporter.sendMail(mailOption);
+    
+                    return res.status(200).send('Link kích hoạt đã được gửi vào mail');
 
-                    const result=await customerCreate({uuid:uuid,id_user:newUser.null});
 
-                    return res.status(200).send({
-                        id:newUser.null
-                    });
+                    // const uuid=uuidv4();
+
+                    // const result=await customerCreate({uuid:uuid,id_user:newUser.null});
+
+                    // return res.status(200).send({
+                    //     id:newUser.null
+                    // });
                     
                 }
             });
@@ -175,6 +212,7 @@ exports.renderProfilePage=async (req,res)=>{
         return {
             id:item.id,
             name:item.ten_thanhpho,
+            slug:item.slug,
             selected:false
         }
     });
@@ -516,7 +554,7 @@ exports.update=async (req,res)=>{
 
     if(user.id_diachi === null || user.id_diachi === undefined){
         const address = await addressCreate({
-            so_nha:numHouse,
+            sonha:numHouse,
             street:street,
             ward:ward,
             district:district,
@@ -540,7 +578,7 @@ exports.update=async (req,res)=>{
         const result=await Promise.all([
             addressUpdate({
                 id_diachi:user.id_diachi,
-                so_nha:numHouse,
+                sonha:numHouse,
                 street:street,
                 ward:ward,
                 district:district,
@@ -605,19 +643,20 @@ exports.updatePermission=async (req,res)=>{
 
 exports.renderAdd=async (req,res)=>{
 
-    const _groups=await groupGetAll({});
+    // const _groups=await groupGetAll({});
 
-    const groups=_groups.map(item=>{
-        return{
-            id:item.id,
-            name:item.name,
-            slug:item.slug
-        }
-    });
+    // const groups=_groups.map(item=>{
+    //     return{
+    //         id:item.id,
+    //         name:item.name,
+    //         slug:item.slug
+    //     }
+    // });
 
-    const payload={
-        groups:groups
-    }
+    // const payload={
+    //     groups:groups
+    // }
+    const payload={};
 
     res.render('admin/add-account',{
         layout:'admin',
@@ -907,4 +946,74 @@ exports.changePass=async (req,res)=>{
     } catch (error) {
         console.log(error);
     }
+}
+
+exports.activeUser=async (req,res)=>{
+
+    const username=req.query.username;
+
+    if(username === undefined || username === null)
+        return res.render('admin/active',{
+            layout:'admin',
+            message:'Link không hợp lệ',
+            auth:false
+        });
+
+    const user=await userNotActiveGetUser(username);
+    if(user === null){
+        return res.render('admin/active',{
+            message:'Username không hợp lệ',
+            layout:'admin',
+            auth:false
+        });
+    }
+
+    const newUser = await userCreateUser(username,user.password,user.email,user.name);
+    
+    if (!newUser) {
+        return res.render('admin/active',{
+            message:'Có lỗi trong quá trình tạo tải khoản, xin vui lòng thử lại',
+            layout:'admin',
+            auth:false
+        });
+    }
+
+    const uuid=uuidv4();
+
+    const result=await customerCreate({
+        uuid:uuid,
+        id_user:newUser.null,
+        ten:user.name,
+        email:user.email
+    });
+
+    const accessTokenLife = process.env.ACCESS_TOKEN_LIFE;
+    const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+
+    const dataForAccessToken = {
+        username: username,
+    };
+    const accessToken = await generateToken(
+        dataForAccessToken,
+        accessTokenSecret,
+        accessTokenLife,
+    );
+
+    if (!accessToken) {
+        return res.render('admin/active',{
+            message:'Đăng nhập không thành công, vui lòng thử lại',
+            layout:'admin',
+            auth:false
+        });
+    }
+
+    userNotActiveRemove(username);
+
+    res.cookie('auth',accessToken);
+
+    return res.render('admin/active',{
+        message:"Tài khoản của bạn đã được kích hoạt",
+        layout:'admin',
+        auth:true
+    });
 }

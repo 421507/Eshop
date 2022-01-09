@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-09 00:41:01
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2021-12-16 13:42:52
+ * @Last Modified time: 2022-01-10 05:27:45
  */
 const {getUser,createUser} = require('./service/user');
 const bcrypt  =require('bcrypt');
@@ -18,7 +18,10 @@ exports.renderLoginPage=async(req,res)=>{
             res.redirect('/');
         }
         else{
-            res.render('login');
+            res.render('login',{
+                brands:req.brands,
+                types:req.types
+            });
         }
     } catch (error) {
         console.log(error);

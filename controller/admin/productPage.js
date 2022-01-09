@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2022-01-04 12:22:45
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-08 11:41:24
+ * @Last Modified time: 2022-01-09 16:54:16
  */
 
 const {
@@ -10,7 +10,8 @@ const {
     remove:productRemove,
     getByPk:productGetByPk,
     update:productUpdate,
-    create:productCreate
+    create:productCreate,
+    getTopProducts:productGetTop
 } = require('../service/sanpham');
 const {
     getAll:brandGetAll
@@ -37,6 +38,9 @@ const{
     create:typeBrandCreate,
     remove:typeBrandRemove
 }=require('../service/loaisp_thuonghieu');
+const{
+    getProfitByYear:cartGetProfit
+}=require('../service/giohang');
 
 exports.renderListing = async (req, res) => {
 
@@ -752,4 +756,35 @@ exports.discountProductRemove=async (req,res)=>{
         return res.status(401).send("Something wrong please try again");
     
     return res.status(200).send("OK");
+}
+
+exports.getTopProducts=async (req,res)=>{
+
+    const products=await productGetTop();
+
+    return res.status(200).send(products);
+}
+
+exports.getProfit=async (req,res)=>{
+
+    const year=req.query.year;
+    const now=new Date();
+    if(year === undefined || year === null || parseInt(year) < 0 || parseInt(year) > now.getFullYear){
+        return res.status(401).send("Year not found or invalid");
+    }
+
+    let result=await cartGetProfit(parseInt(year));
+
+    if(result === null)
+        return res.status(401).send("Something wrong please try again");
+
+    const data=[];
+    result.forEach(element => {
+        data.push({
+            month:element.dataValues.month,
+            profit:element.dataValues.profit
+        })
+    });
+
+    return res.status(200).send(data);
 }

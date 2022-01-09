@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-09 00:19:54
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-07 18:38:41
+ * @Last Modified time: 2022-01-10 05:44:17
  */
 const { verifyToken } = require('../service/token');
 const { getUser } = require('../service/user');
@@ -35,7 +35,7 @@ exports.isAuth = async (req, res, next) => {
     try {
         const user = await getUser(verified.payload.username);
         req.user = user;
-
+        console.log("AAAAAAAAAAAAAAAAAA ",user);
         const customers=await customerGetAll({id_user:user.id_user});
 
         if(customers === null){
@@ -48,7 +48,7 @@ exports.isAuth = async (req, res, next) => {
         else{
             req.customer=customers[0];
         }
-
+        console.log("AAAAAAAAAAAAAAAAAAAAAa");
         return next();      
     } catch (error) {
         console.log(err);
@@ -137,7 +137,7 @@ exports.isIdentify=async (req,res,next) => {
 
         customer = await customerGetAll({ uuid: uuid });
 
-        if (customer === null)
+        if (customer === null || customer.length === 0)
             return res.status(401).send("Something wrong please try again");
         else
             customer = customer[0];
@@ -243,4 +243,31 @@ exports.isIdentify=async (req,res,next) => {
     req.cart=cart;
     req.uuid=uuid;
     return next();
+}
+
+exports.navBarSearch=async (req,res,next)=>{
+
+    const{
+        getAll:typeGetAll
+    }=require('../service/loaisanpham');
+    const{
+        getAll:brandGetAll
+    }=require('../service/thuonghieu');
+
+    const brands=await brandGetAll({});
+
+    if(brands === null){
+        return res.status(401).send("Middleware: Can not get brand");
+    }
+    
+    const types = await typeGetAll({});
+
+    if(types === null){
+        return res.status(401).send("Middleware: Can not get types");
+    }
+
+
+    req.brands=brands;
+    req.types=types;
+    next();
 }

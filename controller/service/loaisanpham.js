@@ -2,20 +2,24 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-15 15:51:04
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-08 09:51:11
+ * @Last Modified time: 2022-01-10 00:45:26
  */
 const db = require("../../models/index");
 const Loaisanpham = db.loaisanpham;
-const Op = require("sequelize");
+const {Op} = require("sequelize");
 const {
     setFkNull:productSetFkNull
 }=require('./sanpham');
 
-const getAll = async () => {
+const getAll = async props => {
 
+    const condition={};
+
+    if(props.id_loaisp !== undefined)
+        condition.id_loaisp=props.id_loaisp;
     try {
 
-        const data = await Loaisanpham.findAll();
+        const data = await Loaisanpham.findAll({where:condition});
 
         return data;
 

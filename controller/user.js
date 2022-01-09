@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-08 23:05:58
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-08 22:41:34
+ * @Last Modified time: 2022-01-10 05:33:19
  */
 const {getUser,createUser,update : userUpdate} = require('./service/user');
 const {
@@ -12,7 +12,10 @@ const {
 } = require('./service/usernotactive');
 const bcrypt  =require('bcrypt');
 const {generateToken}=require('./service/token');
-const {update : addressUpdate}=require('./service/diachi');
+const {
+    update : addressUpdate,
+    create:addressCreate
+}=require('./service/diachi');
 const {
     create:customerCreate,
     getAll:customerGetAll,
@@ -23,13 +26,16 @@ const{
 const{
     transporter
 }=require('./helpers/index');
+const{
+    isBlocked
+}=require('./service/group_user');
 
 const { v4: uuidv4 } = require('uuid');
 exports.register=async(req,res)=>{
 
     const username = req.body.username;
     const email=req.body.email;
-
+    const name=req.body.name;
     const user = await getUser(username);
     
     if(user !== null)
@@ -51,7 +57,13 @@ exports.register=async(req,res)=>{
                 }
                 else{
 
-                    const userNotActive=await userNotActiveCreate(username,hash,email);
+                    const userNotActive=await userNotActiveCreate({
+                        username:username,
+                        password:hash,
+                        email:email,
+                        name:name
+                    });
+                    
                     if (!userNotActive) {
                         return res
                             .status(401)
@@ -112,6 +124,11 @@ exports.login = async(req,res)=>{
         }
     }
 
+    const block=await isBlocked(user.id_user);
+
+    if(block)
+        return res.status(401).send("Bạn đã bị chặn");
+    
     try {
         const result = await bcrypt.compare(password, user.password);
 
@@ -236,7 +253,9 @@ exports.renderProfilePage=async(req,res)=>{
         address:address,
         user:user,
         cities:_cities,
-        auth:true
+        auth:true,
+        brands:req.brands,
+                types:req.types
     })
 
 }
@@ -258,7 +277,8 @@ exports.update=async (req,res)=>{
     const _city=await cityGetAll({id:city});
 
     try {
-        const id_diachi=await addressUpdate({
+        if(req.user.id_diachi !== null){
+            addressUpdate({
                 id_diachi:req.user.id_diachi,
                 sonha:sonha,
                 street:street,
@@ -267,14 +287,32 @@ exports.update=async (req,res)=>{
                 city:_city[0].slug,
                 province:province
             });
-        // console.log("AAAAAAAAA ",id_diachi);
-        const result = await userUpdate({
-            id_user:req.user.id_user,
-            email:email,
-            ten:name,
-            phone:phone,
-            id_diachi: req.user.id_diachi !== null ? null:id_diachi
-        });
+            const result = await userUpdate({
+                id_user:req.user.id_user,
+                email:email,
+                ten:name,
+                phone:phone
+            });
+        }
+        else{
+            const id_diachi=await addressCreate({
+                sonha:sonha,
+                street:street,
+                ward:ward,
+                district:district,
+                city:_city[0].slug,
+                province:province
+            });
+            const result = await userUpdate({
+                id_user:req.user.id_user,
+                email:email,
+                ten:name,
+                phone:phone,
+                id_diachi:id_diachi.null
+            });
+        }
+        
+
         return res.status(200).send('Update thành công');
     } catch (error) {
         console.log(error);
@@ -382,26 +420,39 @@ exports.activeUser=async(req,res)=>{
     if(username === undefined || username === null)
         return res.render('active',{
             message:'Link không hợp lệ',
-            auth:false
+            auth:false,
+            brands:req.brands,
+            types:req.types
         });
 
     const user=await userNotActiveGetUser(username);
     if(user === null){
         return res.render('active',{
             message:'Username không hợp lệ',
-            auth:false
+            auth:false,
+            brands:req.brands,
+            types:req.types
         });
     }
 
-    const newUser = await createUser(username,user.password,user.email);
+    const newUser = await createUser(username,user.password,user.email,user.name);
 
     if (!newUser) {
-        return res.render('active',{message:'Có lỗi trong quá trình tạo tải khoản, xin vui lòng thử lại',auth:false});
+        return res.render('active',{
+            message:'Có lỗi trong quá trình tạo tải khoản, xin vui lòng thử lại',
+            auth:false,
+            brands:req.brands,
+            types:req.types});
     }
 
     const uuid=uuidv4();
 
-    const result=await customerCreate({uuid:uuid,id_user:newUser.null});
+    const result=await customerCreate({
+        uuid:uuid,
+        id_user:newUser.null,
+        ten:user.name,
+        email:user.email
+    });
 
     const accessTokenLife = process.env.ACCESS_TOKEN_LIFE;
     const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
@@ -416,7 +467,12 @@ exports.activeUser=async(req,res)=>{
     );
 
     if (!accessToken) {
-        return res.render('active',{message:'Đăng nhập không thành công, vui lòng thử lại',auth:false});
+        return res.render('active',{
+            message:'Đăng nhập không thành công, vui lòng thử lại',
+            auth:false,
+            brands:req.brands,
+                types:req.types
+        });
     }
 
     userNotActiveRemove(username);
@@ -430,6 +486,8 @@ exports.activeUser=async(req,res)=>{
 
     return res.render('active',{
         message:"Tài khoản của bạn đã được kích hoạt",
-        auth:true
+        auth:true,
+        brands:req.brands,
+        types:req.types
     });
 }

@@ -6,7 +6,7 @@
                     <table class="table table-hover tm-table-small tm-product-table">
                         <thead>
                             <tr>
-                                <th scope="col">&nbsp;</th>
+                                {{!-- <th scope="col">&nbsp;</th> --}}
                                 <th scope="col">PRESENT NAME</th>
                                 <th scope="col">START DATE</th>
                                 <th scope="col">EXPIRED DATE</th>
@@ -17,7 +17,7 @@
                         <tbody>
                             {{#data.presents}}
                             <tr id="{{id}}">
-                                <th scope="row"><input type="checkbox" id="present_{{id}}" onchange="selectPresent(this)"/></th>
+                                {{!-- <th scope="row"><input type="checkbox" id="present_{{id}}" onchange="selectPresent(this)"/></th> --}}
                                 <td class="tm-product-name" id="present-{{id}}" onclick="viewPresentDetail(this.id)" style="cursor: pointer;">
                                     {{name}}
                                 </td>
@@ -37,9 +37,9 @@
                 </div>
                 <!-- table container -->
                 <a href="/admin/addpresent" class="btn btn-primary btn-block text-uppercase mb-3">Add new present</a>
-                <button class="btn btn-primary btn-block text-uppercase" onclick="deleteSelectedProducts()">
+                {{!-- <button class="btn btn-primary btn-block text-uppercase" onclick="deleteSelectedProducts()">
                     Delete selected presents
-                </button>
+                </button> --}}
             </div>
         </div>
         

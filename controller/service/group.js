@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2022-01-07 20:58:54
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-09 00:32:26
+ * @Last Modified time: 2022-01-09 17:55:00
  */
 const db = require("../../models/index");
 const Group=db.group;
@@ -100,6 +100,22 @@ exports.update=async props=>{
 exports.getGroupBlocked=async  ()=>{
 
     const condition={slug:'blockedlist'};
+
+    try {
+        const result= await this.getAll(condition);
+        if(result.length > 0){
+            return result[0];
+        }
+        return null;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+exports.getGroup=async (slug)=>{
+
+    const condition={slug:slug};
 
     try {
         const result= await this.getAll(condition);

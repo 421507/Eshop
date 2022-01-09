@@ -1,3 +1,9 @@
+/**
+ * @Author: Le Vu Huy
+ * @Date:   2022-01-04 00:25:09
+ * @Last Modified by:   Le Vu Huy
+ * @Last Modified time: 2022-01-09 17:17:52
+ */
 const width_threshold = 480;
 
 function drawLineChart() {
@@ -81,7 +87,7 @@ function drawBarChart() {
             },
             scaleLabel: {
               display: true,
-              labelString: "Hits"
+              labelString: "Products"
             }
           }
         ]
@@ -100,33 +106,106 @@ function drawBarChart() {
      * Purple: #9D66CC
      * Orange: #DB9C3F
      * Blue: #3889FC
+     * Pink: #f542a7
+     * StrongGreen: #00f70c
+     * Black: #000000
      */
 
-    configBar = {
-      type: "horizontalBar",
-      data: {
-        labels: ["Red", "Aqua", "Green", "Yellow", "Purple", "Orange", "Blue"],
-        datasets: [
-          {
-            label: "# of Hits",
-            data: [33, 40, 28, 49, 58, 38, 44],
-            backgroundColor: [
-              "#F7604D",
-              "#4ED6B8",
-              "#A8D582",
-              "#D7D768",
-              "#9D66CC",
-              "#DB9C3F",
-              "#3889FC"
-            ],
-            borderWidth: 0
-          }
-        ]
-      },
-      options: optionsBar
-    };
+    $.ajax({
+      type:'GET',
+      url:'http://localhost:3000/api/admin/product/top',
+      data:{}
+    }).done(data=>{
 
-    barChart = new Chart(ctxBar, configBar);
+      const names=[];
+      const amounts=[];
+      data.forEach(item=>{
+
+        names.push(item.name);
+        amounts.push(item.amount);
+      });
+
+      configBar = {
+        type: "horizontalBar",
+        data: {
+          labels: names,
+          datasets: [
+            {
+              label: "Number of sold products",
+              data: amounts,
+              backgroundColor: [
+                "#F7604D",
+                "#4ED6B8",
+                "#A8D582",
+                "#D7D768",
+                "#9D66CC",
+                "#DB9C3F",
+                "#3889FC",
+                "#f542a7",
+                "#00f70c",
+                "#000000"
+              ],
+              borderWidth: 0
+            }
+          ]
+        },
+        options: optionsBar
+      };
+      // configBar = {
+      //   type: "horizontalBar",
+      //   data: {
+      //     labels: ["Red", "Aqua", "Green", "Yellow", "Purple", "Orange", "Blue"],
+      //     datasets: [
+      //       {
+      //         label: "Number of sold products",
+      //         data: [33, 40, 28, 49, 58, 38, 44],
+      //         backgroundColor: [
+      //           "#F7604D",
+      //           "#4ED6B8",
+      //           "#A8D582",
+      //           "#D7D768",
+      //           "#9D66CC",
+      //           "#DB9C3F",
+      //           "#3889FC"
+      //         ],
+      //         borderWidth: 0
+      //       }
+      //     ]
+      //   },
+      //   options: optionsBar
+      // };
+  
+      barChart = new Chart(ctxBar, configBar);
+    }).fail(data=>{
+      alert(data.responseText);
+      console.log(data.responseText);
+    });
+
+    // configBar = {
+    //   type: "horizontalBar",
+    //   data: {
+    //     labels: ["Red", "Aqua", "Green", "Yellow", "Purple", "Orange", "Blue"],
+    //     datasets: [
+    //       {
+    //         label: "Number of sold products",
+    //         data: [33, 40, 28, 49, 58, 38, 44],
+    //         backgroundColor: [
+    //           "#F7604D",
+    //           "#4ED6B8",
+    //           "#A8D582",
+    //           "#D7D768",
+    //           "#9D66CC",
+    //           "#DB9C3F",
+    //           "#3889FC"
+    //         ],
+    //         borderWidth: 0
+    //       }
+    //     ]
+    //   },
+    //   options: optionsBar
+    // };
+
+    // barChart = new Chart(ctxBar, configBar);
   }
 }
 
@@ -154,26 +233,92 @@ function drawPieChart() {
       }
     };
 
-    configPie = {
-      type: "pie",
-      data: {
-        datasets: [
-          {
-            data: [18.24, 6.5, 9.15],
-            backgroundColor: ["#F7604D", "#4ED6B8", "#A8D582"],
-            label: "Storage"
-          }
-        ],
-        labels: [
-          "Used Storage (18.240GB)",
-          "System Storage (6.500GB)",
-          "Available Storage (9.150GB)"
-        ]
-      },
-      options: optionsPie
-    };
+    const now=new Date();
 
-    pieChart = new Chart(ctxPie, configPie);
+    $.ajax({
+      type:'GET',
+      url:`http://localhost:3000/api/admin/product/profit?year=${now.getFullYear()}`,
+      data:{}
+    }).done(data=>{
+
+      console.log(data);
+
+      const profits=[];
+      const months=[];
+
+      data.forEach(element => {
+        profits.push(element.profit);
+        months.push(`Month ${element.month}`);
+      });
+
+      configPie = {
+        type: "pie",
+        data: {
+          datasets: [
+            {
+              data: profits,
+              backgroundColor: [
+                "#F7604D",
+                "#4ED6B8",
+                "#A8D582",
+                "#D7D768",
+                "#9D66CC",
+                "#DB9C3F",
+                "#3889FC",
+                "#f542a7",
+                "#00f70c",
+                "#000000",
+                "#ffffff",
+                "#cfad6d"
+              ],
+              label: "Storage"
+            }
+          ],
+          labels: months
+        },
+        options: optionsPie
+      };
+  
+      pieChart = new Chart(ctxPie, configPie);
+
+    }).fail(data=>{
+      alert(data.responseText);
+      console.log(data.responseText);
+    });
+
+    // configPie = {
+    //   type: "pie",
+    //   data: {
+    //     datasets: [
+    //       {
+    //         data: [18.24, 6.5, 9.15],
+    //         backgroundColor: [
+    //           "#F7604D",
+    //           "#4ED6B8",
+    //           "#A8D582",
+    //           "#D7D768",
+    //           "#9D66CC",
+    //           "#DB9C3F",
+    //           "#3889FC",
+    //           "#f542a7",
+    //           "#00f70c",
+    //           "#000000",
+    //           "#ffffff",
+    //           "#cfad6d"
+    //         ],
+    //         label: "Storage"
+    //       }
+    //     ],
+    //     labels: [
+    //       "Used Storage (18.240GB)",
+    //       "System Storage (6.500GB)",
+    //       "Available Storage (9.150GB)"
+    //     ]
+    //   },
+    //   options: optionsPie
+    // };
+
+    // pieChart = new Chart(ctxPie, configPie);
   }
 }
 
@@ -189,4 +334,43 @@ function updateBarChart() {
     barChart.options = optionsBar;
     barChart.update();
   }
+}
+function updatePieChart() {
+
+  const year=$('#year option:selected').val();
+
+  if(year === ''){
+    alert('Select a year');
+    return;
+  }
+
+  $.ajax({
+    type:'GET',
+    url:`http://localhost:3000/api/admin/product/profit?year=${year}`,
+    data:{}
+  }).done(data=>{
+
+    console.log(data);
+
+    const profits=[];
+    const months=[];
+
+    data.forEach(element => {
+      profits.push(element.profit);
+      months.push(months.push(`Month ${element.month}`));
+    });
+
+    if (pieChart) {
+      pieChart.data.labels=months;
+      // console.log(pieChart.data.datasets)
+      pieChart.data.datasets[0].data=profits;
+      pieChart.update();
+    }
+
+  }).fail(data=>{
+    alert(data.responseText);
+    console.log(data.responseText);
+  });
+
+  
 }

@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 22:15:05
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-08 21:47:35
+ * @Last Modified time: 2022-01-10 06:24:16
  */
 const {
     update:cartUpdate,
@@ -42,6 +42,9 @@ const {
     getAll:statusShippingGetAll,
 }=require('./service/trangthaigiaohang');
 const{
+    getAll:shippingGetAll
+}=require('./service/shipping');
+const{
     getAll:customerPresentGetAll,
     update:customerPresentUpdate
 }=require('./service/khachhang_present');
@@ -52,7 +55,7 @@ const{
     getAll:voucherGetAll,
 }=require('./service/voucher');
 const{
-    getAll:discountProductGetAll,
+    getAll:discountProductGetAll, getAll,
 }=require('./service/sanphamgiamgia');
 
 exports.create = async (req, res) => {
@@ -258,6 +261,13 @@ exports.update=async (req,res)=>{
                         })
 
                         if(count === 0){
+                            props={
+                                id_giohang:req.cart.id_giohang,
+                                gia:0
+                            }
+                            console.log("AAAAAAAAAAAAAAAAAAAa");
+                            detailCartRemove(props);
+                            
                             payload.voucherErrorCode=-1;
                             payload.voucherMessage='Không thể dùng voucher vì Cart của bạn hiện tại chưa có món hàng nào';
                         
@@ -274,7 +284,10 @@ exports.update=async (req,res)=>{
                     else{
                         payload.voucherErrorCode=1;
                         payload.voucherMessage='Voucher hiện tại không thể sử dụng';
-
+                        console.log("AAAAAAAAAAAAAAAAAAA");
+                        console.log(startDate.toISOString());
+                        console.log(endDate.toISOString());
+                        console.log(today.toISOString());
                         result=await customerPresentUpdate({
                             id:statusPresents[0].id,
                             trang_thai:'Không thể sử dụng',
@@ -305,12 +318,19 @@ exports.update=async (req,res)=>{
                             if(item.gia > 0){
                                 count+=1;
                             }
-                        })
+                        });
 
                         if(count === 0){
                             payload.voucherErrorCode=-1;
                             payload.voucherMessage='Không thể dùng voucher vì Cart của bạn hiện tại chưa có món hàng nào';
                         
+                            props={
+                                id_giohang:req.cart.id_giohang,
+                                gia:0
+                            }
+                            console.log("AAAAAAAAAAAAAAAAAAAa");
+                            detailCartRemove(props);
+
                             result=await customerPresentUpdate({
                                 id:statusPresents[0].id,
                                 trang_thai:'Chưa sử dụng',
@@ -397,7 +417,10 @@ exports.update=async (req,res)=>{
                     else{
                         payload.voucherErrorCode=1;
                         payload.voucherMessage='Voucher hiện tại không thể sử dụng';
-
+                        console.log("AAAAAAAAAAAAAAAAAAA");
+                        console.log(startDate.toISOString());
+                        console.log(endDate.toISOString());
+                        console.log(today.toISOString());
                         result=await customerPresentUpdate({
                             id:statusPresents[0].id,
                             trang_thai:'Không thể sử dụng',
@@ -518,7 +541,10 @@ exports.update=async (req,res)=>{
             else{
                 payload.discountErrorCode=1;
                 payload.discountMessage='Discount hiện tại không thể sử dụng';
-
+                console.log("AAAAAAAAAAAAAAAAAAA");
+                console.log(startDate.toISOString());
+                console.log(endDate.toISOString());
+                console.log(today.toISOString());
                 result=await customerPresentUpdate({
                     id:statusPresents[0].id,
                     trang_thai:'Không thể sử dụng',
@@ -605,7 +631,10 @@ exports.renderCartPage=async (req,res)=>{
                     count+=1;
                 }
                 else{
-    
+                    console.log("AAAAAAAAAAAAAAAAAAA");
+                    console.log(startDate.toISOString());
+                    console.log(endDate.toISOString());
+                    console.log(today.toISOString());
                     result=await customerPresentUpdate({
                         id:statusPresents[i].id,
                         trang_thai:'Không thể sử dụng',
@@ -616,19 +645,20 @@ exports.renderCartPage=async (req,res)=>{
             else if(statusPresents[i].loai === "discount"){
 
                 if(today < startDate){
+
                     result=await customerPresentUpdate({
                         id:statusPresents[i].id,
-                        trang_thai:'Không thể sử dụng',
-                        slug_trangthai:'outdated'
+                        trang_thai:'Chưa sử dụng',
+                        slug_trangthai:'not_used'
                     });
                 }
                 else if(today <= endDate){
     
-                    result=await customerPresentUpdate({
-                        id:statusPresents[i].id,
-                        trang_thai:'Không thể sử dụng',
-                        slug_trangthai:'outdated'
-                    });
+                    // result=await customerPresentUpdate({
+                    //     id:statusPresents[i].id,
+                    //     trang_thai:'Không thể sử dụng',
+                    //     slug_trangthai:'outdated'
+                    // });
                 }
                 else{
     
@@ -645,7 +675,8 @@ exports.renderCartPage=async (req,res)=>{
         if (count === 0){
             try {
                 const result=await isAuth(req); 
-                return res.render('cart',{auth:result,empty:true});
+                return res.render('cart',{auth:result,empty:true,brands:req.brands,
+                    types:req.types});
             } catch (error) {
                 console.log(error);
                 return;
@@ -660,11 +691,11 @@ exports.renderCartPage=async (req,res)=>{
     let voucherIdCustomerPresent=-1;
     let discountPendingOrNot=false;
     let voucherPendingOrNot=false;
-    
+    console.log("BBBBBBBBBBBBBBBBBBB");
     if(statusPresents.length > 0){
 
         for(let i=0;i<statusPresents.length;++i){
-
+            console.log("AAAAAAAAAAAAAAAAAAA");
             if(statusPresents[i].loai === "discount"){
                 const idPresent=statusPresents[i].id_present;
 
@@ -679,8 +710,13 @@ exports.renderCartPage=async (req,res)=>{
                 const endDate=new Date(present.ngay_ketthuc);
                 const today=new Date();
 
+                console.log(startDate.toISOString());
+                console.log(endDate.toISOString());
+                console.log(today.toISOString());
+
                 if(today < startDate){
                     hasDiscount=false;
+
                 }
                 else if(today <= endDate){
                     hasDiscount=true;
@@ -694,6 +730,7 @@ exports.renderCartPage=async (req,res)=>{
                     });
 
                     if(count === 0){
+                        
                         result=await customerPresentUpdate({
                             id:statusPresents[i].id,
                             trang_thai:'Chưa sử dụng',
@@ -711,7 +748,8 @@ exports.renderCartPage=async (req,res)=>{
                 }
                 else{
                     hasDiscount=false;
-
+                    console.log("AAAAAAAAAAAAAAAAAAA");
+                    
                     result=await customerPresentUpdate({
                         id:statusPresents[i].id,
                         trang_thai:'Không thể sử dụng',
@@ -766,7 +804,10 @@ exports.renderCartPage=async (req,res)=>{
                 else{
 
                     hasVoucher=false;
-
+                    console.log("AAAAAAAAAAAAAAAAAAA");
+                    console.log(startDate.toISOString());
+                    console.log(endDate.toISOString());
+                    console.log(today.toISOString());
                     result=await customerPresentUpdate({
                         id:statusPresents[i].id,
                         trang_thai:'Không thể sử dụng',
@@ -840,7 +881,6 @@ exports.renderCartPage=async (req,res)=>{
         }
     }
 
-
     subTotal=Math.ceil(subTotal);
     
     result=await isAuth(req);
@@ -860,6 +900,8 @@ exports.renderCartPage=async (req,res)=>{
         voucherPendingOrNot:voucherPendingOrNot,
         voucherIdCustomerPresent:voucherIdCustomerPresent,
         checkout:detailCart.length > 0 ? true:false,
+        brands:req.brands,
+        types:req.types
         // cities:cities
     });
 }
@@ -887,7 +929,8 @@ exports.renderCheckoutPage=async (req,res)=>{
     else if(detailCart.length === 0){
 
         try {
-            return res.render('checkout',{checkout:false,auth:authResult});
+            return res.render('checkout',{checkout:false,auth:authResult,brands:req.brands,
+                types:req.types});
     
         } catch (error) {
             console.log(error);
@@ -904,7 +947,8 @@ exports.renderCheckoutPage=async (req,res)=>{
 
         if(count === 0){
             try {
-                return res.render('checkout',{checkout:false,auth:authResult});
+                return res.render('checkout',{checkout:false,auth:authResult,brands:req.brands,
+                    types:req.types});
         
             } catch (error) {
                 console.log(error);
@@ -950,7 +994,10 @@ exports.renderCheckoutPage=async (req,res)=>{
                     discount=present.so_tien;       
                 }
                 else{
-
+                    console.log("AAAAAAAAAAAAAAAAAAA");
+                    console.log(startDate.toISOString());
+                    console.log(endDate.toISOString());
+                    console.log(today.toISOString());
                     result=await customerPresentUpdate({
                         id:statusPresents[i].id,
                         trang_thai:'Không thể sử dụng',
@@ -965,7 +1012,10 @@ exports.renderCheckoutPage=async (req,res)=>{
                 else if(today <= endDate){
                 }
                 else{
-
+                    console.log("AAAAAAAAAAAAAAAAAAA");
+                    console.log(startDate.toISOString());
+                    console.log(endDate.toISOString());
+                    console.log(today.toISOString());
                     result=await customerPresentUpdate({
                         id:statusPresents[i].id,
                         trang_thai:'Không thể sử dụng',
@@ -1121,7 +1171,9 @@ exports.renderCheckoutPage=async (req,res)=>{
         cities:_cities,
         discount:discount,
         address:address,
-        user:user
+        user:user,
+        brands:req.brands,
+        types:req.types
     });
 }
 
@@ -1138,25 +1190,52 @@ exports.renderHistoryPage=async (req,res) =>{
             return res.redirect('/');
         }
         else if(carts.length === 0){
-            return res.render('history',{empty:true,auth:true});
+            return res.render('history',{empty:true,auth:true,brands:req.brands,types:req.types});
         }
-        else{
+        else{   
+            const idCarts=carts.map(item=>item.id_giohang);
+
+            const _shippings=await shippingGetAll({id_giohang:idCarts});
+            const idStatusShippings=_shippings.map(item=>item.trang_thai);
+            const _statusShippings=await statusShippingGetAll({id:idStatusShippings});
+            
 
             const payload=carts.map(item=>{
 
+                function getStatusShipping(id){
+                    let shipping;
+                    for (let index = 0; index < _shippings.length; index++) {
+                        const element = _shippings[index];
+                        if(element.id_giohang === id){
+                            shipping=element
+                        }
+                    }
+
+                    for (let index = 0; index < _statusShippings.length; index++) {
+                        const element = _statusShippings[index];
+                        if(element.id === shipping.trang_thai)
+                            return element.ten_trangthai;
+                    }
+
+                    return "";
+                }
+
                 return{
-                    ngay_dat:new Date(item.ngay_dat).toISOString(),
+                    ngay_dat:new Date(item.ngay_dat).toLocaleString(),
                     tong_tien:item.tong_tien,
                     methodPayment:item.phuongthuc_thanhtoan === "checkpayment" ? "Check payment" : "Credit card",
                     statusPayment:item.trangthai_thanhtoan === "chuathanhtoan" ? "Chưa thanh toán" : "Đã thanh toán",
-                    id_giohang:item.id_giohang
+                    id_giohang:item.id_giohang,
+                    statusShipping:getStatusShipping(item.id_giohang)
                 }
             });
 
             return res.render('history',{
                 empty:false,
                 data:payload,
-                auth:true
+                auth:true,
+                brands:req.brands,
+                types:req.types
             });
         }
     }
@@ -1169,7 +1248,8 @@ exports.renderHistoryPage=async (req,res) =>{
             return res.redirect('/history');
         }
         else if(detailCarts.length === 0){
-            return res.render('detailCart',{empty:true,auth:true});
+            return res.render('detailCart',{empty:true,auth:true,brands:req.brands,
+                types:req.types});
         }
         else{
             
@@ -1234,6 +1314,8 @@ exports.renderHistoryPage=async (req,res) =>{
                 total:total,
                 auth:true,
                 empty:false,
+                brands:req.brands,
+                types:req.types
             });
         }
         
@@ -1391,6 +1473,10 @@ exports.checkout=async (req,res)=>{
                     
                 }
                 else{
+                    console.log("AAAAAAAAAAAAAAAAAAA");
+                    console.log(startDate.toISOString());
+                    console.log(endDate.toISOString());
+                    console.log(today.toISOString());
                     result=await customerPresentUpdate({
                         id:statusPresents[i].id,
                         trang_thai:'Không thể sử dụng',
@@ -1413,6 +1499,10 @@ exports.checkout=async (req,res)=>{
                     });
                 }
                 else{
+                    console.log("AAAAAAAAAAAAAAAAAAA");
+                    console.log(startDate.toISOString());
+                    console.log(endDate.toISOString());
+                    console.log(today.toISOString());
                     result=await customerPresentUpdate({
                         id:statusPresents[i].id,
                         trang_thai:'Không thể sử dụng',

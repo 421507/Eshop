@@ -2,14 +2,14 @@
  * @Author: Le Vu Huy
  * @Date:   2022-01-04 12:23:07
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-08 11:59:20
+ * @Last Modified time: 2022-01-09 18:26:37
  */
 var express = require('express');
 var router = express.Router();
-const { isAdmin } = require('../../controller/middleware/admin/user');
+const { isAdmin, viewCustomer } = require('../../controller/middleware/admin/user');
 const customer = require('../../controller/admin/customers');
 
-router.get('/', isAdmin, function (req, res) {
+router.get('/', isAdmin, viewCustomer,function (req, res) {
 
     customer.renderListing(req, res);
 

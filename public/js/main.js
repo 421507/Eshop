@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 13:05:32
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-08 21:41:55
+ * @Last Modified time: 2022-01-09 14:34:28
  */
 /*price range*/
 
@@ -102,13 +102,15 @@ $(document).ready(function () {
 			const username = $('input#register-username').val();
 			const password = $('input#register-password').val();
 			const email = $('input#register-email').val();
+			const name = $('input#register-name').val();
 			$.ajax({
 				type: 'POST',
 				url: 'http://localhost:3000/api/user/register',
 				data: {
 					username: username,
 					password: password,
-					email:email
+					email:email,
+					name:name
 				}
 			}).done(function (data) {
 				alert(data);
@@ -269,10 +271,30 @@ $(document).ready(function () {
 
 		});
 
-		$('#changepass-form').submit(event=>{
-
+		$('#main-contact-form').submit(event=>{
 			event.preventDefault();
-			alert("AAAAAAAAAAAAAAAAAAAA");
+
+			const name=$('#name').val();
+			const email=$('#email').val();
+			const subject=$('#subject').val();
+			const message=$('#message').val();
+
+			$.ajax({
+				type:'POST',
+				url:'http://localhost:3000/api/contact',
+				data:{
+					name:name,
+					email:email,
+					subject:subject,
+					message:message
+				}
+			}).done(data=>{
+				alert(data);
+				console.log(data);
+			}).fail(data=>{
+				alert(data.responseText);
+				console.log(data.responseText);
+			});
 		});
 
 	});

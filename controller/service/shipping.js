@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-15 15:51:04
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-08 15:28:51
+ * @Last Modified time: 2022-01-10 03:08:59
  */
 const db = require("../../models/index");
 const Shipping = db.shipping;
@@ -33,7 +33,15 @@ const getAll = async (props) => {
 
     try {
 
-        const data = await Shipping.findAll({ where: condition });
+        const data = await Shipping.findAll(
+            { 
+                where: condition,
+                order:[
+                    ['ngay_nhan','DESC']
+                ] 
+            }
+            
+            );
 
         return data;
 
@@ -107,6 +115,16 @@ const update=async props=>{
         field.mieu_ta=props.mieu_ta;
 
     try {
+
+        const{
+            update:cartUpdate
+        }=require('./giohang');
+
+        cartUpdate({
+            id_giohang:props.id_giohang,
+            trangthai_thanhtoan:'dathanhtoan'
+        });
+
         const result=await Shipping.update(field,{where:condition});
         return result;
     } catch (error) {
@@ -134,4 +152,49 @@ const remove=async props=>{
 
 }
 
-module.exports = { getAll,create,getByPk,update,remove };
+const shippingCancelled=async (props)=>{
+    console.log("AAAAAAAAAAAAa");
+    const{
+        getAll:detailCartGetAll,
+        remove:detailCartRemove
+    }=require('./giohangchitiet');
+
+    const shipping=await getByPk(props.id_shipping);
+
+    const detailCarts=await detailCartGetAll({id_giohang:shipping.id_giohang});
+
+    const data=detailCarts.map(item=>{
+
+        return{
+            id:item.dataValues.id_sanpham,
+            amount:item.dataValues.soluong
+        }
+    });
+
+    const{
+        recover
+    }=require('./sanpham');
+
+    recover({
+        products:data
+    });
+
+    await detailCartRemove({
+        id_giohang:shipping.id_giohang
+    });
+
+    const{
+        updateToNotUsed
+    }=require('./khachhang_present');
+
+    await updateToNotUsed({
+        id_giohang:shipping.id_giohang
+    });
+
+
+    let result = await update(props);
+
+    return result;
+}
+
+module.exports = { getAll,create,getByPk,update,remove,shippingCancelled };

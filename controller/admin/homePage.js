@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-09 02:35:55
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-08 11:26:29
+ * @Last Modified time: 2022-01-09 17:14:21
  */
 const{
     getAll:shippingGetAll
@@ -19,6 +19,9 @@ const{
 const{
     getAll:gopYGetAll,
 }=require('../service/gopy');
+const{
+    getProfitByYear
+}=require('../service/giohang');
 
 
 exports.renderHomePage = async (req, res) => {
@@ -103,7 +106,7 @@ exports.renderHomePage = async (req, res) => {
 
     const noti=_gopy.map(item=>{
         const now=new Date();
-        now.setHours(now.getHours()+7);
+        // now.setHours(now.getHours()+7);
         const date=new Date(item.create_at);
         const time=Math.round((now.getTime()-date.getTime())/(3600 * 1000));
         return{
@@ -113,10 +116,29 @@ exports.renderHomePage = async (req, res) => {
         }
     });
 
+    const years=[];
+
+    const date=new Date();
+    
+    for (let index = date.getFullYear()-2; index <= date.getFullYear(); index++) {
+        if(index === date.getFullYear())
+            years.push({
+                selected:true,
+                year:index
+            });
+        else
+        years.push({
+            selected:true,
+            year:index
+        });
+        
+    }
+
     const payload={
         name:user.ten,
         shippings:shippings,
-        noti:noti
+        noti:noti,
+        years:years
     }
     
     res.render('admin/index', { 

@@ -2,11 +2,11 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-01 16:34:23
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-08 23:38:53
+ * @Last Modified time: 2022-01-10 03:49:22
  */
 const db = require("../../models/index");
 const Sanpham = db.sanpham;
-const {Op} = require("sequelize");
+const {Op, fn} = require("sequelize");
 const {
     update:detailCartUpdate
 }=require('./giohangchitiet');
@@ -22,9 +22,10 @@ const{
 const{
     remove:voucherRemove
 }=require('./voucher');
-const {
-    remove:typeDetailProduct
-}=require('./loaispchitiet');
+const{
+    remove:theodoiRemove
+}=require('./theodoi');
+
 
 
 const getPagination = (page, size) => {
@@ -149,6 +150,9 @@ const getAll = async ( props) => {
     const { limit, offset } = getPagination(props.page, props.size);
 
     const condition = {};
+    condition.thumbnail={
+        [Op.ne]:null
+    }
     let _data;
     if (props){
         if (props.brand !== undefined)
@@ -297,15 +301,13 @@ const remove=async (props)=>{
                 so_sanpham:brand.so_sanpham-1
             });
         }
-
-        const values =await Promise.all([
-            imageRemove({id_sanpham:props.id_sanpham}),
-            discountProductRemove({id_sanpham:props.id_sanpham}),
-            reviewRemove({id_sanpham:props.id_sanpham}),
-            voucherRemove({id_sanpham:props.id_sanpham}),
-            detailCartUpdate({id_sanpham:props.id_sanpham}),
-            typeDetailProduct({id_sanpham:props.id_sanpham})
-        ]);
+        console.log("CCCCCCCCCCCC ",props.id_sanpham);
+        await imageRemove({id_sanpham:props.id_sanpham});
+        await discountProductRemove({id_sanpham:props.id_sanpham});
+        await reviewRemove({id_sanpham:props.id_sanpham});
+        await voucherRemove({id_sanpham:props.id_sanpham});
+        await detailCartUpdate({id_sanpham:props.id_sanpham});
+        await theodoiRemove({id_sanpham:props.id_sanpham});
 
         const result=await Sanpham.destroy({where:condition});
         return result;
@@ -387,6 +389,142 @@ const getRelatedProducts=async pk=>{
 
 }
 
+const getTopProducts=async ()=>{
+
+    const {
+        getTopProducts:detailCartGetTop
+    }=require('./giohangchitiet');
+
+    const result=await detailCartGetTop();
+
+    const idProds=result.map(item=>item.id_sanpham);
+
+    const _products=await _getAll({
+        id_sanpham:idProds
+    });
+    const products=[];
+    result.forEach(item=>{
+
+        function getProduct(id){
+            for (let index = 0; index < _products.length; index++) {
+                const element = _products[index];
+                if(element.id_sanpham === id)
+                    return element;
+            }
+            return null;
+        }
+
+        const prod=getProduct(item.id_sanpham);
+
+        products.push({
+            name:prod.ten_sanpham,
+            amount:prod.soluong_daban
+        });
+    });
+
+    return products;
+}
+
+const recover=async props=>{
+
+    const idProds=props.products.map(item=>item.id);
+
+    const products=await _getAll({
+        id_sanpham:idProds
+    });
+
+    const data=[];
+    props.products.forEach(item=>{
+
+        function getProduct(id){
+
+            for (let index = 0; index < products.length; index++) {
+                const element = products[index];
+                if(element.id_sanpham === id)
+                    return element;
+            }
+
+            return null;
+        }
+
+        const prod=getProduct(item.id);
+
+        // promiseFunc.push(update({
+        //     id_sanpham:item.id,
+        //     soluong_daban:prod.soluong_daban+item.amount,
+        //     soluong_tonkho:prod.soluong_tonkho-item.amount
+        // }));
+
+        data.push({
+            id_sanpham:item.id,
+            soluong_daban:prod.soluong_daban+item.amount,
+            soluong_tonkho:prod.soluong_tonkho-item.amount
+        })
+    });
+
+
+
+    // let result=await Promise.all(promiseFunc);
+
+    // for (let index = 0; index < result.length; index++) {
+    //     const element = result[index];
+    //     if(element === null)
+    //         return null;
+    // }
+
+
+    try {
+        const result =await Sanpham.bulkCreate(data,{updateOnDuplicate:['soluong_daban','soluong_tonkho']});
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+
+}
+
+const getProductHomePage=async _=>{
+
+    try {
+        const result=await Sanpham.findAll({
+            limit:12,
+            where:{
+                thumbnail:{
+                    [Op.ne]:null
+                }
+            },
+            order:[
+                ['ngay_list','DESC']
+            ]
+        });
+
+        return result;
+
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+const getSamples=async types=>{
+
+    try {
+        const result=await Sanpham.findAndCountAll({
+            group:['id_loaisp'],
+            // attributes:['id_loaisp','sanpham.*'],
+            where:{
+                id_loaisp:types
+            },
+            limit:4
+        })
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+
+}
+
 module.exports = { 
     getAll, 
     getByPk,
@@ -395,5 +533,9 @@ module.exports = {
     remove,
     setFkNull,
     create,
-    getRelatedProducts
+    getRelatedProducts,
+    getTopProducts,
+    recover,
+    getProductHomePage,
+    getSamples
 };

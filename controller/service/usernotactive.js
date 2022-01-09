@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2022-01-08 21:03:14
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-08 22:19:36
+ * @Last Modified time: 2022-01-09 12:59:41
  */
 const db=require("../../models/index");
 const UserNotActive=db.usernotactive;
@@ -25,12 +25,15 @@ exports.getUser=async (username)=>{
 
 }
 
-exports.create=async (username,password,email)=>{
+exports.create=async (props)=>{
     
     const field={};
-    field.username=username;
-    field.password=password;
-    field.email=email;
+    field.username=props.username;
+    field.password=props.password;
+    field.email=props.email;
+    if(props.name !== undefined)
+        field.name=props.name;
+        
     try {
         return await UserNotActive.create(field);
     } catch (error) {

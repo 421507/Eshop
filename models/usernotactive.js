@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-08 22:28:11
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-08 21:02:39
+ * @Last Modified time: 2022-01-09 13:12:14
  */
 module.exports = (sequelize, Sequelize) => {
     try {
@@ -19,6 +19,9 @@ module.exports = (sequelize, Sequelize) => {
                 type: Sequelize.STRING,
             },
             email: {
+                type: Sequelize.STRING,
+            },
+            name: {
                 type: Sequelize.STRING,
             },
         });

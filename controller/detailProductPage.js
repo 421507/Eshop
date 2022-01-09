@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-20 23:41:13
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-08 23:29:38
+ * @Last Modified time: 2022-01-10 05:51:37
  */
 
 // const {remove:detailCartRemove,update:detailCartUpdate}=require('./service/giohangchitiet');
@@ -43,7 +43,9 @@ exports.renderProductDetail = async (req, res) => {
     if(parseInt(req.query.id) === -1){
         return res.render('product-details',{
             empty:true,
-            auth:auth
+            auth:auth,
+            brands:req.brands,
+                types:req.types
         });
     }
 
@@ -55,7 +57,9 @@ exports.renderProductDetail = async (req, res) => {
         if(result === null){
             return res.render('product-details',{
                 empty:true,
-                auth:auth
+                auth:auth,
+                brands:req.brands,
+                types:req.types
             });
         }
 
@@ -143,12 +147,12 @@ exports.renderProductDetail = async (req, res) => {
     data.name = name;
     data.id = id;
     data.availability = availability;
-    data.brand = brand[0].ten_thuonghieu;
+    data.brand = brand.length > 0 ? brand[0].ten_thuonghieu : "";
     data.isNew = diffDays > 7 ? false : true;
     data.rating = ratingMark;
     data.description=result.mieuta;
     data.listDate=new Date(result.ngay_list).toLocaleString();
-    data.type=type[0].ten_loaisp;
+    data.type=type.length > 0 ? type[0].ten_loaisp : "";
 
     if (reviews !== null) {
 
@@ -179,14 +183,14 @@ exports.renderProductDetail = async (req, res) => {
 
     }
 
-    const brands = await brandGetAll({});
+    const brands = req.brands;
 
     brands.forEach((item, index) => {
 
         brands[index].url = `/products?brand=${item.id_thuonghieu}`;
     });
 
-    const types = await typeGetAll();
+    const types = req.types;
 
     const typeBrand = await typeBrandGetAll({});
 

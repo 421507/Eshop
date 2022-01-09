@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-11-24 13:05:32
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-08 22:15:43
+ * @Last Modified time: 2022-01-09 14:28:36
  */
 const createError = require('http-errors');
 const express = require('express');
@@ -66,6 +66,7 @@ const adminMethodPaymentAddRouter = require('./routes/admin/add-methodpayment');
 const adminMethodPaymentDetailRouter = require('./routes/admin/methodpayment-detail');
 const adminCityAddRouter = require('./routes/admin/add-city');
 const adminCityDetailRouter = require('./routes/admin/city-detail');
+const adminActiveRouter = require('./routes/admin/active');
 
 
 const app = express();
@@ -150,8 +151,10 @@ app.use('/admin/methodpayment', adminMethodPaymentDetailRouter);
 app.use('/admin/addmethodpayment', adminMethodPaymentAddRouter);
 app.use('/admin/city', adminCityDetailRouter);
 app.use('/admin/addcity', adminCityAddRouter);
+app.use('/admin/active', adminActiveRouter);
 
 // api route
+require("./routes/api/contact")(app);
 require("./routes/api/sanpham")(app);
 require("./routes/api/user")(app);
 require("./routes/api/giohang")(app);

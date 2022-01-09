@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2022-01-05 14:09:24
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-08 10:14:17
+ * @Last Modified time: 2022-01-10 03:53:39
  */
 const {
     remove:brandRemove,
@@ -18,10 +18,14 @@ exports.remove= async (req,res) =>{
     if(id === undefined || id === null)
         return res.status(401).send("ID not found");
     
-    const result=await brandRemove({id_thuonghieu:id});
-
-    if(result === null)
+    try {
+        const result=await brandRemove({id_thuonghieu:id});
+        if(result === null)
+            return res.status(401).send("Something wrong please try again");
+    } catch (error) {
+        console.log(error);
         return res.status(401).send("Something wrong please try again");
+    }
 
     return res.status(200).send("OK");
 }

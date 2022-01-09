@@ -2,12 +2,13 @@
  * @Author: Le Vu Huy
  * @Date:   2022-01-06 20:06:02
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-07 01:59:22
+ * @Last Modified time: 2022-01-10 02:52:13
  */
 
 const{
     getByPk:shippingGetByPk,
-    update:shippingUpdate
+    update:shippingUpdate,
+    shippingCancelled
 }=require('../service/shipping');
 const{
     getByPk:addressGetByPk,
@@ -93,7 +94,7 @@ exports.renderPage=async (req,res)=>{
         cities:cities,
         status:status,
         price:shipping.gia,
-        cart:''
+        cart:shipping.id_giohang
     }
 
     return res.render('admin/shipping-detail',{
@@ -126,6 +127,7 @@ exports.update=async (req,res)=>{
     const province=req.body.province;
     const idCity=req.body.idCity;
     const idStatus=req.body.idStatus;
+    const id_giohang=req.body.id_giohang;
 
     const city=await cityGetByPk(idCity);
 
@@ -136,7 +138,7 @@ exports.update=async (req,res)=>{
         quan:district,
         thanh_pho:city.slug,
         tinh:province,
-        id_diachi:shipping.id_diachi
+        id_diachi:shipping.id_diachi,
     });
 
     if(result === null)
@@ -155,11 +157,28 @@ exports.update=async (req,res)=>{
             trang_thai:idStatus,
             ngay_ketthuc:now.toISOString(),
             gia_ship:price,
-            mieu_ta:description
+            mieu_ta:description,
+            id_giohang:id_giohang
         });
 
         if(result === null)
             return res.status(401).send("Something wrong please again");        
+    }
+    else if(status.slug === "cancelled"){
+        const now=new Date();
+
+        result=await shippingCancelled({
+            id_shipping:shipping.id_shipping,
+            ten_shipper:nameShipper,
+            trang_thai:idStatus,
+            ngay_ketthuc:now.toISOString(),
+            gia_ship:price,
+            mieu_ta:description,
+            id_giohang:id_giohang
+        });
+
+        if(result === null)
+            return res.status(401).send("Something wrong please again");
     }
     else{
         result=await shippingUpdate({

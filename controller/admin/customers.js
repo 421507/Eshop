@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2022-01-08 11:52:30
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-08 13:53:46
+ * @Last Modified time: 2022-01-10 06:02:27
  */
 const e = require('express');
 const{
@@ -162,7 +162,13 @@ exports.remove=async (req,res)=>{
     if(parseInt(id) < 1)
         return res.status(401).send("ID invalid");
 
-    let result=await customerRemove({
+    let result=await customerGetByPk(id);
+
+    if(result.id_user !== null){
+        return res.status(401).send("Can not delete this customer");
+    }
+
+    result=await customerRemove({
         id_khachhang:id
     });
 

@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-27 22:53:50
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-08 19:22:30
+ * @Last Modified time: 2022-01-10 05:31:44
  */
 
 const { getAll } = require('./service/sanpham');
@@ -12,12 +12,12 @@ const { getAll: typeBrandGetAll } = require('./service/loaisp_thuonghieu');
 const {isAuth}=require('./service/auth');
 exports.renderProductList = async (req, res) => {
 
-    const page = req.query.page && parseInt(req.query.page) > -1 ? parseInt(req.query.page) : 0;
-    const brand = req.query.brand && parseInt(req.query.brand) > 0 ? parseInt(req.query.brand) : null;
-    const type = req.query.type && parseInt(req.query.type) > 0 ? parseInt(req.query.type) : null;
-    const min = req.query.min && parseInt(req.query.min) > 0 ? parseInt(req.query.min) : null;
-    const max = req.query.max && parseInt(req.query.max) > 0 ? parseInt(req.query.max) : null;
-    const description=req.query.description !== undefined && req.query.description !== null ? req.query.description : null;
+    const page = req.query.page && req.query.page !== '' && parseInt(req.query.page) > -1 ? parseInt(req.query.page) : 0;
+    const brand = req.query.brand && req.query.brand !== ''&& parseInt(req.query.brand) > 0 ? parseInt(req.query.brand) : null;
+    const type = req.query.type && req.query.type !== '' && parseInt(req.query.type) > 0 ? parseInt(req.query.type) : null;
+    const min = req.query.min && req.query.min !== '' && parseInt(req.query.min) > 0 ? parseInt(req.query.min) : null;
+    const max = req.query.max && req.query.max !== '' && parseInt(req.query.max) > 0 ? parseInt(req.query.max) : null;
+    const description=req.query.description !== undefined && req.query.description !== null && req.query.description !== '' ? req.query.description : null;
     
     const props = {};
     props.page = page;
@@ -36,6 +36,8 @@ exports.renderProductList = async (req, res) => {
         props.description=description
     }
 
+    console.log("PROpSSSSSSSSSS ",props )
+
     const result = await getAll(props);
     const products = result.sanpham.map(item => {
 
@@ -47,14 +49,14 @@ exports.renderProductList = async (req, res) => {
         }
     });
 
-    const brands = await brandgetAll({});
+    const brands = req.brands;
 
     brands.forEach((item, index) => {
 
         brands[index].url = `/products?brand=${item.id_thuonghieu}`;
     });
 
-    const types = await typeGetAll();
+    const types = req.types;
 
     const typeBrand = await typeBrandGetAll({});
 

@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2022-01-02 17:31:50
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-07 19:30:20
+ * @Last Modified time: 2022-01-10 05:33:51
  */
 const{
     isAuth
@@ -28,6 +28,8 @@ exports.renderPage=async (req,res) => {
         voucher:voucher,
         nameVoucher:nameVoucher,
         shopping:shopping  ,
-        auth:auth  
+        auth:auth,
+        brands:req.brands,
+        types:req.types
     });
 }

@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2022-01-04 01:11:35
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-09 00:15:22
+ * @Last Modified time: 2022-01-10 04:42:12
  */
 $(document).ready(function () {
 
@@ -75,7 +75,12 @@ $(document).ready(function () {
             let start = "";
             let end = "";
 
-            const id = $('input#id_sanpham').val();
+            const id = $('input#id-sanpham').val();
+
+            if(id === undefined || id === null || id === ""){
+                alert("ID invalid ",id);
+                return;
+            }
 
             if (isDiscount) {
 
@@ -228,6 +233,7 @@ $(document).ready(function () {
             const city = $('select#city option:selected').val();
             const province = $('input#province').val();
             const status = $('select#status option:selected').val();
+            const id_cart = $('#id_cart').val();
 
             const id = $('input#id_shipping').val();
 
@@ -243,7 +249,8 @@ $(document).ready(function () {
                     district: district,
                     province: province,
                     idCity: city,
-                    idStatus: status
+                    idStatus: status,
+                    id_giohang:id_cart
                 }
             }).done(data => {
 
@@ -678,6 +685,44 @@ $(document).ready(function () {
                 console.log(data.responseText);
             });
         });
+        $('#update-profile-form').submit(event => {
+
+            event.preventDefault();
+
+            const name = $('#name').val();
+            const email = $('#email').val();
+            const phone = $('#phone').val();
+            const numHouse = $('#sonha').val();
+            const street = $('#street').val();
+            const ward = $('#ward').val();
+            const district = $('#district').val();
+            const province = $('#province').val();
+            const city = $('#city option:selected').val();
+            const id = $('#id-user').val();
+
+            const payload = {
+                name: name,
+                email: email,
+                phone: phone,
+                numHouse: numHouse,
+                street: street,
+                ward: ward,
+                district: district,
+                idCity: city,
+                province: province,
+            }
+            $.ajax({
+                type: 'PUT',
+                url: `http://localhost:3000/api/admin/user/${id}`,
+                data: payload
+            }).done(data => {
+                alert(data);
+                console.log(dat);
+            }).fail(data => {
+                alert(data.responseText);
+                console.log(data.responseText);
+            });
+        });
         $('#update-customer-form').submit(event => {
 
             event.preventDefault();
@@ -715,18 +760,22 @@ $(document).ready(function () {
 
             const username = $('#username').val();
             const password = $('#password').val();
+            const email = $('#email').val();
+            const name = $('#name').val();
             const payload = {
                 username: username,
-                password: password
+                password: password,
+                email:email,
+                name:name
             }
             $.ajax({
                 type: 'POST',
                 url: 'http://localhost:3000/api/admin/register',
                 data: payload
             }).done(data => {
-                alert("OK");
+                alert(data);
                 console.log(data);
-                $('#id-account').val(data.id);
+                // $('#id-account').val(data.id);
             }).fail(data => {
                 alert(data.responseText);
                 console.log(data.responseText);
@@ -970,7 +1019,7 @@ function deleteSelectedProducts() {
             console.log(data);
 
             _listProducts.forEach(item => {
-                $(`tr#${item}`).remove();
+                $(`tr#product-${item}`).remove();
             });
 
             localStorage.setItem('selected', '');
@@ -1160,7 +1209,7 @@ function updatePermission() {
     console.log(payload);
     $.ajax({
         type: 'PUT',
-        url: `http://localhost:3000/api/admin/group/${id}`,
+        url: `http://localhost:3000/api/admin/permission/${id}`,
         data: payload
     }).done(data => {
         alert(data);

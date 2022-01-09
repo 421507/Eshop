@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-15 15:51:04
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-08 09:38:03
+ * @Last Modified time: 2022-01-10 03:54:27
  */
 const db = require("../../models/index");
 const Thuonghieu = db.thuonghieu;
@@ -49,8 +49,8 @@ const remove=async props=>{
             const{
                 remove:typeProdBrandRemove
             }=require('./loaisp_thuonghieu');
-            typeProdBrandRemove({id_thuonghieu:props.id_thuonghieu});
-            productSetFkNull({id_thuonghieu:props.id_thuonghieu});
+            await typeProdBrandRemove({id_thuonghieu:props.id_thuonghieu});
+            await productSetFkNull({id_thuonghieu:props.id_thuonghieu});
 
         }        
         result=Thuonghieu.destroy({where:condition});

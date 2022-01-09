@@ -2,7 +2,7 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-08 23:08:17
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-08 22:36:45
+ * @Last Modified time: 2022-01-10 05:56:57
  */
 const db=require("../../models/index");
 const User=db.user;
@@ -26,13 +26,15 @@ exports.getUser=async (username)=>{
 
 }
 
-exports.createUser=async (username,password,email)=>{
+exports.createUser=async (username,password,email,name)=>{
 
     try{
         const user={
             username:username,
             password:password,
-            email:email
+            email:email,
+            ten:name,
+            role:'customer'
         }
 
         const data = await User.create(user);
@@ -44,12 +46,14 @@ exports.createUser=async (username,password,email)=>{
 
 }
 
-exports.createUserAdmin=async (username,password)=>{
+exports.createUserAdmin=async (username,password,email,name)=>{
 
     try{
         const user={
             username:username,
             password:password,
+            email:email,
+            ten:name,
             role:'admin'
         }
 
@@ -76,9 +80,9 @@ exports.update=async (props)=>{
         field.phone=props.phone;
     if(props.email)
         field.email=props.email;
-    if(props.id_diachi !== null)
+    if(props.id_diachi !== undefined)
         field.id_diachi=props.id_diachi;
-    if(props.avatar !== null)
+    if(props.avatar !== undefined)
         field.avatar=props.avatar;
     if(props.password !== undefined)
         field.password=props.password;
@@ -95,7 +99,7 @@ exports.update=async (props)=>{
 exports.getAll=async props=>{
 
     const condition={};
-    condition.role='admin';
+    // condition.role='admin';
     
     try {
         const result=await User.findAll({where:condition});
@@ -139,10 +143,8 @@ exports.remove=async props=>{
         remove:groupUserRemove
     }=require('./group_user');
 
-    await Promise.all([
-        customerRemove({id_user:id}),
-        groupUserRemove({user_id:id})
-    ]);
+    await customerRemove({id_user:id}),
+    await groupUserRemove({user_id:id})
 
     const condition={};
 

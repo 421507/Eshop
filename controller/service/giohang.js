@@ -2,10 +2,11 @@
  * @Author: Le Vu Huy
  * @Date:   2021-12-16 17:05:18
  * @Last Modified by:   Le Vu Huy
- * @Last Modified time: 2022-01-08 02:01:29
+ * @Last Modified time: 2022-01-10 02:15:49
  */
 const db = require("../../models/index");
 const Giohang=db.giohang;
+const sequelize=require('sequelize');
 
 const create=async (props)=>{
 
@@ -101,7 +102,12 @@ const getAll=async (props)=>{
         condition.check_out=props.check_out;
 
     try {
-        const result=Giohang.findAll({where:condition});
+        const result=Giohang.findAll({
+            where:condition,
+            order:[
+                ['ngay_dat','DESC']
+            ]
+        });
         return result;
     } catch (error) {
         console.log(error);
@@ -155,4 +161,28 @@ const remove=async props=>{
     }
 }
 
-module.exports={getAll,create,update,getByPk,remove}
+const getProfitByYear=async year=>{
+    
+    try {
+        const result=await Giohang.findAll({
+            where:{
+                [sequelize.Op.and]:[
+                    sequelize.where(sequelize.fn("YEAR",sequelize.col('ngay_dat')),year),
+                    {trangthai_thanhtoan:'dathanhtoan'}
+                ]
+            },
+            group:[sequelize.fn('month', sequelize.col('ngay_dat')), 'month'],
+            attributes:[
+                [sequelize.fn('sum',sequelize.col('tong_tien')),'profit'],
+                [ sequelize.fn('month', sequelize.col('ngay_dat')), 'month']
+            ]
+        });
+        return result;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+
+}
+
+module.exports={getAll,create,update,getByPk,remove,getProfitByYear}
