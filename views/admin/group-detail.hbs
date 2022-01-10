@@ -1,0 +1,73 @@
+<div class="container tm-mt-big tm-mb-big">
+    <div class="row">
+        <div class="col-xl-9 col-lg-10 col-md-12 col-sm-12 mx-auto">
+            <div class="tm-bg-primary-dark tm-block tm-block-h-auto">
+                <div class="row">
+                    <div class="col-12">
+                        <h2 class="tm-block-title d-inline-block">Edit Group</h2>
+                    </div>
+                </div>
+                <div class="row tm-edit-product-row">
+                    <div class="col-12">
+                        <form method="post" id="update-group-form" class="tm-edit-product-form">
+                        <input id="id_group" value="{{data.id}}" style="display: none;"/>
+                        <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12">
+                                <div class="form-group mb-3">
+                                    <label for="name">Name
+                                    </label>
+                                    <input id="name" name="name" type="text"
+                                        class="form-control validate" value="{{data.name}}" required/>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="slug">Slug
+                                    </label>
+                                    <input id="slug" name="slug" type="text"
+                                        class="form-control validate" value="{{data.slug}}" required/>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 tm-block-col">
+                                <div class="tm-bg-primary-dark tm-block tm-block-products">
+                                    <div class="tm-product-table-container">
+                                        <table class="table table-hover tm-table-small tm-product-table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">&nbsp;</th>
+                                                    <th scope="col">USERNAME</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {{#data.selectUsers}}
+                                                <tr id="row-{{id}}">
+                                                    <th scope="row"><input type="checkbox" class="select-row" id="{{id}}" onchange="selectProductsVoucher({{id}})" checked/></th>
+                                                    <td class="tm-product-name" onclick="viewAccountDetail({{id}})" style="cursor: pointer;">
+                                                        {{username}}
+                                                    </td>
+                                                </tr>
+                                                {{/data.selectUsers}}
+                                                {{#data.nonSelectUsers}}
+                                                <tr id="row-{{id}}">
+                                                    <th scope="row"><input type="checkbox" class="select-row" id="{{id}}" onchange="selectProductsVoucher({{id}})"/></th>
+                                                    <td class="tm-product-name" onclick="viewProductDetail({{id}})" style="cursor: pointer;">
+                                                        {{username}}
+                                                    </td>
+                                                    
+                                                </tr>
+                                                {{/data.nonSelectUsers}}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary btn-block text-uppercase">Update Now</button>
+                            </div>
+                        </div>
+                    </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

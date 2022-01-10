@@ -1,0 +1,106 @@
+<div class="container mt-5">
+
+    <!-- row -->
+    <div class="row tm-content-row">
+        <div class="tm-block-col tm-col-avatar">
+            <div class="tm-bg-primary-dark tm-block tm-block-avatar">
+                <h2 class="tm-block-title">Change Avatar</h2>
+                <div class="tm-avatar-container">
+                    <img src="{{data.avatar}}" alt="Avatar" class="tm-avatar img-fluid mb-4" />
+                    {{!-- <a class="tm-avatar-delete-link">
+                        <i class="far fa-trash-alt tm-product-delete-icon">
+                        </i>
+                        
+                    </a> --}}
+                </div>
+                <input id="avatar" type="file" class="btn btn-primary btn-block text-uppercase" name="avatar" accept="image/*" required/>
+                <button class="btn btn-primary btn-block text-uppercase" onclick="uploadAvatar()">
+                    Upload New Photo
+                </button>
+            </div>
+        </div>
+        <div class="tm-block-col tm-col-account-settings">
+            <div class="tm-bg-primary-dark tm-block tm-block-settings">
+                <h2 class="tm-block-title">Account Settings</h2>
+                <form id="update-profile-form" class="tm-signup-form row">
+                    <input id="id-user" value="{{data.id}}" style="display: none;"/>
+                    <div class="form-group col-lg-6">
+                        <label for="name">Account Name</label>
+                        <input id="name" name="name" type="text" class="form-control validate" value="{{data.name}}" />
+                    </div>
+                    <div class="form-group col-lg-6">
+                        <label for="email">Account Email</label>
+                        <input id="email" name="email" type="email" class="form-control validate"
+                            value="{{data.email}}" />
+                    </div>
+                    <div class="form-group col-lg-6">
+                        <label for="phone">Phone</label>
+                        <input id="phone" name="phone" type="tel" class="form-control validate"
+                            value="{{data.phone}}" />
+                    </div>
+                    <div class="form-group col-lg-6">
+                        <label for="sonha">Số nhà</label>
+                        <input id="sonha" class="form-control validate" type="text" value="{{data.numHouse}}" name="sonha"
+                        />
+                    </div>
+                    <div class="form-group col-lg-6">
+                        <label for="street">Đường</label>
+                        <input id="street" class="form-control validate" type="text" value="{{data.street}}" name="street"
+                        />
+                    </div>
+                    <div class="form-group col-lg-6">
+                        <label for="ward">Phường</label>
+                        <input id="ward" class="form-control validate" type="text" value="{{data.ward}}" name="ward"
+                        />
+                    </div>
+                    <div class="form-group col-lg-6">
+                        <label for="district">Quận</label>
+                        <input id="district" class="form-control validate" type="text" value="{{data.district}}" name="district"
+                        />
+                    </div>
+                    <div class="form-group col-lg-6">
+                        <label for="city">Thành phố</label>
+                        <select class="custom-select tm-select-accounts" id="city" name="city">
+                            <option value="">Select city</option>
+                            {{#data.cities}}
+                            {{#if selected}}
+                            <option value='{{id}}' selected>{{name}}</option>
+                            {{else}}
+                            <option value='{{id}}'>{{name}}</option>
+                            {{/if}}
+                            {{/data.cities}}
+                        </select>
+                    </div>
+                    <div class="form-group col-lg-6">
+                        <label for="province">Tỉnh</label>
+                        <input id="province" class="form-control validate" type="text" value="{{data.province}}" name="province"
+                        />
+                    </div>
+                    <div class="form-group col-lg-6">
+                        <label class="tm-hide-sm">&nbsp;</label>
+                        <button type="submit" class="btn btn-primary btn-block text-uppercase">
+                            Update Your Profile
+                        </button>
+                    </div>
+                    <div class="form-group col-lg-6 disabled" id="oldpass-div">
+                        <label for="oldpass">Old pass</label>
+                        <input id="oldpass" class="form-control validate" type="password" name="oldpass"
+                        />
+                    </div>
+                    <div class="form-group col-lg-6 disabled" id="newpass-div">
+                        <label for="newpass">New pass</label>
+                        <input id="newpass" class="form-control validate" type="password" name="newpass"
+                        />
+                    </div>
+                    <div class="form-group col-lg-6">
+                        <label class="tm-hide-sm">&nbsp;</label>
+                        <button type="button" onclick="changePass()" class="btn btn-primary btn-block text-uppercase">
+                            Change password
+                        </button>
+                    </div>
+                    
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
